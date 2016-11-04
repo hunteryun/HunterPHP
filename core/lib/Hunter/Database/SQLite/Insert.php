@@ -6,9 +6,9 @@
  * Insert
  */
 
-namespace HunterPHP\Core\Database\SQLite;
+namespace Hunter\Core\Database\SQLite;
 
-use HunterPHP\Core\Database\Insert as QueryInsert;
+use Hunter\Core\Database\Insert as QueryInsert;
 
 class Insert extends QueryInsert {
     

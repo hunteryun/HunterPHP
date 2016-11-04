@@ -6,7 +6,7 @@
  * 数据库类
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 abstract class Database {
 

@@ -6,7 +6,7 @@
  * Query
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 class Query {
     
@@ -20,7 +20,7 @@ class Query {
     /**
      * 库连接
      *
-     * @var HunterPHP\Core\Connection
+     * @var Hunter\Core\Connection
      */
     protected $connection;
     

@@ -6,7 +6,7 @@
  * Select
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 class Select extends Query {
     
@@ -75,7 +75,7 @@ class Select extends Query {
     
     public function extend($extender_name) {
         if (!class_exists($extender_name)) {
-            $extender_name = 'core\\Component\\Database\\' . ucfirst($extender_name);
+            $extender_name = 'Hunter\\Core\\Database\\' . ucfirst($extender_name);
         }
         return new $extender_name($this, $this->connection);
     }

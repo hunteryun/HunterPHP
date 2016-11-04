@@ -6,7 +6,7 @@
  * Log
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 class Log {
 

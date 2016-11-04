@@ -6,7 +6,7 @@
  * Delete
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 class Delete extends Query {
     

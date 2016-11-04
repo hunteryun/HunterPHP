@@ -6,7 +6,7 @@
  * Condition
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 use Countable;
 

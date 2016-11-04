@@ -8,7 +8,7 @@
  * @see http://php.net/manual/book.pdo.php
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 use PDO;
 use PDOStatement;

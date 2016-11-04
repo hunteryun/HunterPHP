@@ -6,7 +6,7 @@
  * DB Connection
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 use PDO;
 use PDOException;
@@ -36,7 +36,7 @@ class Connection extends PDO {
     /**
      * 日志记录器
      *
-     * @var HunterPHP\Core\Database\Log
+     * @var Hunter\Core\Database\Log
      */
     protected $logger = null;
     
@@ -66,7 +66,7 @@ class Connection extends PDO {
      *
      * @var string
      */
-    protected $statementClass = 'HunterPHP\\Core\\Database\\Statement';
+    protected $statementClass = 'Hunter\\Core\\Database\\Statement';
     
     /**
      * 是否支持事务
@@ -165,7 +165,7 @@ class Connection extends PDO {
     /**
      * 获取日志记录器
      *
-     * @var HunterPHP\Core\Database\Log
+     * @var Hunter\Core\Database\Log
      */
     public function getLogger() {
         return $this->logger;
@@ -211,7 +211,7 @@ class Connection extends PDO {
     /**
      * 前置query处理
      *
-     * @return HunterPHP\Core\Database\Statement
+     * @return Hunter\Core\Database\Statement
      */
     public function prepareQuery($sql) {
         $sql = $this->replacePrefix($sql);
@@ -228,7 +228,7 @@ class Connection extends PDO {
     /**
      * SELECT
      *
-     * @return HunterPHP\Core\Database\Select
+     * @return Hunter\Core\Database\Select
      */    
     public function select($table, $alias = null, array $options = array()) {
         return new Select($table, $alias, $this, $options);
@@ -237,7 +237,7 @@ class Connection extends PDO {
     /**
      * INSERT
      *
-     * @return HunterPHP\Core\Database\Insert
+     * @return Hunter\Core\Database\Insert
      */  
     public function insert($table, array $options = array()) {
         return new Insert($this, $table, $options);
@@ -246,7 +246,7 @@ class Connection extends PDO {
     /**
      * UPDATE
      *
-     * @return HunterPHP\Core\Database\Update
+     * @return Hunter\Core\Database\Update
      */  
     public function update($table, array $options = array()) {
         return new Update($this, $table, $options);
@@ -255,7 +255,7 @@ class Connection extends PDO {
     /**
      * DELETE
      *
-     * @return HunterPHP\Core\Database\Delete
+     * @return Hunter\Core\Database\Delete
      */  
     public function delete($table, array $options = array()) {
         return new Delete($this, $table, $options);
@@ -264,7 +264,7 @@ class Connection extends PDO {
     /**
      * MERGE
      *
-     * @return HunterPHP\Core\Database\Merge
+     * @return Hunter\Core\Database\Merge
      */  
     public function merge($table, array $options = array()) {
         return new Merge($this, $table, $options);
@@ -273,7 +273,7 @@ class Connection extends PDO {
     /**
      * Schema
      *
-     * @return HunterPHP\Core\Database\Schema
+     * @return Hunter\Core\Database\Schema
      */  
     public function schema(array $options = array()) {
         $options = $this->options + $options;

@@ -6,9 +6,9 @@
  * Delete
  */
 
-namespace HunterPHP\Core\Database\SQLite;
+namespace Hunter\Core\Database\SQLite;
 
-use HunterPHP\Core\Database\Delete as QueryDelete;
+use Hunter\Core\Database\Delete as QueryDelete;
 
 class Delete extends QueryDelete {
     

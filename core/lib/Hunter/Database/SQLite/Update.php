@@ -6,8 +6,8 @@
  * Update
  */
 
-namespace HunterPHP\Core\Database\SQLite;
+namespace Hunter\Core\Database\SQLite;
 
-use HunterPHP\Core\Database\Update as QueryUpdate;
+use Hunter\Core\Database\Update as QueryUpdate;
 
 class Update extends QueryUpdate {}

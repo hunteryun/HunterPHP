@@ -6,7 +6,7 @@
  * Schema
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 class Schema extends Query {
     

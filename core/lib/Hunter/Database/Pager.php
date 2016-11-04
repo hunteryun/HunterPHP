@@ -6,7 +6,7 @@
  * Pager
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 class Pager {
     

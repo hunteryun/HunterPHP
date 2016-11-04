@@ -6,7 +6,7 @@
  * Merge
  */
 
-namespace HunterPHP\Core\Database;
+namespace Hunter\Core\Database;
 
 use InvalidArgumentException;
 use RuntimeException;
