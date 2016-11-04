@@ -1,0 +1,5 @@
+{
+    "require": {
+        "league/container": "^2.2"
+    }
+}
