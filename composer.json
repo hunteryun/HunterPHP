@@ -1,5 +1,6 @@
 {
     "require": {
-        "league/container": "^2.2"
+        "league/container": "^2.2",
+        "tomphp/container-configurator": "^1.0"
     }
 }
