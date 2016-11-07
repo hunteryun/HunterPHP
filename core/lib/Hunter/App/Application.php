@@ -29,11 +29,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class Application extends \Pimple implements HttpKernelInterface
 {
-    const VERSION = '1.3.5';
-
-    const EARLY_EVENT = 512;
-    const LATE_EVENT = -512;
-
     protected $providers = array();
     protected $booted = false;
 
