@@ -4,64 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e45e9e84e88114ac9e26a5d9fa20b695",
-    "content-hash": "953209e2348f61621cb1e7f1fa08a97a",
+    "hash": "f4cd22d86f7a4992093e4444208b88d2",
+    "content-hash": "255c6e840685c12fdf46b951327d1cad",
     "packages": [
-        {
-            "name": "beberlei/assert",
-            "version": "v2.6.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/beberlei/assert.git",
-                "reference": "f567e3e4bce5419bccb9e9b1faf8d4ca9b2f5055"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://packagist.phpcomposer.com/files/beberlei/assert/f567e3e4bce5419bccb9e9b1faf8d4ca9b2f5055.zip",
-                "reference": "f567e3e4bce5419bccb9e9b1faf8d4ca9b2f5055",
-                "shasum": ""
-            },
-            "require": {
-                "ext-mbstring": "*",
-                "php": ">=5.3"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "2.0.0-alpha",
-                "phpunit/phpunit": "@stable"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Assert": "lib/"
-                },
-                "files": [
-                    "lib/Assert/functions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de",
-                    "role": "Lead Developer"
-                },
-                {
-                    "name": "Richard Quadling",
-                    "email": "rquadling@gmail.com",
-                    "role": "Collaborator"
-                }
-            ],
-            "description": "Thin assertion library for input validation in business models.",
-            "keywords": [
-                "assert",
-                "assertion",
-                "validation"
-            ],
-            "time": "2016-10-31 12:09:54"
-        },
         {
             "name": "container-interop/container-interop",
             "version": "1.1.0",
@@ -152,6 +97,52 @@
                 "service"
             ],
             "time": "2016-03-17 11:07:59"
+        },
+        {
+            "name": "pimple/pimple",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silexphp/Pimple.git",
+                "reference": "2019c145fe393923f3441b23f29bbdfaa5c58c4d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://packagist.phpcomposer.com/files/silexphp/Pimple/2019c145fe393923f3441b23f29bbdfaa5c58c4d.zip",
+                "reference": "2019c145fe393923f3441b23f29bbdfaa5c58c4d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Pimple": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Pimple is a simple Dependency Injection Container for PHP 5.3",
+            "homepage": "http://pimple.sensiolabs.org",
+            "keywords": [
+                "container",
+                "dependency injection"
+            ],
+            "time": "2013-11-22 08:30:29"
         },
         {
             "name": "psr/log",
@@ -510,115 +501,6 @@
                 "shim"
             ],
             "time": "2016-05-18 14:26:46"
-        },
-        {
-            "name": "tomphp/container-configurator",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tomphp/container-configurator.git",
-                "reference": "1b61418002e87f4730c6461243d216983b02ae4d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://packagist.phpcomposer.com/files/tomphp/container-configurator/1b61418002e87f4730c6461243d216983b02ae4d.zip",
-                "reference": "1b61418002e87f4730c6461243d216983b02ae4d",
-                "shasum": ""
-            },
-            "require": {
-                "beberlei/assert": "^2.6",
-                "php": "^5.6|^7.0",
-                "tomphp/exception-constructor-tools": "^1.0.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "2.0.0-alpha",
-                "league/container": "^2.0.2",
-                "phpunit/phpunit": "^5.5.4",
-                "pimple/pimple": "^3.0.0",
-                "squizlabs/php_codesniffer": "*",
-                "symfony/yaml": "^3.1.4"
-            },
-            "suggest": {
-                "league/container": "Small but powerful dependency injection container http://container.thephpleague.com",
-                "pimple/pimple": "A small PHP 5.3 dependency injection container http://pimple.sensiolabs.org",
-                "symfony/yaml": "For reading configuration from YAML files"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "TomPHP\\ContainerConfigurator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Oram",
-                    "email": "tom@x2k.co.uk",
-                    "homepage": "https://github.com/tomphp",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Configure your application and the Dependency Injection Container (DIC) via config arrays or config files.",
-            "homepage": "https://github.com/tomphp/config-service-provider",
-            "keywords": [
-                "container",
-                "dependency injection",
-                "di",
-                "league"
-            ],
-            "time": "2016-10-31 18:34:14"
-        },
-        {
-            "name": "tomphp/exception-constructor-tools",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tomphp/exception-constructor-tools.git",
-                "reference": "f01db0b3d4c370b45543364883aac2babeafa24f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://packagist.phpcomposer.com/files/tomphp/exception-constructor-tools/f01db0b3d4c370b45543364883aac2babeafa24f.zip",
-                "reference": "f01db0b3d4c370b45543364883aac2babeafa24f",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.6|^7.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^1.10",
-                "phpunit/phpunit": "^5.5",
-                "squizlabs/php_codesniffer": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "TomPHP\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Oram",
-                    "email": "tom@codept.com",
-                    "homepage": "https://github.com/tomphp",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A simple PHP trait which makes creating static constructors for exceptions nicer.",
-            "homepage": "https://github.com/tomphp/exception-constructor-tools",
-            "keywords": [
-                "constructor",
-                "exception",
-                "static"
-            ],
-            "time": "2016-09-09 09:30:00"
         }
     ],
     "packages-dev": [],
