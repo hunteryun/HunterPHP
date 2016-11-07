@@ -1,6 +1,13 @@
 {
     "require": {
         "league/container": "^2.2",
-        "tomphp/container-configurator": "^1.0"
+        "symfony/http-foundation": "^3.1",
+        "symfony/http-kernel": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hunter\\Core\\": "core/lib/Hunter",
+            "Hunter\\ServiceProvider\\": "core/ServiceProvider"
+        }
     }
 }
