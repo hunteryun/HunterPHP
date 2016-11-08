@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Hunter\Core\App\ModuleHandler;
 
 /**
  * The Silex framework class.
@@ -31,6 +32,7 @@ class Application extends \Pimple implements HttpKernelInterface
 {
     protected $providers = array();
     protected $booted = false;
+    protected $root;
 
     /**
      * Instantiate a new Application.
@@ -44,60 +46,83 @@ class Application extends \Pimple implements HttpKernelInterface
         parent::__construct();
 
         $app = $this;
+        $this->root = static::guessApplicationRoot();
 
-        $this['logger'] = null;
-
-        $this['controllers'] = $this->share(function () use ($app) {
-            return $app['controllers_factory'];
+        $this['module_handler'] = $this->share(function () use ($app) {
+            $files = $this->file_scan($this->root.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
+            $module_list = $this->getModulesParameter($files);
+            return new ModuleHandler($this->root, $module_list);
         });
-
-        $this['controllers_factory'] = function () use ($app) {
-            return new ControllerCollection($app['route_factory']);
-        };
-
-        $this['route_class'] = 'Silex\\Route';
-        $this['route_factory'] = function () use ($app) {
-            return new $app['route_class']();
-        };
-
-        $this['exception_handler'] = $this->share(function () use ($app) {
-            return new ExceptionHandler($app['debug']);
-        });
-
-        $this['request_stack'] = $this->share(function () use ($app) {
-            if (class_exists('Symfony\Component\HttpFoundation\RequestStack')) {
-                return new RequestStack();
-            }
-        });
-
-        $this['request_context'] = $this->share(function () use ($app) {
-            $context = new RequestContext();
-
-            $context->setHttpPort($app['request.http_port']);
-            $context->setHttpsPort($app['request.https_port']);
-
-            return $context;
-        });
-
-        $this['url_matcher'] = $this->share(function () use ($app) {
-            return new RedirectableUrlMatcher($app['routes'], $app['request_context']);
-        });
-
-        $this['request_error'] = $this->protect(function () {
-            throw new \RuntimeException('Accessed request service outside of request scope. Try moving that call to a before handler or controller.');
-        });
-
-        $this['request'] = $this['request_error'];
-
-        $this['request.http_port'] = 80;
-        $this['request.https_port'] = 443;
-        $this['debug'] = false;
-        $this['charset'] = 'UTF-8';
-        $this['locale'] = 'en';
 
         foreach ($values as $key => $value) {
             $this[$key] = $value;
         }
+    }
+
+    /**
+     * Determine the application root directory based on assumptions.
+     *
+     * @return string
+     *   The application root.
+     */
+    public static function guessApplicationRoot()
+    {
+      return dirname(substr(__DIR__, 0, -strlen(__NAMESPACE__)));
+    }
+
+    /**
+     * file scan.
+     *
+     * @return array
+     *   The files list.
+     */
+    protected function file_scan($dir, $regx, $options = array(), $depth = 1) {
+        $options += array(
+            'nomask'   => '/(\.\.?|CSV)$/',
+            'recurse'  => true,
+            'minDepth' => 1,
+            'maxDepth' => 10,
+            'fullpath' => false,
+        );
+        $files = array();
+        if (is_dir($dir) && $depth <= $options['maxDepth'] && ($handle = opendir($dir))) {
+            while (false !== ($filename = readdir($handle))) {
+                if (!preg_match($options['nomask'], $filename) && $filename[0] != '.') {
+                    $subdir = $dir . '/' . $filename;
+                    if (is_dir($subdir) && $options['recurse']) {
+                        $files = array_merge($this->file_scan($subdir, $regx, $options, $depth + 1), $files);
+                    } elseif ($depth >= $options['minDepth']) {
+                        if (preg_match($regx, $filename) || ($options['fullpath'] && preg_match($regx, $subdir))) {
+                            $files[] = array(
+                                'dirname'  => $dir,
+                                'basename' => $filename,
+                                'file'     => $dir . '/' . $filename,
+                            );
+                        }
+                    }
+                }
+            }
+            closedir($handle);
+        }
+        return $files;
+    }
+
+    /**
+     * Returns an array of Extension class parameters for all enabled modules.
+     *
+     * @return array
+     */
+    protected function getModulesParameter($files) {
+      $extensions = array();
+      foreach ($files as $name => $f) {
+        list ($module,) = explode('.', $f['basename']);
+        $extensions[$name] = array(
+          'type' => 'module',
+          'pathname' => 'module/'.$module.'/'.$module.'.info',
+          'filename' => $f['basename'],
+        );
+      }
+      return $extensions;
     }
 
     /**
@@ -165,13 +190,9 @@ class Application extends \Pimple implements HttpKernelInterface
             $this->boot();
         }
 
-        $current = HttpKernelInterface::SUB_REQUEST === $type ? $this['request'] : $this['request_error'];
-
         $this['request'] = $request;
 
         $response = new Response('You got it');
-
-        $this['request'] = $current;
 
         return $response;
     }

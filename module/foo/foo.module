@@ -1,0 +1,5 @@
+<?php
+
+function foo_menu () {
+    return 'foo';
+}
