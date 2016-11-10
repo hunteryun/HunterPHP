@@ -2,38 +2,12 @@
 
 namespace Hunter\Core\App;
 
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpKernel\HttpKernel;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpKernel\TerminableInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
-use Symfony\Component\HttpKernel\EventListener\ResponseListener;
-use Symfony\Component\HttpKernel\EventListener\RouterListener;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Hunter\Core\App\ModuleHandler;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Routing\Route;
-use	Symfony\Component\Routing\Exception\ResourceNotFoundException;
-
 /**
  * The Silex framework class.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Application extends \Pimple implements HttpKernelInterface
+class Application
 {
     protected $providers = array();
     protected $booted = false;
@@ -47,12 +21,8 @@ class Application extends \Pimple implements HttpKernelInterface
      *
      * @param array $values The parameters or objects.
      */
-    public function __construct(array $values = array())
+    public function __construct()
     {
-        parent::__construct();
-
-        $app = $this;
-        $this->routes = new RouteCollection();
         $this->root = static::guessApplicationRoot();
 
         $this['module_handler'] = $this->share(function () use ($app) {
@@ -60,10 +30,6 @@ class Application extends \Pimple implements HttpKernelInterface
             $module_list = $this->getModulesParameter($files);
             return new ModuleHandler($this->root, $module_list);
         });
-
-        foreach ($values as $key => $value) {
-            $this[$key] = $value;
-        }
     }
 
     /**
@@ -197,26 +163,6 @@ class Application extends \Pimple implements HttpKernelInterface
             $this->boot();
         }
 
-        // create a context using the current request
-				$context = new RequestContext();
-				$context->fromRequest($request);
-
-				$matcher = new UrlMatcher($this->routes, $context);
-
-				try {
-					$attributes = $matcher->match($request->getPathInfo());
-					$controller = $attributes['controller'];
-          unset($attributes['controller']);
-			    $response = call_user_func_array($controller, $attributes);
-				} catch (ResourceNotFoundException $e) {
-					$response = new Response('Not found!', Response::HTTP_NOT_FOUND);
-				}
-
         return $response;
     }
-
-    // Associates an URL with a callback function
-		public function map($path, $controller) {
-      $this->routes->add($path, new Route($path, array('controller' => $controller)));
-		}
 }

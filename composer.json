@@ -1,14 +1,15 @@
 {
     "require": {
-        "symfony/http-foundation": "^3.1",
-        "symfony/http-kernel": "^3.1",
-        "pimple/pimple": "~1.0",
-        "symfony/routing": "^3.1"
+        "league/container": "^2.2",
+        "league/route": "^2.0",
+        "josegonzalez/dotenv": "^2.0",
+        "zendframework/zend-diactoros": "^1.3",
+        "twig/twig": "^1.24"
     },
     "autoload": {
         "psr-4": {
             "Hunter\\Core\\": "core/lib/Hunter",
-            "Hunter\\ServiceProvider\\": "core/ServiceProvider"
+            "Hunter\\": "core/app"
         }
     }
 }
