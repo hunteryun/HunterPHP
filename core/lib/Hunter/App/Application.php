@@ -22,6 +22,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Hunter\Core\App\ModuleHandler;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\Route;
+use	Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * The Silex framework class.
@@ -33,6 +38,7 @@ class Application extends \Pimple implements HttpKernelInterface
     protected $providers = array();
     protected $booted = false;
     protected $root;
+    protected $routes = array();
 
     /**
      * Instantiate a new Application.
@@ -46,6 +52,7 @@ class Application extends \Pimple implements HttpKernelInterface
         parent::__construct();
 
         $app = $this;
+        $this->routes = new RouteCollection();
         $this->root = static::guessApplicationRoot();
 
         $this['module_handler'] = $this->share(function () use ($app) {
@@ -190,10 +197,26 @@ class Application extends \Pimple implements HttpKernelInterface
             $this->boot();
         }
 
-        $this['request'] = $request;
+        // create a context using the current request
+				$context = new RequestContext();
+				$context->fromRequest($request);
 
-        $response = new Response('You got it');
+				$matcher = new UrlMatcher($this->routes, $context);
+
+				try {
+					$attributes = $matcher->match($request->getPathInfo());
+					$controller = $attributes['controller'];
+          unset($attributes['controller']);
+			    $response = call_user_func_array($controller, $attributes);
+				} catch (ResourceNotFoundException $e) {
+					$response = new Response('Not found!', Response::HTTP_NOT_FOUND);
+				}
 
         return $response;
     }
+
+    // Associates an URL with a callback function
+		public function map($path, $controller) {
+      $this->routes->add($path, new Route($path, array('controller' => $controller)));
+		}
 }
