@@ -3,3 +3,9 @@ test.overview:
   defaults:
     _controller: 'Hunter\test\Controller\TestController::overview'
     _title: 'Test messages'
+
+test.homepage:
+  path: '/'
+  defaults:
+    _controller: 'Hunter\test\Controller\TestController::index'
+    _title: 'Home Page'
