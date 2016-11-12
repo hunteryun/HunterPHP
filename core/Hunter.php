@@ -8,6 +8,4 @@ josegonzalez\Dotenv\Loader::load([
     'toEnv'    => true
 ]);
 
-$container = include __DIR__ . '/app/container.php';
-
-$router = include __DIR__ . '/app/router.php';
+require __DIR__ . '/app/container.php';

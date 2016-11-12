@@ -1,0 +1,5 @@
+test.overview:
+  path: '/test'
+  defaults:
+    _controller: 'Hunter\test\Controller\TestController::overview'
+    _title: 'Test messages'
