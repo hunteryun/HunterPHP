@@ -1,5 +1,5 @@
 foo.list:
   path: '/foo'
   defaults:
-    _controller: 'Hunter\foo\Controller\FooController::list'
+    _controller: 'Hunter\foo\Controller\FooController::foo_list'
     _title: 'Foo list'

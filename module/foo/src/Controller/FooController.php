@@ -11,7 +11,7 @@ class FooController {
   /**
    * Displays a list of materias.
    */
-  public function list() {
+  public function foo_list() {
     echo 'list';
   }
 

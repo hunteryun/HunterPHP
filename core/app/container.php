@@ -18,10 +18,6 @@ $container->inflector(Hunter\Contract\ConfigAwareInterface::class)
 $container->inflector(Hunter\Contract\TemplateAwareInterface::class)
           ->invokeMethod('setTemplateDriver', ['Twig_Environment']);
 
-$container->add(Hunter\Controller\MainController::class);
-$container->add(Hunter\test\Controller\TestController::class);
-
-
 $router = new RouteCollection($container);
 
 $application = new Application();
