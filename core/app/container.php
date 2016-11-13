@@ -2,10 +2,11 @@
 
 use League\Container\Container;
 use League\Container\ContainerInterface;
+use League\Route\RouteCollection;
+use League\Route\Strategy\ParamStrategy;
 use Hunter\Core\App\Application;
 use Hunter\Core\App\ModuleHandler;
 use Hunter\Core\Discovery\YamlDiscovery;
-use League\Route\RouteCollection;
 
 $container = new Container();
 
@@ -19,6 +20,7 @@ $container->inflector(Hunter\Contract\TemplateAwareInterface::class)
           ->invokeMethod('setTemplateDriver', ['Twig_Environment']);
 
 $router = new RouteCollection($container);
+$router->setStrategy(new ParamStrategy());
 
 $application = new Application();
 $application->updateModules($application->getModulesList());
