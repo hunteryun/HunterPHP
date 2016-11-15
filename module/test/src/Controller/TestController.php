@@ -10,14 +10,13 @@ use League\Container\Container;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Hunter\Core\App\Application;
-use Symfony\Component\HttpFoundation\Request;
 
 class TestController {
 
   /**
    * homepage.
    */
-  public function index(Request $request) {
+  public function index(Application $app) {
     echo 'Hello HunterPHP';
   }
 
