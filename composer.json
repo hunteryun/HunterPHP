@@ -9,8 +9,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Hunter\\Core\\": "core/lib/Hunter",
-            "Hunter\\": "core/app"
+            "Hunter\\Core\\": "core/lib/Hunter"
         }
     }
 }

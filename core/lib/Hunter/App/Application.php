@@ -3,6 +3,19 @@
 namespace Hunter\Core\App;
 
 use Composer\Autoload\ClassLoader;
+use League\Container\Container;
+use League\Container\ContainerInterface;
+use League\Container\ReflectionContainer;
+use League\Route\RouteCollection;
+use League\Route\Strategy\ParamStrategy;
+use Hunter\Core\App\Application;
+use Hunter\Core\App\ModuleHandler;
+use Hunter\Core\Discovery\YamlDiscovery;
+use Hunter\Core\App\ServiceProvider\ConfigServiceProvider;
+use Hunter\Core\App\ServiceProvider\HttpMessageServiceProvider;
+use Hunter\Core\App\ServiceProvider\TemplateServiceProvider;
+use Hunter\Core\App\Contract\ConfigAwareInterface;
+use Hunter\Core\App\Contract\TemplateAwareInterface;
 
 /**
  * The Silex framework class.
@@ -14,9 +27,10 @@ class Application
     protected $files = array();
     protected $booted = false;
     protected $root;
-    protected $routes = array();
+    protected $routers = array();
     protected $classLoader;
     protected $moduleList;
+    protected $container;
 
     /**
      * Instantiate a new Application.
@@ -203,12 +217,72 @@ class Application
     public function boot()
     {
         if (!$this->booted) {
-            foreach ($this->providers as $provider) {
-                $provider->boot($this);
-            }
+            $this->loadLegacyIncludes();
+
+            // Initialize the container.
+            $this->initializeContainer();
 
             $this->booted = true;
         }
+    }
+
+    /**
+     * Initializes the service container.
+     *
+     * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    protected function initializeContainer() {
+        $container = new Container();
+
+        $container->addServiceProvider(ConfigServiceProvider::class);
+        $container->addServiceProvider(HttpMessageServiceProvider::class);
+        $container->addServiceProvider(TemplateServiceProvider::class);
+
+        $container->inflector(ConfigAwareInterface::class)
+                  ->invokeMethod('setConfig', ['config']);
+        $container->inflector(TemplateAwareInterface::class)
+                  ->invokeMethod('setTemplateDriver', ['Twig_Environment']);
+
+        $container->delegate(new ReflectionContainer());
+
+        $this->container = $container;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getContainer() {
+      return $this->container;
+    }
+
+    protected function buildRouters($container)
+    {
+        $routers = new RouteCollection($container);
+        $routers->setStrategy(new ParamStrategy());
+
+        $this->updateModules($this->moduleList);
+        $moduleHandler = new ModuleHandler($this->root, $this->moduleList);
+        $moduleHandler->loadAll();
+
+        $discovery = new YamlDiscovery('routing', $moduleHandler->getModuleDirectories());
+
+        foreach ($discovery->findAll() as $module_routers) {
+          foreach ($module_routers as $name => $route_info) {
+            $routers->get($route_info['path'], $route_info['defaults']['_controller']);
+          }
+        }
+
+        $this->routers = $routers;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadLegacyIncludes() {
+      require_once $this->root . '/core/includes/common.inc';
+      require_once $this->root . '/core/includes/database.inc';
+      require_once $this->root . '/core/includes/schema.inc';
+      require_once $this->root . '/core/includes/theme.inc';
     }
 
     /**
@@ -218,26 +292,18 @@ class Application
      */
     public function run(Request $request = null)
     {
-        if (null === $request) {
-            $request = Request::createFromGlobals();
-        }
-
-        $response = $this->handle($request);
-        $response->send();
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * If you call this method directly instead of run(), you must call the
-     * terminate() method yourself if you want the finish filters to be run.
-     */
-    public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
-    {
         if (!$this->booted) {
             $this->boot();
         }
 
-        return $response;
+        $request = $this->container->get('request');
+
+        $response = $this->container->get('response');
+
+        $this->buildRouters($this->container);
+
+        $response = $this->routers->dispatch($request, $response);
+
+        $this->container->get('emitter')->emit($response);
     }
 }

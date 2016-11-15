@@ -1,6 +1,6 @@
 <?php
 
-namespace Hunter\Contract;
+namespace Hunter\Core\App\Contract;
 
 trait ConfigAwareTrait
 {

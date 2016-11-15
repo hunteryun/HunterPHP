@@ -1,6 +1,6 @@
 <?php
 
-namespace Hunter\ServiceProvider;
+namespace Hunter\Core\App\ServiceProvider;
 
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Twig_Loader_Filesystem;
@@ -43,7 +43,7 @@ class TemplateServiceProvider extends AbstractServiceProvider
             }
 
             // Add current path
-            $request = $this->getContainer()->get('Zend\Diactoros\ServerRequest');
+            $request = $this->getContainer()->get('Request');
             $twig->addGlobal('current_path', $request->getServerParams()['REQUEST_URI']);
 
             // Add extensions

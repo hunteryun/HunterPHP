@@ -1,6 +1,6 @@
 <?php
 
-namespace Hunter\ServiceProvider;
+namespace Hunter\Core\App\ServiceProvider;
 
 use League\Container\ServiceProvider\AbstractServiceProvider;
 

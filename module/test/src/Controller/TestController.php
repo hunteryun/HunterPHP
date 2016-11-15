@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- */
-
 namespace Hunter\test\Controller;
 
 use League\Container\Container;

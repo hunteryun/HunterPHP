@@ -2,9 +2,6 @@
 
 require __DIR__ . '/core/Hunter.php';
 
-$response = $router->dispatch(
-    $container->get('Zend\Diactoros\ServerRequest'),
-    $container->get('Zend\Diactoros\Response')
-);
+$app = new Hunter\Core\App\Application();
 
-$container->get('Zend\Diactoros\Response\SapiEmitter')->emit($response);
+$app->run();

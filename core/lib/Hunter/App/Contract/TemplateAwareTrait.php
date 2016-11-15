@@ -1,6 +1,6 @@
 <?php
 
-namespace Hunter\Contract;
+namespace Hunter\Core\App\Contract;
 
 use Twig_Environment;
 
