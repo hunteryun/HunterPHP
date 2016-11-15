@@ -22,11 +22,10 @@ class TemplateServiceProvider extends AbstractServiceProvider
      */
     public function register()
     {
-        $config = $this->getContainer()->get('config');
         $globals = [
-            'base_url'    => $config['base_url'],
-            'asset_url'   => $config['base_url'] . '/theme/assets',
-            'environment' => $config['environment']
+            'base_url'    => base_path(),
+            'asset_url'   => base_path() . '/theme/assets',
+            'environment' => 'development'
         ];
 
         $this->getContainer()->share('Twig_Environment', function () use ($globals, $config) {

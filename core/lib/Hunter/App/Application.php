@@ -11,10 +11,8 @@ use League\Route\Strategy\ParamStrategy;
 use Hunter\Core\App\Application;
 use Hunter\Core\App\ModuleHandler;
 use Hunter\Core\Discovery\YamlDiscovery;
-use Hunter\Core\App\ServiceProvider\ConfigServiceProvider;
 use Hunter\Core\App\ServiceProvider\HttpMessageServiceProvider;
 use Hunter\Core\App\ServiceProvider\TemplateServiceProvider;
-use Hunter\Core\App\Contract\ConfigAwareInterface;
 use Hunter\Core\App\Contract\TemplateAwareInterface;
 
 /**
@@ -234,12 +232,9 @@ class Application
     protected function initializeContainer() {
         $container = new Container();
 
-        $container->addServiceProvider(ConfigServiceProvider::class);
         $container->addServiceProvider(HttpMessageServiceProvider::class);
         $container->addServiceProvider(TemplateServiceProvider::class);
 
-        $container->inflector(ConfigAwareInterface::class)
-                  ->invokeMethod('setConfig', ['config']);
         $container->inflector(TemplateAwareInterface::class)
                   ->invokeMethod('setTemplateDriver', ['Twig_Environment']);
 
