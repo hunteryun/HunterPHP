@@ -260,13 +260,18 @@ class Application
       global $base_path, $base_root;
       global $base_secure_url, $base_insecure_url;
 
+      $request = $this->container->get('request');
+
+      $serverParams = $request->getServerParams();
+
       // Create base URL.
-      $base_root = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'];
+      $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
+      $base_root = $http_type.$serverParams['HTTP_HOST'];
       $base_url = $base_root;
 
       // For a request URI of '/index.php/foo', $_SERVER['SCRIPT_NAME'] is
       // '/index.php', whereas $_SERVER['PHP_SELF'] is '/index.php/foo'.
-      if ($dir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '\/')) {
+      if ($dir = rtrim(dirname($serverParams['SCRIPT_NAME']), '\/')) {
         // Remove "core" directory if present, allowing install.php,
         // authorize.php, and others to auto-detect a base path.
         $core_position = strrpos($dir, '/core');
