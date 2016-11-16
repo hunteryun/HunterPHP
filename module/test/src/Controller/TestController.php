@@ -13,14 +13,14 @@ class TestController {
    * homepage.
    */
   public function index(Application $app) {
-    echo 'Hello HunterPHP';
+    return 'Hello HunterPHP';
   }
 
   /**
    * Displays a list of materias.
    */
   public function overview() {
-    echo 'overview';
+    return 'overview';
   }
 
 }

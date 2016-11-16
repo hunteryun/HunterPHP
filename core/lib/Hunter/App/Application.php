@@ -220,6 +220,9 @@ class Application
             // Initialize the container.
             $this->initializeContainer();
 
+            // Initialize legacy request globals.
+            $this->initializeRequestGlobals();
+
             $this->booted = true;
         }
     }
@@ -241,6 +244,46 @@ class Application
         $container->delegate(new ReflectionContainer());
 
         $this->container = $container;
+    }
+
+    /**
+     * Bootstraps the legacy global request variables.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *   The current request.
+     *
+     * @todo D8: Eliminate this entirely in favor of Request object.
+     */
+    protected function initializeRequestGlobals() {
+      global $base_url;
+      // Set and derived from $base_url by this function.
+      global $base_path, $base_root;
+      global $base_secure_url, $base_insecure_url;
+
+      // Create base URL.
+      $base_root = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'];
+      $base_url = $base_root;
+
+      // For a request URI of '/index.php/foo', $_SERVER['SCRIPT_NAME'] is
+      // '/index.php', whereas $_SERVER['PHP_SELF'] is '/index.php/foo'.
+      if ($dir = rtrim(dirname($_SERVER['SCRIPT_NAME']), '\/')) {
+        // Remove "core" directory if present, allowing install.php,
+        // authorize.php, and others to auto-detect a base path.
+        $core_position = strrpos($dir, '/core');
+        if ($core_position !== FALSE && strlen($dir) - 5 == $core_position) {
+          $base_path = substr($dir, 0, $core_position);
+        }
+        else {
+          $base_path = $dir;
+        }
+        $base_url .= $base_path;
+        $base_path .= '/';
+      }
+      else {
+        $base_path = '/';
+      }
+      $base_secure_url = str_replace('http://', 'https://', $base_url);
+      $base_insecure_url = str_replace('https://', 'http://', $base_url);
     }
 
     /**
@@ -285,7 +328,7 @@ class Application
      *
      * @param Request|null $request Request to process
      */
-    public function run(Request $request = null)
+    public function run()
     {
         if (!$this->booted) {
             $this->boot();
