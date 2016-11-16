@@ -21,7 +21,7 @@ $databases = array(
 //配置: Log 日志路径
 $loggers = array(
     'default' => array(
-        'class' => 'core\Component\Logger\FileLogger', //如果记文件日志用FileLogger
+        'class' => 'Hunter\Core\Logger\FileLogger', //如果记文件日志用FileLogger
         'level' => 'warn',
         'file'  => HUNTER_ROOT . '/sites/logs', //这里指定log目录
         'prefix' => 'hunter',
@@ -32,17 +32,17 @@ $loggers = array(
 //配置: 模板引擎
 $engines = array(
     'default' => array(
-        'engine'      => 'core\Component\Templating\BladeEngine',
-        'loader'      => 'core\Component\Templating\Blade\Loader',
-        'environment' => 'core\Component\Templating\Blade\Environment',
+        'engine'      => 'Hunter\Core\Templating\BladeEngine',
+        'loader'      => 'Hunter\Core\Templating\Blade\Loader',
+        'environment' => 'Hunter\Core\Templating\Blade\Environment',
         'loaderArgs'  => array(HUNTER_ROOT . '/theme'),
         'cacheDir'    => HUNTER_ROOT . '/sites/cache',
         'envArgs'     => array(),
     ),
     'command' => array(
-        'engine'      => 'core\Component\Templating\PhpEngine',
-        'loader'      => 'core\Component\Templating\Php\Loader',
-        'environment' => 'core\Component\Templating\Php\Environment',
+        'engine'      => 'Hunter\Core\Templating\PhpEngine',
+        'loader'      => 'Hunter\Core\Templating\Php\Loader',
+        'environment' => 'Hunter\Core\Templating\Php\Environment',
         'loaderArgs'  => array(HUNTER_ROOT . '/core/Command/templates'),
         'cacheDir'    => '',
         'envArgs'     => array(),

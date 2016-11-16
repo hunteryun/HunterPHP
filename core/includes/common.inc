@@ -7,8 +7,6 @@
  */
 
 use Hunter\Core\Database\Database;
-use Hunter\Core\HttpFoundation\Request;
-use Hunter\Core\HttpFoundation\RedirectResponse;
 use Hunter\Core\CSRF\CSRF;
 
 //file scan
@@ -92,7 +90,7 @@ function hunter_get_messages($type = NULL, $clear_queue = TRUE) {
       if ($clear_queue) {
         unset($message_list);
         session()->delete('messages');
-      }      
+      }
       return $messages;
     }
   }

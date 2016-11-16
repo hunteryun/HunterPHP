@@ -23,7 +23,7 @@ function theme($target = 'default') {
  * @param $parameters 变量
  */
 function view($name, array $parameters = array(), $target = 'default') {
-    return theme($target)->setTemplate($name)->setParameters($parameters);
+    return theme($target)->setTemplate($name)->setParameters($parameters)->render($name, $parameters);
 }
 
 /*

@@ -322,6 +322,7 @@ class Application
      * {@inheritdoc}
      */
     public function loadLegacyIncludes() {
+      require_once $this->root . '/core/includes/session.inc';
       require_once $this->root . '/core/includes/common.inc';
       require_once $this->root . '/core/includes/database.inc';
       require_once $this->root . '/core/includes/schema.inc';

@@ -13,7 +13,7 @@ class TestController {
    * homepage.
    */
   public function index(Application $app) {
-    return 'Hello HunterPHP';
+    return view('/hunter/index.html');
   }
 
   /**
