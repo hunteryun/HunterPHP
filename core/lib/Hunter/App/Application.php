@@ -8,12 +8,10 @@ use League\Container\ContainerInterface;
 use League\Container\ReflectionContainer;
 use League\Route\RouteCollection;
 use League\Route\Strategy\ParamStrategy;
-use Hunter\Core\App\Application;
+use Symfony\Component\Console\Application as ConsoleApp;
 use Hunter\Core\App\ModuleHandler;
 use Hunter\Core\Discovery\YamlDiscovery;
 use Hunter\Core\App\ServiceProvider\HttpMessageServiceProvider;
-use Hunter\Core\App\ServiceProvider\TemplateServiceProvider;
-use Hunter\Core\App\Contract\TemplateAwareInterface;
 
 /**
  * The Silex framework class.
@@ -22,13 +20,13 @@ use Hunter\Core\App\Contract\TemplateAwareInterface;
  */
 class Application
 {
-    protected $files = array();
     protected $booted = false;
     protected $root;
-    protected $routers = array();
     protected $classLoader;
-    protected $moduleList;
     protected $container;
+    protected $moduleList;
+    protected $cmdlist;
+    protected $routers = array();
 
     /**
      * Instantiate a new Application.
@@ -41,8 +39,6 @@ class Application
     {
       $this->root = static::guessApplicationRoot();
       $this->classLoader = new ClassLoader();
-      $this->files = $this->file_scan($this->root.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
-      $this->moduleList = $this->getModulesParameter($this->files);
     }
 
     /**
@@ -122,43 +118,6 @@ class Application
     }
 
     /**
-     * file scan.
-     *
-     * @return array
-     *   The files list.
-     */
-    public function file_scan($dir, $regx, $options = array(), $depth = 1) {
-        $options += array(
-            'nomask'   => '/(\.\.?|CSV)$/',
-            'recurse'  => true,
-            'minDepth' => 1,
-            'maxDepth' => 10,
-            'fullpath' => false,
-        );
-        $files = array();
-        if (is_dir($dir) && $depth <= $options['maxDepth'] && ($handle = opendir($dir))) {
-            while (false !== ($filename = readdir($handle))) {
-                if (!preg_match($options['nomask'], $filename) && $filename[0] != '.') {
-                    $subdir = $dir . '/' . $filename;
-                    if (is_dir($subdir) && $options['recurse']) {
-                        $files = array_merge($this->file_scan($subdir, $regx, $options, $depth + 1), $files);
-                    } elseif ($depth >= $options['minDepth']) {
-                        if (preg_match($regx, $filename) || ($options['fullpath'] && preg_match($regx, $subdir))) {
-                            $files[] = array(
-                                'dirname'  => $dir,
-                                'basename' => $filename,
-                                'file'     => $dir . '/' . $filename,
-                            );
-                        }
-                    }
-                }
-            }
-            closedir($handle);
-        }
-        return $files;
-    }
-
-    /**
      * Returns an array of Extension class parameters for all enabled modules.
      *
      * @return array
@@ -177,36 +136,6 @@ class Application
     }
 
     /**
-     * Returns an array of Extension class parameters for all enabled modules.
-     *
-     * @return array
-     */
-    public function getModulesList() {
-      return $this->moduleList;
-    }
-
-    /**
-     * Registers a service provider.
-     *
-     * @param ServiceProviderInterface $provider A ServiceProviderInterface instance
-     * @param array                    $values   An array of values that customizes the provider
-     *
-     * @return Application
-     */
-    public function register(ServiceProviderInterface $provider, array $values = array())
-    {
-        $this->providers[] = $provider;
-
-        $provider->register($this);
-
-        foreach ($values as $key => $value) {
-            $this[$key] = $value;
-        }
-
-        return $this;
-    }
-
-    /**
      * Boots all service providers.
      *
      * This method is automatically called by handle(), but you can use it
@@ -215,6 +144,8 @@ class Application
     public function boot()
     {
         if (!$this->booted) {
+
+            // load all core file.
             $this->loadLegacyIncludes();
 
             // Initialize the container.
@@ -223,8 +154,22 @@ class Application
             // Initialize legacy request globals.
             $this->initializeRequestGlobals();
 
+            // Initialize all module list.
+            $this->initializeModuleList();
+
             $this->booted = true;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadLegacyIncludes() {
+      require_once $this->root . '/core/includes/session.inc';
+      require_once $this->root . '/core/includes/common.inc';
+      require_once $this->root . '/core/includes/database.inc';
+      require_once $this->root . '/core/includes/schema.inc';
+      require_once $this->root . '/core/includes/theme.inc';
     }
 
     /**
@@ -236,10 +181,6 @@ class Application
         $container = new Container();
 
         $container->addServiceProvider(HttpMessageServiceProvider::class);
-        $container->addServiceProvider(TemplateServiceProvider::class);
-
-        $container->inflector(TemplateAwareInterface::class)
-                  ->invokeMethod('setTemplateDriver', ['Twig_Environment']);
 
         $container->delegate(new ReflectionContainer());
 
@@ -265,9 +206,13 @@ class Application
       $serverParams = $request->getServerParams();
 
       // Create base URL.
-      $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
-      $base_root = $http_type.$serverParams['HTTP_HOST'];
-      $base_url = $base_root;
+      $is_https = isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on';
+      $http_protocol = $is_https ? 'https' : 'http';
+
+      if(!is_cli()){
+        $base_root = $http_protocol . '://' . $_SERVER['HTTP_HOST'];
+        $base_url = $base_root;
+      }
 
       // For a request URI of '/index.php/foo', $_SERVER['SCRIPT_NAME'] is
       // '/index.php', whereas $_SERVER['PHP_SELF'] is '/index.php/foo'.
@@ -294,10 +239,15 @@ class Application
     /**
      * {@inheritdoc}
      */
-    public function getContainer() {
-      return $this->container;
+    protected function initializeModuleList()
+    {
+      $modulefiles = file_scan($this->root.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
+      $this->moduleList = $this->getModulesParameter($modulefiles);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function buildRouters($container)
     {
         $routers = new RouteCollection($container);
@@ -319,14 +269,38 @@ class Application
     }
 
     /**
+     * Load and regist Command
+     */
+    public function registerCommand($dir, $path, $regx = '', $options = array()) {
+        if (!$this->booted) {
+            $this->boot();
+        }
+
+        $options += array('fullpath'=>true, 'minDepth'=>1);
+        $files = file_include($path.'/'.$dir, "/.*(\w+).*\.php$/is", $options);
+
+        $cmdapp = new ConsoleApp();
+        foreach ($files as $f) {
+          require_once $f['file'];
+          list ($command,) = explode('.', $f['basename']);
+          $cmdapp->add(new $command());
+        }
+
+        $cmdapp->run();
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function loadLegacyIncludes() {
-      require_once $this->root . '/core/includes/session.inc';
-      require_once $this->root . '/core/includes/common.inc';
-      require_once $this->root . '/core/includes/database.inc';
-      require_once $this->root . '/core/includes/schema.inc';
-      require_once $this->root . '/core/includes/theme.inc';
+    public function getContainer() {
+      return $this->container;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getModulesList() {
+      return $this->moduleList;
     }
 
     /**

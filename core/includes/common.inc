@@ -8,6 +8,7 @@
 
 use Hunter\Core\Database\Database;
 use Hunter\Core\CSRF\CSRF;
+use Hunter\Core\Utility\Timer;
 
 //file scan
 function file_scan($dir, $regx, $options = array(), $depth = 1) {
@@ -54,6 +55,54 @@ function file_include($dir, $regx, $options = array()) {
 function redirect($path) {
   $request = Request::createFromGlobals();
   return new RedirectResponse($request->getUriForPath($path));
+}
+
+/**
+ * 开始计时器
+ *
+ * @param $name
+ *   计时名
+ */
+if (!function_exists('timer_start')) {
+  function timer_start($name = 'default') {
+      Timer::start($name);
+  }
+}
+
+/**
+ * 读取计时器
+ *
+ * @param $name
+ *   计时名
+ *
+ * @return
+ *  时间(ms)
+ */
+if (!function_exists('timer_read')) {
+  function timer_read($name = 'default') {
+      return Timer::read($name);
+  }
+}
+
+/**
+ * 停止计时器
+ *
+ * @param $name
+ *   计时名
+ *
+ * @return array
+ *   时间数组(ms)
+ */
+if (!function_exists('timer_stop')) {
+  function timer_stop($name = 'default') {
+      return Timer::stop($name);
+  }
+}
+
+//是否运行在cli模式
+function is_cli() {
+  return (!isset($_SERVER['SERVER_SOFTWARE'])
+           && (PHP_SAPI == 'cli' || (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0)));
 }
 
 // set session message.
