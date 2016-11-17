@@ -12,7 +12,7 @@ class FooController {
    * Displays a list of materias.
    */
   public function foo_list() {
-    echo 'list';
+    return 'list';
   }
 
 }

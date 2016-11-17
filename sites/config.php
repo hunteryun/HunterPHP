@@ -1,5 +1,8 @@
 <?php
 
+//配置: 根目录
+$root_dir = '/HunterPHP';
+
 //配置: session
 $sessions = array(
     'prefix' => '',
