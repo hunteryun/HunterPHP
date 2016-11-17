@@ -18,15 +18,14 @@ use Hunter\Core\App\ServiceProvider\HttpMessageServiceProvider;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Application
-{
+class Application {
     protected $booted = false;
     protected $root;
     protected $classLoader;
     protected $container;
     protected $moduleList;
-    protected $cmdlist;
     protected $routers = array();
+    protected $moduleHandler;
 
     /**
      * Instantiate a new Application.
@@ -35,8 +34,7 @@ class Application
      *
      * @param array $values The parameters or objects.
      */
-    public function __construct()
-    {
+    public function __construct() {
       $this->root = static::guessApplicationRoot();
       $this->classLoader = new ClassLoader();
     }
@@ -47,8 +45,7 @@ class Application
      * @return string
      *   The application root.
      */
-    public static function guessApplicationRoot()
-    {
+    public static function guessApplicationRoot() {
       return dirname(substr(__DIR__, 0, -strlen(__NAMESPACE__)));
     }
 
@@ -141,8 +138,7 @@ class Application
      * This method is automatically called by handle(), but you can use it
      * to boot all service providers when not handling a request.
      */
-    public function boot()
-    {
+    public function boot() {
         if (!$this->booted) {
 
             // load all core file.
@@ -168,7 +164,6 @@ class Application
       require_once $this->root . '/core/includes/session.inc';
       require_once $this->root . '/core/includes/common.inc';
       require_once $this->root . '/core/includes/database.inc';
-      require_once $this->root . '/core/includes/schema.inc';
       require_once $this->root . '/core/includes/theme.inc';
     }
 
@@ -239,25 +234,23 @@ class Application
     /**
      * {@inheritdoc}
      */
-    protected function initializeModuleList()
-    {
+    protected function initializeModuleList() {
       $modulefiles = file_scan($this->root.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
       $this->moduleList = $this->getModulesParameter($modulefiles);
+
+      $this->updateModules($this->moduleList);
+      $this->moduleHandler = new ModuleHandler($this->root, $this->moduleList);
+      $this->moduleHandler->loadAll();
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function buildRouters($container)
-    {
+    protected function buildRouters($container) {
         $routers = new RouteCollection($container);
         $routers->setStrategy(new ParamStrategy());
 
-        $this->updateModules($this->moduleList);
-        $moduleHandler = new ModuleHandler($this->root, $this->moduleList);
-        $moduleHandler->loadAll();
-
-        $discovery = new YamlDiscovery('routing', $moduleHandler->getModuleDirectories());
+        $discovery = new YamlDiscovery('routing', $this->moduleHandler->getModuleDirectories());
 
         foreach ($discovery->findAll() as $module_routers) {
           foreach ($module_routers as $name => $route_info) {
@@ -292,15 +285,34 @@ class Application
     /**
      * {@inheritdoc}
      */
+    public function installModule($module, $enable_dependencies = TRUE) {
+        if(isset($this->moduleList[$module])){
+            $install_file = str_replace('info.yml', 'install', $this->moduleList[$module]['pathname']);
+
+            if(is_file($install_file)){
+              require_once $install_file;
+            }
+
+            $schema = $this->moduleHandler->invoke($module, 'schema');
+
+            foreach ($schema as $name => $table) {
+              db_create_table($name, $table);
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getContainer() {
-      return $this->container;
+        return $this->container;
     }
 
     /**
      * {@inheritdoc}
      */
     public function getModulesList() {
-      return $this->moduleList;
+        return $this->moduleList;
     }
 
     /**
@@ -308,8 +320,7 @@ class Application
      *
      * @param Request|null $request Request to process
      */
-    public function run()
-    {
+    public function run() {
         if (!$this->booted) {
             $this->boot();
         }
@@ -324,4 +335,5 @@ class Application
 
         $this->container->get('emitter')->emit($response);
     }
+
 }

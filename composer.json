@@ -3,7 +3,6 @@
         "league/container": "^2.2",
         "league/route": "^2.0",
         "zendframework/zend-diactoros": "^1.3",
-        "twig/twig": "^1.24",
         "symfony/yaml": "~2.7",
         "symfony/console": "^3.1"
     },
