@@ -285,25 +285,6 @@ class Application {
     /**
      * {@inheritdoc}
      */
-    public function installModule($module, $enable_dependencies = TRUE) {
-        if(isset($this->moduleList[$module])){
-            $install_file = str_replace('info.yml', 'install', $this->moduleList[$module]['pathname']);
-
-            if(is_file($install_file)){
-              require_once $install_file;
-            }
-
-            $schema = $this->moduleHandler->invoke($module, 'schema');
-
-            foreach ($schema as $name => $table) {
-              db_create_table($name, $table);
-            }
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getContainer() {
         return $this->container;
     }

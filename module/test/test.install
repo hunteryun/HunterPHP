@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * @file
+ * news database info.
+ */
+
+function test_schema() {
+  $schema['test'] = array(
+    'description' => 'Stores pages data.',
+    'fields' => array(
+      'nid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID of page.',
+      ),
+      'title' => array(
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'page title.',
+      ),
+      'content' => array(
+        'type' => 'text',
+        'size' => 'normal',
+        'description' => "page content.",
+      ),
+      'images' => array(
+        'type' => 'blob',
+        'not null' => TRUE,
+        'size' => 'big',
+        'description' => 'page images.',
+      ),
+      'attach_files' => array(
+        'type' => 'blob',
+        'not null' => TRUE,
+        'size' => 'big',
+        'description' => 'page attach files.',
+      ),
+      'author' => array(
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => "page author.",
+      ),
+      'status' => array(
+        'type' => 'varchar',
+        'length' => 9,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'page status.',
+      ),
+      'created' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Unix timestamp when the user was created.',
+      ),
+      'updated' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Unix timestamp when the user was updated.',
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Insert init user.
+ */
+function test_install() {
+
+}

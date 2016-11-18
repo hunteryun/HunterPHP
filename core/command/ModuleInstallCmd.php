@@ -13,6 +13,21 @@ use Hunter\Core\App\Application;
  * php hunter migrate:db
  */
 class ModuleInstallCmd extends BaseCommand {
+
+   /** @var Validator  */
+   protected $moduleList;
+
+   /**
+    * InstallCommand constructor.
+    * @param Site $site
+    */
+   public function __construct() {
+       $application = new Application();
+       $modulefiles = file_scan(HUNTER_ROOT.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
+       $this->moduleList = $application->getModulesParameter($modulefiles);
+       parent::__construct();
+   }
+
    /**
     * {@inheritdoc}
     */
@@ -27,10 +42,26 @@ class ModuleInstallCmd extends BaseCommand {
     * {@inheritdoc}
     */
    protected function execute(InputInterface $input, OutputInterface $output) {
+      $installed = false;
+      if(isset($this->moduleList[$input->getOption('module')])){
+          $install_file = str_replace('info.yml', 'install', $this->moduleList[$input->getOption('module')]['pathname']);
 
-      $Application = new Application();
+          if(file_exists($install_file)){
+            require_once $install_file;
+          }
 
-      $installed = $Application->installModule($input->getOption('module'));
+          $schema_fun = $input->getOption('module').'_schema';
+          $install_fun = $input->getOption('module').'_install';
+          if (function_exists($schema_fun)) {
+            $schemas = $schema_fun();
+          }
+
+          $installed = db_schema()->installSchema($schemas);
+
+          if (function_exists($install_fun)) {
+            $install_fun();
+          }
+      }
 
       if($installed){
        $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getOption('module').' module install successful!');
