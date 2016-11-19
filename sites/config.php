@@ -3,11 +3,6 @@
 //配置: 根目录
 $root_dir = '/';
 
-//配置: session
-$sessions = array(
-    'prefix' => '',
-);
-
 //配置: 数据库
 $databases = array(
     'default' => array(

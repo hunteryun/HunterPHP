@@ -6,10 +6,11 @@
  * Session
  */
 
-use Hunter\Core\Session\Session;
+use duncan3dc\Sessions\SessionInstance;
 
-function session($config = array()) {
-    return Session::getHandler($config);
+function session() {
+    $session = new SessionInstance("HunterPHP");
+    return $session;
 }
 
 /*

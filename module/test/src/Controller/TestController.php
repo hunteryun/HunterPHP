@@ -13,7 +13,8 @@ class TestController {
    * homepage.
    */
   public function index(Application $app) {
-    return view('/hunter/index.html', array('title' => 'Hello HunterPHP!'));
+    session()->set("user", "Drupal Hunter");
+    return view('/hunter/index.html', array('title' => 'Hello HunterPHP!', 'session_value' => session()->get("user")));
   }
 
   /**
