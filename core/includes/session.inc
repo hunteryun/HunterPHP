@@ -6,10 +6,10 @@
  * Session
  */
 
-use duncan3dc\Sessions\SessionInstance;
+use Opis\Session\Session;
 
 function session() {
-    $session = new SessionInstance("HunterPHP");
+    $session = new Session(null, array('name' => 'Hunter'));
     return $session;
 }
 
