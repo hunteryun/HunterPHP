@@ -1,0 +1,3 @@
+access test page:
+  title: 'Access test page'
+  _callback: 'Hunter\test\TestPermission::auth'

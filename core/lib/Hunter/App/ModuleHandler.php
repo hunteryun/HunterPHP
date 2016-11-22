@@ -4,6 +4,7 @@ namespace Hunter\Core\App;
 
 use Hunter\Core\Graph\Graph;
 use Hunter\Core\Utility\NestedArray;
+use Hunter\Core\Serialization\Yaml;
 
 /**
  * Class that manages modules in a Drupal installation.
@@ -715,7 +716,9 @@ class ModuleHandler implements ModuleHandlerInterface {
    * {@inheritdoc}
    */
   public function getName($module) {
-    $info = system_get_info('module', $module);
+    if(isset($this->moduleList[$module])){
+      $info = Yaml::decode(file_get_contents($this->moduleList[$module]->getPathname()));
+    }
     return isset($info['name']) ? $info['name'] : $module;
   }
 

@@ -128,53 +128,23 @@ class PermissionHandler implements PermissionHandlerInterface {
    */
   protected function buildPermissionsYaml() {
     $all_permissions = array();
-    $all_callback_permissions = array();
 
     foreach ($this->getYamlDiscovery()->findAll() as $provider => $permissions) {
-      // The top-level 'permissions_callback' is a list of methods in controller
-      // syntax, see \Drupal\Core\Controller\ControllerResolver. These methods
-      // should return an array of permissions in the same structure.
-      if (isset($permissions['permission_callbacks'])) {
-        foreach ($permissions['permission_callbacks'] as $permission_callback) {
-          $callback = $this->controllerResolver->getControllerFromDefinition($permission_callback);
-          if ($callback_permissions = call_user_func($callback)) {
-            // Add any callback permissions to the array of permissions. Any
-            // defaults can then get processed below.
-            foreach ($callback_permissions as $name => $callback_permission) {
-              if (!is_array($callback_permission)) {
-                $callback_permission = array(
-                  'title' => $callback_permission,
-                );
-              }
-
-              $callback_permission += array(
-                'description' => NULL,
-                'provider' => $provider,
-              );
-
-              $all_callback_permissions[$name] = $callback_permission;
-            }
-          }
-        }
-
-        unset($permissions['permission_callbacks']);
-      }
-
       foreach ($permissions as &$permission) {
         if (!is_array($permission)) {
           $permission = array(
             'title' => $permission,
           );
         }
-        $permission['title'] = $this->t($permission['title']);
-        $permission['description'] = isset($permission['description']) ? $this->t($permission['description']) : NULL;
+        $permission['title'] = $permission['title'];
+        $permission['description'] = isset($permission['description']) ? $permission['description'] : NULL;
         $permission['provider'] = !empty($permission['provider']) ? $permission['provider'] : $provider;
       }
 
       $all_permissions += $permissions;
     }
 
-    return $all_permissions + $all_callback_permissions;
+    return $all_permissions;
   }
 
   /**
@@ -218,15 +188,6 @@ class PermissionHandler implements PermissionHandlerInterface {
     }
     asort($modules);
     return $modules;
-  }
-
-  /**
-   * Wraps system_rebuild_module_data()
-   *
-   * @return \Drupal\Core\Extension\Extension[]
-   */
-  protected function systemRebuildModuleData() {
-    return system_rebuild_module_data();
   }
 
 }

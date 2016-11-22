@@ -9,9 +9,10 @@ use League\Container\ReflectionContainer;
 use League\Route\RouteCollection;
 use League\Route\Strategy\ParamStrategy;
 use Symfony\Component\Console\Application as ConsoleApp;
-use Hunter\Core\App\ModuleHandler;
 use Hunter\Core\Discovery\YamlDiscovery;
 use Hunter\Core\App\ServiceProvider\HttpMessageServiceProvider;
+use Hunter\Core\App\ModuleHandler;
+use Hunter\Core\App\PermissionHandler;
 
 /**
  * The Silex framework class.
@@ -26,6 +27,7 @@ class Application {
     protected $moduleList;
     protected $routers = array();
     protected $moduleHandler;
+    protected $permissionHandler;
 
     /**
      * Instantiate a new Application.
@@ -153,6 +155,9 @@ class Application {
             // Initialize all module list.
             $this->initializeModuleList();
 
+            // Initialize all permission list.
+            $this->initializePermissionList();
+
             $this->booted = true;
         }
     }
@@ -241,6 +246,16 @@ class Application {
       $this->updateModules($this->moduleList);
       $this->moduleHandler = new ModuleHandler($this->root, $this->moduleList);
       $this->moduleHandler->loadAll();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function initializePermissionList() {
+      $modulefiles = file_scan($this->root.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
+      $this->moduleList = $this->getModulesParameter($modulefiles);
+      $this->permissionHandler = new PermissionHandler($this->moduleHandler);
+      $permissions = $this->permissionHandler->getPermissions();
     }
 
     /**

@@ -1,8 +1,10 @@
 test.overview:
   path: '/test'
   defaults:
-    _controller: 'Hunter\test\Controller\TestController::overview'
+    _controller:  'Hunter\test\Controller\TestController::overview'
     _title: 'Test messages'
+  requirements:
+    _permission: 'access test page'
 
 test.homepage:
   path: '/'

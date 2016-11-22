@@ -1,3 +1,3 @@
-name = "test"
-description = "test module."
-core = "1.x"
+name: foo
+description: foo module.
+core: 1.x
