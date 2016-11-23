@@ -16,23 +16,27 @@ class HunterStrategy extends AbstractStrategy implements StrategyInterface
     {
         $permissions = $this->getContainer()->get('routePermission');
         $path = $route->getPath();
+        $callback_permissions = FALSE;
 
         if(isset($permissions[$path])){
           $perm_name = 'hunter_permission_'.str_replace(" ", "_", $permissions[$path]);
           $callback = $this->getContainer()->get($perm_name);
           $permission_controller = $this->getCallable($callback['_callback']);
-        }
+          $callback_permissions = $this->getContainer()->call($permission_controller, $vars);
 
-        if (method_exists($this->getContainer(), 'call')) {
-            $callback_permissions = $this->getContainer()->call($permission_controller, $vars);
-            if($callback_permissions === TRUE){
-                $response = $this->getContainer()->call($controller, $vars);
-                return $this->determineResponse($response);
-            }else {
-                $response = $this->getResponse();
-                $response->getBody()->write('Sorry, you do not have permission to access this page!');
-                return $response;
-            }
+          if (method_exists($this->getContainer(), 'call')) {
+              if($callback_permissions === TRUE){
+                  $response = $this->getContainer()->call($controller, $vars);
+                  return $this->determineResponse($response);
+              }else {
+                  $response = $this->getResponse();
+                  $response->getBody()->write('Sorry, you do not have permission to access this page!');
+                  return $response;
+              }
+          }
+        }else {
+            $response = $this->getContainer()->call($controller, $vars);
+            return $this->determineResponse($response);
         }
 
         throw new RuntimeException(
