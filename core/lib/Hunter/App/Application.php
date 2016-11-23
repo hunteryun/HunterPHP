@@ -56,7 +56,7 @@ class Application {
      * Registers a list of namespaces with PSR-4 directories for class loading.
      *
      * @param array $namespaces
-     *   Array where each key is a namespace like 'Drupal\system', and each value
+     *   Array where each key is a namespace like 'Hunter\system', and each value
      *   is either a PSR-4 base directory, or an array of PSR-4 base directories
      *   associated with this namespace.
      * @param object $class_loader
@@ -89,7 +89,7 @@ class Application {
      *   respective *.info.yml file.
      *
      * @return string[]
-     *   Array where each key is a module namespace like 'Drupal\system', and each
+     *   Array where each key is a module namespace like 'Hunter\system', and each
      *   value is the PSR-4 base directory associated with the module namespace.
      */
     protected function getModuleNamespacesPsr4($module_file_names) {
@@ -101,7 +101,7 @@ class Application {
     }
 
     /**
-     * Implements Drupal\Core\DrupalKernelInterface::updateModules().
+     * Implements Hunter\Core\HunterKernelInterface::updateModules().
      *
      * @todo Remove obsolete $module_list parameter. Only $module_filenames is
      *   needed.

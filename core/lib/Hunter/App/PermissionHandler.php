@@ -13,25 +13,25 @@ class PermissionHandler implements PermissionHandlerInterface {
   /**
    * The module handler.
    *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   * @var \Hunter\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
 
   /**
    * The YAML discovery class to find all .permissions.yml files.
    *
-   * @var \Drupal\Core\Discovery\YamlDiscovery
+   * @var \Hunter\Core\Discovery\YamlDiscovery
    */
   protected $yamlDiscovery;
 
   /**
    * Constructs a new PermissionHandler.
    *
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   * @param \Hunter\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
-   * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
+   * @param \Hunter\Core\StringTranslation\TranslationInterface $string_translation
    *   The string translation.
-   * @param \Drupal\Core\Controller\ControllerResolverInterface $controller_resolver
+   * @param \Hunter\Core\Controller\ControllerResolverInterface $controller_resolver
    *   The controller resolver.
    */
   public function __construct(ModuleHandlerInterface $module_handler) {
@@ -43,7 +43,7 @@ class PermissionHandler implements PermissionHandlerInterface {
   /**
    * Gets the YAML discovery.
    *
-   * @return \Drupal\Core\Discovery\YamlDiscovery
+   * @return \Hunter\Core\Discovery\YamlDiscovery
    *   The YAML discovery.
    */
   protected function getYamlDiscovery() {

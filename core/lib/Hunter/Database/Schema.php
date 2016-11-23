@@ -493,8 +493,8 @@ class Schema extends Query {
      * @param array $index
      *   The index array to be used in createKeySql.
      *
-     * @see Drupal\Core\Database\Driver\mysql\Schema::createKeySql()
-     * @see Drupal\Core\Database\Driver\mysql\Schema::normalizeIndexes()
+     * @see Hunter\Core\Database\Driver\mysql\Schema::createKeySql()
+     * @see Hunter\Core\Database\Driver\mysql\Schema::normalizeIndexes()
      */
     protected function shortenIndex(&$index) {
       if (is_array($index)) {

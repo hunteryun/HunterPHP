@@ -46,7 +46,7 @@ interface ModuleHandlerInterface {
   /**
    * Returns the list of currently active modules.
    *
-   * @return \Drupal\Core\Extension\Extension[]
+   * @return \Hunter\Core\Extension\Extension[]
    *   An associative array whose keys are the names of the modules and whose
    *   values are Extension objects.
    */
@@ -58,7 +58,7 @@ interface ModuleHandlerInterface {
    * @param string $name
    *   The name of the module to return.
    *
-   * @return \Drupal\Core\Extension\Extension
+   * @return \Hunter\Core\Extension\Extension
    *   An extension object.
    *
    * @throws \InvalidArgumentException
@@ -69,7 +69,7 @@ interface ModuleHandlerInterface {
   /**
    * Sets an explicit list of currently active modules.
    *
-   * @param \Drupal\Core\Extension\Extension[] $module_list
+   * @param \Hunter\Core\Extension\Extension[] $module_list
    *   An associative array whose keys are the names of the modules and whose
    *   values are Extension objects.
    */
@@ -100,7 +100,7 @@ interface ModuleHandlerInterface {
    *
    * @param array $modules
    *   An array of module objects keyed by module name. Each object contains
-   *   information discovered during a Drupal\Core\Extension\ExtensionDiscovery
+   *   information discovered during a Hunter\Core\Extension\ExtensionDiscovery
    *   scan.
    *
    * @return
@@ -110,7 +110,7 @@ interface ModuleHandlerInterface {
    *   - required_by: An array with the keys being the modules that will not work
    *     without this module.
    *
-   * @see \Drupal\Core\Extension\ExtensionDiscovery
+   * @see \Hunter\Core\Extension\ExtensionDiscovery
    */
   public function buildModuleDependencies(array $modules);
 

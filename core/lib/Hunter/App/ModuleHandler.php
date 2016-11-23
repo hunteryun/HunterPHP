@@ -7,7 +7,7 @@ use Hunter\Core\Utility\NestedArray;
 use Hunter\Core\Serialization\Yaml;
 
 /**
- * Class that manages modules in a Drupal installation.
+ * Class that manages modules in a Hunter installation.
  */
 class ModuleHandler implements ModuleHandlerInterface {
 
@@ -23,7 +23,7 @@ class ModuleHandler implements ModuleHandlerInterface {
   /**
    * List of installed modules.
    *
-   * @var \Drupal\Core\Extension\Extension[]
+   * @var \Hunter\Core\Extension\Extension[]
    */
   protected $moduleList;
 
@@ -59,7 +59,7 @@ class ModuleHandler implements ModuleHandlerInterface {
   /**
    * Cache backend for storing module hook implementation information.
    *
-   * @var \Drupal\Core\Cache\CacheBackendInterface
+   * @var \Hunter\Core\Cache\CacheBackendInterface
    */
   protected $cacheBackend;
 
@@ -99,12 +99,12 @@ class ModuleHandler implements ModuleHandlerInterface {
    * @param array $module_list
    *   An associative array whose keys are the names of installed modules and
    *   whose values are Extension class parameters. This is normally the
-   *   %container.modules% parameter being set up by DrupalKernel.
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
+   *   %container.modules% parameter being set up by HunterKernel.
+   * @param \Hunter\Core\Cache\CacheBackendInterface $cache_backend
    *   Cache backend for storing module hook implementation information.
    *
-   * @see \Drupal\Core\DrupalKernel
-   * @see \Drupal\Core\CoreServiceProvider
+   * @see \Hunter\Core\HunterKernel
+   * @see \Hunter\Core\CoreServiceProvider
    */
   public function __construct($root, array $module_list = array()) {
     $this->root = $root;
@@ -301,7 +301,7 @@ class ModuleHandler implements ModuleHandlerInterface {
   /**
    * Builds hook_hook_info() information.
    *
-   * @see \Drupal\Core\Extension\ModuleHandler::getHookInfo()
+   * @see \Hunter\Core\Extension\ModuleHandler::getHookInfo()
    */
   protected function buildHookInfo() {
     $this->hookInfo = array();
@@ -353,7 +353,7 @@ class ModuleHandler implements ModuleHandlerInterface {
     // when non-database caching backends are used, so there will be more
     // significant gains when a large number of modules are installed or hooks
     // invoked, since this can quickly lead to
-    // \Drupal::moduleHandler()->implementsHook() being called several thousand
+    // \Hunter::moduleHandler()->implementsHook() being called several thousand
     // times per request.
     $this->cacheBackend->set('module_implements', array());
     $this->cacheBackend->delete('hook_info');
@@ -557,7 +557,7 @@ class ModuleHandler implements ModuleHandlerInterface {
    *   Exception thrown when an invalid implementation is added by
    *   hook_module_implements_alter().
    *
-   * @see \Drupal\Core\Extension\ModuleHandler::getImplementationInfo()
+   * @see \Hunter\Core\Extension\ModuleHandler::getImplementationInfo()
    */
   protected function buildImplementationInfo($hook) {
     $implementations = array();
@@ -667,7 +667,7 @@ class ModuleHandler implements ModuleHandlerInterface {
     // supports. Also, op is optional and defaults to equals.
     $p_op = '(?<operation>!=|==|=|<|<=|>|>=|<>)?';
     // Core version is always optional: 8.x-2.x and 2.x is treated the same.
-    $p_core = '(?:' . preg_quote(\Drupal::CORE_COMPATIBILITY) . '-)?';
+    $p_core = '(?:' . preg_quote(\Hunter::CORE_COMPATIBILITY) . '-)?';
     $p_major = '(?<major>\d+)';
     // By setting the minor version to x, branches can be matched.
     $p_minor = '(?<minor>(?:\d+|x)(?:-[A-Za-z]+\d+)?)';
@@ -679,7 +679,7 @@ class ModuleHandler implements ModuleHandlerInterface {
         if (preg_match("/^\s*$p_op\s*$p_core$p_major\.$p_minor/", $version, $matches)) {
           $op = !empty($matches['operation']) ? $matches['operation'] : '=';
           if ($matches['minor'] == 'x') {
-            // Drupal considers "2.x" to mean any version that begins with
+            // Hunter considers "2.x" to mean any version that begins with
             // "2" (e.g. 2.0, 2.9 are all "2.x"). PHP's version_compare(),
             // on the other hand, treats "x" as a string; so to
             // version_compare(), "2.x" is considered less than 2.0. This
