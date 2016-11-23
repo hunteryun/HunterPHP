@@ -7,40 +7,6 @@ use Hunter\Core\App\ModuleHandlerInterface;
 
 /**
  * Provides the available permissions based on yml files.
- *
- * To define permissions you can use a $module.permissions.yml file. This file
- * defines machine names, human-readable names, restrict access (if required for
- * security warning), and optionally descriptions for each permission type. The
- * machine names are the canonical way to refer to permissions for access
- * checking.
- *
- * If your module needs to define dynamic permissions you can use the
- * permission_callbacks key to declare a callable that will return an array of
- * permissions, keyed by machine name. Each item in the array can contain the
- * same keys as an entry in $module.permissions.yml.
- *
- * Here is an example from the core filter module (comments have been added):
- * @code
- * # The key is the permission machine name, and is required.
- * administer filters:
- *   # (required) Human readable name of the permission used in the UI.
- *   title: 'Administer text formats and filters'
- *   # (optional) Additional description fo the permission used in the UI.
- *   description: 'Define how text is handled by combining filters into text formats.'
- *   # (optional) Boolean, when set to true a warning about site security will
- *   # be displayed on the Permissions page. Defaults to false.
- *   restrict access: false
- *
- * # An array of callables used to generate dynamic permissions.
- * permission_callbacks:
- *   # Each item in the array should return an associative array with one or
- *   # more permissions following the same keys as the permission defined above.
- *   - Drupal\filter\FilterPermissions::permissions
- * @endcode
- *
- * @see filter.permissions.yml
- * @see \Drupal\filter\FilterPermissions
- * @see user_api
  */
 class PermissionHandler implements PermissionHandlerInterface {
 
@@ -57,13 +23,6 @@ class PermissionHandler implements PermissionHandlerInterface {
    * @var \Drupal\Core\Discovery\YamlDiscovery
    */
   protected $yamlDiscovery;
-
-  /**
-   * The controller resolver.
-   *
-   * @var \Drupal\Core\Controller\ControllerResolverInterface
-   */
-  protected $controllerResolver;
 
   /**
    * Constructs a new PermissionHandler.

@@ -7,7 +7,7 @@ use League\Container\Container;
 use League\Container\ContainerInterface;
 use League\Container\ReflectionContainer;
 use League\Route\RouteCollection;
-use League\Route\Strategy\ParamStrategy;
+use Hunter\Core\App\Strategy\HunterStrategy;
 use Symfony\Component\Console\Application as ConsoleApp;
 use Hunter\Core\Discovery\YamlDiscovery;
 use Hunter\Core\App\ServiceProvider\HttpMessageServiceProvider;
@@ -26,6 +26,7 @@ class Application {
     protected $container;
     protected $moduleList;
     protected $routers = array();
+    protected $routePermission = array();
     protected $moduleHandler;
     protected $permissionHandler;
 
@@ -256,6 +257,15 @@ class Application {
       $this->moduleList = $this->getModulesParameter($modulefiles);
       $this->permissionHandler = new PermissionHandler($this->moduleHandler);
       $permissions = $this->permissionHandler->getPermissions();
+      if(!empty($permissions)){
+        foreach ($permissions as $name => $info) {
+          if(isset($info['_callback'])){
+            list($class, $method) = explode('::', $info['_callback'], 2);
+            $this->container->add($class);
+            $this->container->add('hunter_permission_'.str_replace(" ", "_", $name), array('_callback' => $info['_callback']));
+          }
+        }
+      }
     }
 
     /**
@@ -263,17 +273,22 @@ class Application {
      */
     protected function buildRouters($container) {
         $routers = new RouteCollection($container);
-        $routers->setStrategy(new ParamStrategy());
+        $routers->setStrategy(new HunterStrategy());
 
         $discovery = new YamlDiscovery('routing', $this->moduleHandler->getModuleDirectories());
 
         foreach ($discovery->findAll() as $module_routers) {
           foreach ($module_routers as $name => $route_info) {
+            if(isset($route_info['requirements']['_permission'])){
+              $this->routePermission[$route_info['path']] = $route_info['requirements']['_permission'];
+            }
+
             $routers->get($route_info['path'], $route_info['defaults']['_controller']);
           }
         }
 
         $this->routers = $routers;
+        $this->container->add('routePermission', $this->routePermission);
     }
 
     /**
