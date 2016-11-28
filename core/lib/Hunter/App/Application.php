@@ -13,6 +13,7 @@ use Hunter\Core\Discovery\YamlDiscovery;
 use Hunter\Core\App\ServiceProvider\HttpMessageServiceProvider;
 use Hunter\Core\App\ModuleHandler;
 use Hunter\Core\App\PermissionHandler;
+use Hunter\Core\Serialization\Yaml;
 
 /**
  * The Silex framework class.
@@ -29,6 +30,7 @@ class Application {
     protected $routePermission = array();
     protected $moduleHandler;
     protected $permissionHandler;
+    protected $serviceYamls;
 
     /**
      * Instantiate a new Application.
@@ -106,7 +108,7 @@ class Application {
      * @todo Remove obsolete $module_list parameter. Only $module_filenames is
      *   needed.
      */
-    public function updateModules(array $module_list) {
+    public function registModuleNamespace(array $module_list) {
       if (!empty($module_list)) {
         $module_spaces = array();
         foreach ($module_list as $name => $info) {
@@ -171,6 +173,7 @@ class Application {
       require_once $this->root . '/core/includes/common.inc';
       require_once $this->root . '/core/includes/database.inc';
       require_once $this->root . '/core/includes/theme.inc';
+      timer_start();
     }
 
     /**
@@ -181,11 +184,47 @@ class Application {
     protected function initializeContainer() {
         $container = new Container();
 
+        $this->initializeServiceProviders();
+
+        if(!empty($this->serviceYamls)){
+          foreach ($this->serviceYamls as $module => $services) {
+            if(!empty($services['services'])){
+              foreach ($services['services'] as $name => $service) {
+                if (class_exists($service['class'])) {
+                  $container->addServiceProvider($service['class']);
+                }
+              }
+            }
+          }
+        }
+
         $container->addServiceProvider(HttpMessageServiceProvider::class);
 
         $container->delegate(new ReflectionContainer());
 
         $this->container = $container;
+    }
+
+    /**
+     * Registers all service providers to the kernel.
+     *
+     * @throws \LogicException
+     */
+    protected function initializeServiceProviders() {
+      // Retrieve register modules namespaces.
+      if (!isset($this->moduleList)) {
+        $modulefiles = file_scan($this->root.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
+        $this->moduleList = $this->getModulesParameter($modulefiles);
+      }
+      $this->registModuleNamespace($this->moduleList);
+
+      // Load each module's serviceProvider class.
+      foreach ($this->moduleList as $module => $filename) {
+        $filename = dirname($filename['pathname']) . "/$module.services.yml";
+        if (file_exists($filename)) {
+          $this->serviceYamls[$module] = Yaml::decode(file_get_contents($filename));
+        }
+      }
     }
 
     /**
@@ -202,7 +241,7 @@ class Application {
       global $base_path, $base_root;
       global $base_secure_url, $base_insecure_url;
 
-      $request = $this->container->get('request');
+      $request = $this->container->get('Zend\Diactoros\ServerRequest');
 
       $serverParams = $request->getServerParams();
 
@@ -241,10 +280,6 @@ class Application {
      * {@inheritdoc}
      */
     protected function initializeModuleList() {
-      $modulefiles = file_scan($this->root.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
-      $this->moduleList = $this->getModulesParameter($modulefiles);
-
-      $this->updateModules($this->moduleList);
       $this->moduleHandler = new ModuleHandler($this->root, $this->moduleList);
       $this->moduleHandler->loadAll();
     }
@@ -253,8 +288,6 @@ class Application {
      * {@inheritdoc}
      */
     protected function initializePermissionList() {
-      $modulefiles = file_scan($this->root.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
-      $this->moduleList = $this->getModulesParameter($modulefiles);
       $this->permissionHandler = new PermissionHandler($this->moduleHandler);
       $permissions = $this->permissionHandler->getPermissions();
       if(!empty($permissions)){
@@ -283,7 +316,13 @@ class Application {
               $this->routePermission[$route_info['path']] = $route_info['requirements']['_permission'];
             }
 
-            $routers->get($route_info['path'], $route_info['defaults']['_controller']);
+            if(isset($route_info['methods'])){
+              foreach ($route_info['methods'] as $method) {
+                $routers->map($method, $route_info['path'], $route_info['defaults']['_controller']);
+              }
+            }else{
+              $routers->map(['GET','POST'], $route_info['path'], $route_info['defaults']['_controller']);
+            }
           }
         }
 
@@ -336,15 +375,15 @@ class Application {
             $this->boot();
         }
 
-        $request = $this->container->get('request');
+        $request = $this->container->get('Zend\Diactoros\ServerRequest');
 
-        $response = $this->container->get('response');
+        $response = $this->container->get('Zend\Diactoros\Response');
 
         $this->buildRouters($this->container);
 
         $response = $this->routers->dispatch($request, $response);
 
-        $this->container->get('emitter')->emit($response);
+        $this->container->get('Zend\Diactoros\Response\SapiEmitter')->emit($response);
     }
 
 }
