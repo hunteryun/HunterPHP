@@ -9,8 +9,8 @@ use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
 
 /**
- * 迁移数据库命令
- * php hunter migrate:db
+ * 安装模块命令
+ * php hunter module:install
  */
 class ModuleInstallCmd extends BaseCommand {
 
@@ -23,8 +23,7 @@ class ModuleInstallCmd extends BaseCommand {
     */
    public function __construct() {
        $application = new Application();
-       $modulefiles = file_scan(HUNTER_ROOT.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
-       $this->moduleList = $application->getModulesParameter($modulefiles);
+       $this->moduleList = $application->boot()->getModulesList();
        parent::__construct();
    }
 

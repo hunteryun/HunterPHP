@@ -38,7 +38,6 @@ class ControllerCreateCmd extends BaseCommand {
        $application = new Application();
        $this->moduleList = $application->boot()->getModulesList();
        $this->routeList = $application->boot()->getRoutesList();
-
        $this->stringConverter = new StringConverter();
 
        parent::__construct();
@@ -106,9 +105,9 @@ class ControllerCreateCmd extends BaseCommand {
                  );
 
        if($writed){
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getOption('module').' module create successful!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' controller create successful!');
        }else{
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getOption('module').' module create failed!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' controller create failed!');
        }
    }
 

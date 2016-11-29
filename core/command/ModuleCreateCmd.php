@@ -29,8 +29,7 @@ class ModuleCreateCmd extends BaseCommand {
     */
    public function __construct() {
        $application = new Application();
-       $modulefiles = file_scan(HUNTER_ROOT.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
-       $this->moduleList = $application->getModulesParameter($modulefiles);
+       $this->moduleList = $application->boot()->getModulesList();
 
        $this->stringConverter = new StringConverter();
 

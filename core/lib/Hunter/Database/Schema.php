@@ -9,7 +9,7 @@
 namespace Hunter\Core\Database;
 
 class Schema extends Query {
-    
+
     /**
      * 最大注释长度.
      */
@@ -40,7 +40,7 @@ class Schema extends Query {
       'LONGTEXT',
       'TEXT',
     );
-    
+
     /**
      * 析构函数
      */
@@ -51,7 +51,7 @@ class Schema extends Query {
         }
         $this->options = $options;
     }
-    
+
     /**
      * 获取Schema信息
      */
@@ -72,7 +72,7 @@ class Schema extends Query {
           return FALSE;
         }
     }
-    
+
     /**
      * 执行获取Schema
      */
@@ -87,7 +87,7 @@ class Schema extends Query {
             $this->schema[$v->table_name][$v->column_name] = array(
                 'description' => $v->column_comment,
                 'type'        => $v->data_type,
-                'default'     => $v->column_default,                    
+                'default'     => $v->column_default,
                 'not null'    => $v->is_nullable == 'NO',
                 'key type'    => $v->column_key, //PRI MUL UNI
                 'increment'   => $v->extra == 'auto_increment',
@@ -102,18 +102,18 @@ class Schema extends Query {
      * 表是否存在
      */
     public function tableExists($table) {
-        $table = $this->connection->replacePrefix('{' . $table . '}');        
+        $table = $this->connection->replacePrefix('{' . $table . '}');
         return isset($this->schema[$table]);
     }
-    
+
     /**
      * 字段是否存在
      */
     public function fieldExists($table, $column) {
-        $table = $this->connection->replacePrefix('{' . $table . '}');        
+        $table = $this->connection->replacePrefix('{' . $table . '}');
         return isset($this->schema[$table][$column]);
     }
-    
+
     /**
      * 索引是否存在
      */
@@ -121,7 +121,7 @@ class Schema extends Query {
         $row = $this->connection->query('SHOW INDEX FROM {' . $table . "} WHERE key_name = '$name'")->fetchAssoc();
         return isset($row['Key_name']);
     }
-    
+
     /**
      * 创建表
      */
@@ -139,7 +139,7 @@ class Schema extends Query {
         }
         return $info;
     }
-    
+
     /**
      * 修改表名
      */
@@ -152,7 +152,7 @@ class Schema extends Query {
         }
         return $this->connection->query('ALTER TABLE {' . $table . '} RENAME TO `{' . $new_name .'}`');
     }
-    
+
     /**
      * 删除表
      */
@@ -163,7 +163,7 @@ class Schema extends Query {
         $this->connection->query('DROP TABLE {' . $table . '}');
         return true;
     }
-    
+
     /**
      * 添加字段
      */
@@ -179,7 +179,7 @@ class Schema extends Query {
         }
         //todo spec is array
     }
-    
+
     /**
      * 删除字段
      */
@@ -190,7 +190,7 @@ class Schema extends Query {
         $this->connection->query('ALTER TABLE {' . $table . '} DROP `' . $field . '`');
         return true;
     }
-    
+
     /**
      * 变更字段
      */
@@ -206,7 +206,7 @@ class Schema extends Query {
         }
         //todo spec is array
     }
-    
+
     /**
      * 设置字段默认值
      */
@@ -221,7 +221,7 @@ class Schema extends Query {
         }
         $this->connection->query('ALTER TABLE {' . $table . '} ALTER COLUMN `' . $field . '` SET DEFAULT ' . $default);
     }
-    
+
     /**
      * 设置字段无默认值
      */
@@ -231,7 +231,7 @@ class Schema extends Query {
         }
         $this->connection->query('ALTER TABLE {' . $table . '} ALTER COLUMN `' . $field . '` DROP DEFAULT');
     }
-    
+
     /**
      * 添加主键
      */
@@ -244,7 +244,7 @@ class Schema extends Query {
         }
         $this->connection->query('ALTER TABLE {' . $table . '} ADD PRIMARY KEY (' . $this->createKeySql($fields) . ')');
     }
-    
+
     /**
      * 删除主键
      */
@@ -255,7 +255,7 @@ class Schema extends Query {
         $this->connection->query('ALTER TABLE {' . $table . '} DROP PRIMARY KEY');
         return true;
     }
-    
+
     /**
      * 添加唯一索引
      */
@@ -268,7 +268,7 @@ class Schema extends Query {
         }
         $this->connection->query('ALTER TABLE {' . $table . '} ADD UNIQUE KEY `' . $name . '` (' . $this->createKeySql($fields) . ')');
     }
-    
+
     /**
      * 删除唯一索引
      */
@@ -279,7 +279,7 @@ class Schema extends Query {
         $this->connection->query('ALTER TABLE {' . $table . '} DROP KEY `' . $name . '`');
         return true;
     }
-    
+
     /**
      * 添加索引
      */
@@ -292,7 +292,7 @@ class Schema extends Query {
         }
         $this->connection->query('ALTER TABLE {' . $table . '} ADD INDEX `' . $name . '` (' . $this->createKeySql($fields) . ')');
     }
-    
+
     /**
      * 删除索引
      */
@@ -317,7 +317,7 @@ class Schema extends Query {
         return implode(', ', $return);
     }
 
-    
+
     /**
      * 创建数据表SQL
      */
