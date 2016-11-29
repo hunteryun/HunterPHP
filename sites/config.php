@@ -41,7 +41,7 @@ $engines = array(
         'engine'      => 'Hunter\Core\Templating\PhpEngine',
         'loader'      => 'Hunter\Core\Templating\Php\Loader',
         'environment' => 'Hunter\Core\Templating\Php\Environment',
-        'loaderArgs'  => array(HUNTER_ROOT . '/core/Command/templates'),
+        'loaderArgs'  => array(HUNTER_ROOT . '/core/command/templates'),
         'cacheDir'    => '',
         'envArgs'     => array(),
     ),
