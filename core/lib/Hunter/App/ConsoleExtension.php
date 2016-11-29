@@ -1,0 +1,114 @@
+<?php
+
+namespace Hunter\Core\App;
+
+/**
+ * Class Extension
+ * @package Drupal\Console\Extension
+ */
+class ConsoleExtension extends Extension
+{
+    /**
+     * @param $fullPath
+     * @return string
+     */
+    public function getPath($fullPath = false)
+    {
+        if ($fullPath) {
+            return $this->root . '/' . parent::getPath();
+        }
+
+        return parent::getPath();
+    }
+
+    /**
+     * @param bool $fullPath
+     * @return string
+     */
+    public function getControllerPath($fullPath = false)
+    {
+        return $this->getSourcePath($fullPath) . '/Controller';
+    }
+
+    /**
+     * @param bool $fullPath
+     * @return string
+     */
+    public function getConfigInstallDirectory($fullPath = false)
+    {
+        return $this->getPath($fullPath) .'/config/install';
+    }
+
+    /**
+     * @param bool $fullPath
+     * @return string
+     */
+    public function getConfigOptionalDirectory($fullPath = false)
+    {
+        return $this->getPath($fullPath) .'/config/optional';
+    }
+
+    /**
+     * @param bool $fullPath
+     * @return string
+     */
+    public function getSourcePath($fullPath=false)
+    {
+        return $this->getPath($fullPath) . '/src';
+    }
+
+    /**
+     * @param string  $authenticationType
+     * @param boolean $fullPath
+     * @return string
+     */
+    public function getAuthenticationPath($authenticationType, $fullPath = false)
+    {
+        return $this->getSourcePath($fullPath) .'/Authentication/' . $authenticationType;
+    }
+
+    /**
+     * @param $fullPath
+     * @return string
+     */
+    public function getFormPath($fullPath = false)
+    {
+        return $this->getSourcePath($fullPath) . '/Form';
+    }
+
+    /**
+     * @param $fullPath
+     * @return string
+     */
+    public function getRoutingPath($fullPath = false)
+    {
+        return $this->getSourcePath($fullPath) . '/Routing';
+    }
+
+    /**
+     * @param bool $fullPath
+     * @return string
+     */
+    public function getCommandDirectory($fullPath=false)
+    {
+        return $this->getSourcePath($fullPath) . '/Command/';
+    }
+
+    /**
+     * @param bool $fullPath
+     * @return string
+     */
+    public function getEntityPath($fullPath = false)
+    {
+        return $this->getSourcePath($fullPath) . '/Entity';
+    }
+
+    /**
+     * @param bool $fullPath
+     * @return string
+     */
+    public function getTemplatePath($fullPath = false)
+    {
+        return $this->getPath($fullPath) . '/templates';
+    }
+}

@@ -1,0 +1,25 @@
+<?php print "<?php"; ?>
+
+namespace Drupal\<?php print $module; ?>\Controller;
+
+/**
+ * Class <?php print $class_name; ?>.
+ *
+ * @package Drupal\<?php print $module; ?>\Controller
+ */
+class <?php print $class_name; ?> {
+<?php foreach($routes as $route): ?>
+  /**
+   * <?php print $route['method']; ?>.
+   *
+   * @return string
+   *   Return <?php print $route['method']; ?> string.
+   */
+  public function <?php print $route['method']; ?>($name) {
+    return [
+      '#type' => 'markup',
+      '#markup' => $this->t('Implement method: hello with parameter(s): $name'),
+    ];
+  }
+<?php endforeach; ?>
+}

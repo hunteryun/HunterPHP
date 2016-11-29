@@ -48,43 +48,43 @@ class ModuleCreateCmd extends BaseCommand {
                 'module',
                 '',
                 InputOption::VALUE_REQUIRED,
-                'commands.generate.module.options.module'
+                'commands.create.module.options.module'
             )
             ->addOption(
                 'machine-name',
                 '',
                 InputOption::VALUE_REQUIRED,
-                'commands.generate.module.options.machine-name'
+                'commands.create.module.options.machine-name'
             )
             ->addOption(
                 'module-path',
                 '',
                 InputOption::VALUE_REQUIRED,
-                'commands.generate.module.options.module-path'
+                'commands.create.module.options.module-path'
             )
             ->addOption(
                 'description',
                 '',
                 InputOption::VALUE_OPTIONAL,
-                'commands.generate.module.options.description'
+                'commands.create.module.options.description'
             )
             ->addOption(
                 'core',
                 '',
                 InputOption::VALUE_OPTIONAL,
-                'commands.generate.module.options.core'
+                'commands.create.module.options.core'
             )
             ->addOption(
                 'package',
                 '',
                 InputOption::VALUE_OPTIONAL,
-                'commands.generate.module.options.package'
+                'commands.create.module.options.package'
             )
             ->addOption(
                 'module-file',
                 '',
                 InputOption::VALUE_NONE,
-                'commands.generate.module.options.module-file'
+                'commands.create.module.options.module-file'
             );
    }
 
@@ -105,7 +105,7 @@ class ModuleCreateCmd extends BaseCommand {
            if (!is_dir($dir)) {
                throw new \RuntimeException(
                    sprintf(
-                       'Unable to generate the module as the target directory "%s" exists but is a file.',
+                       'Unable to create the module as the target directory "%s" exists but is a file.',
                        realpath($dir)
                    )
                );
@@ -114,7 +114,7 @@ class ModuleCreateCmd extends BaseCommand {
            if ($files != array('.', '..')) {
                throw new \RuntimeException(
                    sprintf(
-                       'Unable to generate the module as the target directory "%s" is not empty.',
+                       'Unable to create the module as the target directory "%s" is not empty.',
                        realpath($dir)
                    )
                );
@@ -122,7 +122,7 @@ class ModuleCreateCmd extends BaseCommand {
            if (!is_writable($dir)) {
                throw new \RuntimeException(
                    sprintf(
-                       'Unable to generate the module as the target directory "%s" is not writable.',
+                       'Unable to create the module as the target directory "%s" is not writable.',
                        realpath($dir)
                    )
                );
@@ -198,7 +198,7 @@ class ModuleCreateCmd extends BaseCommand {
            $input->setOption('description', $description);
        }
 
-       // --module option
+       // --module package option
        $package = $input->getOption('package');
        if (!$package) {
            $question = new Question('Enter package name [Custom]:', 'Custom');
@@ -217,7 +217,7 @@ class ModuleCreateCmd extends BaseCommand {
        // --module file option
        $moduleFile = $input->getOption('module-file');
        if (!$moduleFile) {
-           $question = new Question('Do you want to generate a .module file (yes/no) [yes]:', 'yes');
+           $question = new Question('Do you want to create a .module file (yes/no) [yes]:', 'yes');
            $moduleFile = $helper->ask($input, $output, $question);
            $input->setOption('module-file', $moduleFile);
        }
