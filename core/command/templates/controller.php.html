@@ -1,12 +1,12 @@
 <?php print "<?php"; ?>
 
 
-namespace Drupal\<?php print $module; ?>\Controller;
+namespace Hunter\<?php print $module; ?>\Controller;
 
 /**
  * Class <?php print $class_name; ?>.
  *
- * @package Drupal\<?php print $module; ?>\Controller
+ * @package Hunter\<?php print $module; ?>\Controller
  */
 class <?php print $class_name; ?> {
 <?php foreach($routes as $route): ?>
@@ -19,7 +19,7 @@ class <?php print $class_name; ?> {
   public function <?php print $route['method']; ?>($name) {
     return [
       '#type' => 'markup',
-      '#markup' => $this->t('Implement method: hello with parameter(s): $name'),
+      '#markup' => 'Implement method: <?php print $route['method']; ?>',
     ];
   }
 <?php endforeach; ?>

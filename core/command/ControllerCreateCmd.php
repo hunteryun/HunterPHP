@@ -158,7 +158,7 @@ class ControllerCreateCmd extends BaseCommand {
               $method_question = new Question('Enter the action method name [hello]:', 'hello');
               $method = $helper->ask($input, $output, $method_question);
 
-              $path_question = new Question('Enter the route path [/test/hello/{name}]:', '/test/hello/{name}');
+              $path_question = new Question('Enter the route path [/'.$module.'/hello/{name}]:', '/'.$module.'/hello/{name}');
               $path = $helper->ask($input, $output, $path_question);
 
               $classMachineName = $this->stringConverter->createMachineName($class);
