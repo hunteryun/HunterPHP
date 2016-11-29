@@ -8,11 +8,10 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
 use Hunter\Core\Utility\StringConverter;
-use Hunter\Core\App\ConsoleExtension;
 
 /**
- * 创建模块命令
- * php hunter module:create
+ * 创建Controller命令
+ * php hunter ctl:create
  */
 class ControllerCreateCmd extends BaseCommand {
 
@@ -74,7 +73,7 @@ class ControllerCreateCmd extends BaseCommand {
        $routes = $input->getOption('routes');
 
        if(isset($this->moduleList[$module])){
-         $module_path = HUNTER_ROOT . dirname($this->moduleList[$module]['pathname']);
+         $module_path = HUNTER_ROOT .'/'. dirname($this->moduleList[$module]['pathname']);
        }
 
        $routes = $this->inlineValueAsArray($routes);
