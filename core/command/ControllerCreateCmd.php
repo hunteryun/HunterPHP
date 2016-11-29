@@ -15,13 +15,20 @@ use Hunter\Core\Utility\StringConverter;
  */
 class ControllerCreateCmd extends BaseCommand {
 
-   /** @var module list  */
+   /**
+    * @var moduleList
+    */
    protected $moduleList;
 
    /**
-   * @var StringConverter
-   */
-  protected $stringConverter;
+    * @var routeList
+    */
+   protected $routeList;
+
+   /**
+    * @var StringConverter
+    */
+   protected $stringConverter;
 
    /**
     * InstallCommand constructor.
@@ -29,8 +36,8 @@ class ControllerCreateCmd extends BaseCommand {
     */
    public function __construct() {
        $application = new Application();
-       $modulefiles = file_scan(HUNTER_ROOT.'/module', '/.*(\w+).*\.module/is', array('fullpath'=>true,'minDepth'=>2));
-       $this->moduleList = $application->getModulesParameter($modulefiles);
+       $this->moduleList = $application->boot()->getModulesList();
+       $this->routeList = $application->boot()->getRoutesList();
 
        $this->stringConverter = new StringConverter();
 
@@ -130,6 +137,17 @@ class ControllerCreateCmd extends BaseCommand {
        // --routes option
        $routes = $input->getOption('routes');
        if (!$routes) {
+           if(isset($this->routeList[$module])){
+             foreach ($this->routeList[$module] as $key => $info) {
+               list($class, $method) = explode("::", $info['defaults']['_controller']);
+               $routes[] = [
+                 'title' => $info['defaults']['_title'],
+                 'name' => $key,
+                 'method' => $method,
+                 'path' => $info['path']
+               ];
+             }
+           }
            while (true) {
               $title_question = new Question('Enter the Controller method title (leave empty and press enter when done) []:', '');
               $title = $helper->ask($input, $output, $title_question);
@@ -145,7 +163,7 @@ class ControllerCreateCmd extends BaseCommand {
               $path = $helper->ask($input, $output, $path_question);
 
               $classMachineName = $this->stringConverter->createMachineName($class);
-              $routeName = $module . '.' . $classMachineName . '_' . $method;
+              $routeName = $module . '.' . str_replace("controller", "", $classMachineName) . '_' . $method;
 
               $routes[] = [
                   'title' => $title,
@@ -154,6 +172,7 @@ class ControllerCreateCmd extends BaseCommand {
                   'path' => $path
               ];
            }
+
            $input->setOption('routes', $routes);
        }
    }

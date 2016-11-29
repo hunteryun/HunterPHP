@@ -27,6 +27,7 @@ class Application {
     protected $container;
     protected $moduleList;
     protected $routers = array();
+    protected $routeList;
     protected $routePermission = array();
     protected $moduleHandler;
     protected $permissionHandler;
@@ -161,8 +162,16 @@ class Application {
             // Initialize all permission list.
             $this->initializePermissionList();
 
+            // Initialize all routes.
+            $this->buildRouters($this->container);
+
+            // set App service.
+            $this->container->add('App', $this);
+
             $this->booted = true;
         }
+
+        return $this;
     }
 
     /**
@@ -309,8 +318,9 @@ class Application {
         $routers->setStrategy(new HunterStrategy());
 
         $discovery = new YamlDiscovery('routing', $this->moduleHandler->getModuleDirectories());
+        $this->routeList = $discovery->findAll();
 
-        foreach ($discovery->findAll() as $module_routers) {
+        foreach ($this->routeList as $module_routers) {          
           foreach ($module_routers as $name => $route_info) {
             if(isset($route_info['requirements']['_permission'])){
               $this->routePermission[$route_info['path']] = $route_info['requirements']['_permission'];
@@ -366,6 +376,13 @@ class Application {
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getRoutesList() {
+        return $this->routeList;
+    }
+
+    /**
      * Handles the request and delivers the response.
      *
      * @param Request|null $request Request to process
@@ -378,8 +395,6 @@ class Application {
         $request = $this->container->get('Zend\Diactoros\ServerRequest');
 
         $response = $this->container->get('Zend\Diactoros\Response');
-
-        $this->buildRouters($this->container);
 
         $response = $this->routers->dispatch($request, $response);
 
