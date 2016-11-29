@@ -1,5 +1,1 @@
 <?php
-
-function test_menu () {
-    return 'test';
-}

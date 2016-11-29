@@ -6,13 +6,9 @@ class TestPlugin
 {
     public $bar;
 
-    public function __construct()
+    public function __construct(TestBar $bar)
     {
-        $this->bar = new Bar;
+        $this->bar = $bar;
     }
-}
-
-class Bar
-{
 
 }

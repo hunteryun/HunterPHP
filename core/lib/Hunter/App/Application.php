@@ -191,7 +191,7 @@ class Application {
             if(!empty($services['services'])){
               foreach ($services['services'] as $name => $service) {
                 if (class_exists($service['class'])) {
-                  $container->addServiceProvider($service['class']);
+                  $container->share($service['class'])->withArguments($service['arguments']);
                 }
               }
             }

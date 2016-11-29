@@ -12,7 +12,7 @@ class TestController {
    */
   public function index(ServerRequest $request, TestPlugin $test) {
     session()->set("user", "Drupal Hunter");
-    return view('/hunter/index.html', array('title' => 'Hello HunterPHP!', 'session_value' => session()->get("user")));
+    return view('/hunter/index.html', array('title' => $test->bar->sayhello(), 'session_value' => session()->get("user")));
   }
 
   /**

@@ -1,3 +1,5 @@
 services:
   test.request_service:
-    class: Hunter\test\TestRequestServiceProvider
+    class: Hunter\test\Plugin\TestPlugin
+    arguments:
+      - '\Hunter\test\Plugin\TestBar'
