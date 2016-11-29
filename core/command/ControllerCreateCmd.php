@@ -100,8 +100,7 @@ class ControllerCreateCmd extends BaseCommand {
        $writed = $this->renderFile(
                      'routing-controller.yml.html',
                      $module_path.'/'.$module.'.routing.yml',
-                     $parameters,
-                     FILE_APPEND
+                     $parameters
                  );
 
        if($writed){
@@ -138,7 +137,7 @@ class ControllerCreateCmd extends BaseCommand {
        if (!$routes) {
            if(isset($this->routeList[$module])){
              foreach ($this->routeList[$module] as $key => $info) {
-               list($class, $method) = explode("::", $info['defaults']['_controller']);
+               list($classname, $method) = explode("::", $info['defaults']['_controller']);
                $routes[] = [
                  'title' => $info['defaults']['_title'],
                  'name' => $key,
