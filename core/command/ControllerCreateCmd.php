@@ -4,6 +4,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
@@ -92,21 +93,22 @@ class ControllerCreateCmd extends BaseCommand {
        ];
 
        $writed = $this->renderFile(
-                     'controller.php.html',
-                     $module_path.'/src/Controller/'.$class.'.php',
-                     $parameters
-                 );
+           'controller.php.html',
+           $module_path.'/src/Controller/'.$class.'.php',
+           $parameters
+       );
 
        $writed = $this->renderFile(
-                     'routing-controller.yml.html',
-                     $module_path.'/'.$module.'.routing.yml',
-                     $parameters
-                 );
+           'routing-controller.yml.html',
+           $module_path.'/'.$module.'.routing.yml',
+           $parameters,
+           FILE_APPEND
+       );
 
        if($writed){
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' controller create successful!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' create successful!');
        }else{
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' controller create failed!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' create failed!');
        }
    }
 
@@ -119,7 +121,17 @@ class ControllerCreateCmd extends BaseCommand {
        // --module option
        $module = $input->getOption('module');
        if (!$module) {
-           $question = new Question('Enter the modue name:', '');
+           $choices = array_keys($this->moduleList);
+           $default_name = current($choices);
+           if (null !== $default_name) {
+              $values = array_flip($choices);
+              $default = $values[$default_name];
+           }
+           $question = new ChoiceQuestion(
+              'Enter the modue name ['.$default_name.']:',
+              $choices,
+              $default
+           );
            $module = $helper->ask($input, $output, $question);
            $input->setOption('module', $module);
        }
@@ -138,12 +150,15 @@ class ControllerCreateCmd extends BaseCommand {
            if(isset($this->routeList[$module])){
              foreach ($this->routeList[$module] as $key => $info) {
                list($classname, $method) = explode("::", $info['defaults']['_controller']);
-               $routes[] = [
-                 'title' => $info['defaults']['_title'],
-                 'name' => $key,
-                 'method' => $method,
-                 'path' => $info['path']
-               ];
+               if(basename($classname) == $class){
+                 $routes[] = [
+                   'title' => $info['defaults']['_title'],
+                   'name' => $key,
+                   'method' => $method,
+                   'path' => $info['path'],
+                   'args' => $this->getArgumentsFromRoute($info['path'])
+                 ];
+               }
              }
            }
            while (true) {
@@ -167,7 +182,8 @@ class ControllerCreateCmd extends BaseCommand {
                   'title' => $title,
                   'name' => $routeName,
                   'method' => $method,
-                  'path' => $path
+                  'path' => $path,
+                  'args' => $this->getArgumentsFromRoute($path)
               ];
            }
 
@@ -215,6 +231,23 @@ class ControllerCreateCmd extends BaseCommand {
        }
 
        return $inputArrayValue?$inputArrayValue:$inputValue;
+   }
+
+   /**
+    * @return array
+    */
+   public function getArgumentsFromRoute($path)
+   {
+       $returnValues = '';
+       preg_match_all('/{(.*?)}/', $path, $returnValues);
+
+       $returnValues = array_map(
+           function ($value) {
+               return sprintf('$%s', $value);
+           }, $returnValues[1]
+       );
+
+       return $returnValues;
    }
 
 }

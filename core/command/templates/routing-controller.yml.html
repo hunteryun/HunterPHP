@@ -1,8 +1,8 @@
+
 <?php foreach($routes as $route): ?>
 <?php print $route['name']; ?>:
   path: '<?php print $route['path']; ?>'
   defaults:
     _controller: '\Hunter\<?php print $module; ?>\Controller\<?php print $class_name; ?>::<?php print $route['method']; ?>'
     _title: '<?php print $route['title']; ?>'
-
 <?php endforeach; ?>

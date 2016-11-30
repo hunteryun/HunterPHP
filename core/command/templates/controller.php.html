@@ -16,11 +16,12 @@ class <?php print $class_name; ?> {
    * @return string
    *   Return <?php print $route['method']; ?> string.
    */
-  public function <?php print $route['method']; ?>() {
-    return [
-      '#type' => 'markup',
-      '#markup' => 'Implement method: <?php print $route['method']; ?>',
-    ];
-  }
+  public function <?php print $route['method']; ?>(<?php print implode(", ",$route['args']); ?>) {
+  <?php if(!empty($route['args'])): ?>
+    return 'Implement method: <?php print $route['method']; ?> with parameter(s): '.<?php print implode(". ",$route['args']); ?>;
+  <?php else: ?>
+    return 'Implement method: <?php print $route['method']; ?>';
+  <?php endif; ?>
+}
 <?php endforeach; ?>
 }

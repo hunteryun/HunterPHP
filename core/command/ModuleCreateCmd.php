@@ -138,17 +138,17 @@ class ModuleCreateCmd extends BaseCommand {
        );
 
        $writed = $this->renderFile(
-                     '/info.yml.html',
-                     $dir.'/'.$machineName.'.info.yml',
-                     $parameters
-                 );
+           '/info.yml.html',
+           $dir.'/'.$machineName.'.info.yml',
+           $parameters
+       );
 
        if ($moduleFile) {
             $writed = $this->renderFile(
-                         '/module.html',
-                         $dir . '/' . $machineName . '.module',
-                         $parameters
-                      );
+               '/module.html',
+               $dir . '/' . $machineName . '.module',
+               $parameters
+            );
        }
 
        if($writed){

@@ -63,9 +63,9 @@ class ModuleInstallCmd extends BaseCommand {
       }
 
       if($installed){
-       $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getOption('module').' module install successful!');
+        $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getOption('module').' module install successful!');
       }else{
-       $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getOption('module').' module install failed!');
+        $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getOption('module').' module install failed!');
       }
    }
 
