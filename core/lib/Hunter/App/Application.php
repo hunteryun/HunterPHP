@@ -320,13 +320,13 @@ class Application {
         $discovery = new YamlDiscovery('routing', $this->moduleHandler->getModuleDirectories());
         $this->routeList = $discovery->findAll();
 
-        foreach ($this->routeList as $module_routers) {          
+        foreach ($this->routeList as $module_routers) {
           foreach ($module_routers as $name => $route_info) {
             if(isset($route_info['requirements']['_permission'])){
               $this->routePermission[$route_info['path']] = $route_info['requirements']['_permission'];
             }
 
-            if(isset($route_info['methods'])){
+            if(isset($route_info['methods']) && isset($route_info['defaults']['_controller'])){
               foreach ($route_info['methods'] as $method) {
                 $routers->map($method, $route_info['path'], $route_info['defaults']['_controller']);
               }
