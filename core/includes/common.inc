@@ -9,6 +9,8 @@
 use Hunter\Core\Database\Database;
 use Hunter\Core\CSRF\CSRF;
 use Hunter\Core\Utility\Timer;
+use Zend\Diactoros\ServerRequestFactory;
+use Zend\Diactoros\Response\RedirectResponse;
 
 //file scan
 function file_scan($dir, $regx, $options = array(), $depth = 1) {
@@ -53,8 +55,8 @@ function file_include($dir, $regx, $options = array()) {
 
 // Redirect URL path.
 function redirect($path) {
-  $request = Request::createFromGlobals();
-  return new RedirectResponse($request->getUriForPath($path));
+  $request = ServerRequestFactory::fromGlobals();
+  return new RedirectResponse($path);
 }
 
 /**
