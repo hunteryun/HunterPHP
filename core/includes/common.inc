@@ -9,6 +9,7 @@
 use Hunter\Core\Database\Database;
 use Hunter\Core\CSRF\CSRF;
 use Hunter\Core\Utility\Timer;
+use Hunter\Core\Password\Password;
 use Zend\Diactoros\ServerRequestFactory;
 use Zend\Diactoros\Response\RedirectResponse;
 
@@ -173,6 +174,27 @@ function request_uri() {
   $uri = '/' . ltrim($uri, '/');
 
   return $uri;
+}
+
+/**
+ * password_hash (php5.5)
+ */
+function hunter_password_hash($password, $algo = 1, $options = array()) {
+    return Password::hash($password);
+}
+
+/**
+ * password_verify (php5.5)
+ */
+function hunter_password_verify($password, $hash) {
+    return Password::verify($password, $hash);
+}
+
+/**
+ * password_needs_rehash (php5.5)
+ */
+function hunter_password_needs_rehash($hash, $algo = 1) {
+    return Password::needsRehash($hash);
 }
 
 /**
