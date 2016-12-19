@@ -33,15 +33,34 @@ class FakerContentCmd extends BaseCommand {
     * {@inheritdoc}
     */
    protected function execute(InputInterface $input, OutputInterface $output) {
-      $faker = Factory::create();
+      $faker = Factory::create('zh_CN');
+      $fields = array();
+
       for($i = 0; $i < (int) $input->getOption('number'); $i++) {
-          $mid = db_insert($input->getOption('table'))
-              ->fields(array(
-                'name' => $faker->name,
-              ))
+          if(!empty($input->getOption('fields'))){
+            foreach ($input->getOption('fields') as $field) {
+              switch ($field['type'])
+              {
+              case 'password':
+                $fields[$field['name']] = 'password';
+                break;
+              case 'imageUrl':
+                $fields[$field['name']] = $faker->imageUrl(100, 100, 'cats');
+                break;
+              case 'randomTwo':
+                $fields[$field['name']] = $faker->randomElement([0, 1]);
+                break;
+              default:
+                $fields[$field['name']] = $faker->$field['type'];
+              }
+            }
+          }
+          $result = db_insert($input->getOption('table'))
+              ->fields($fields)
               ->execute();
       }
-      if($mid){
+
+      if($result){
         $output->writeln('['.date("Y-m-d H:i:s").'] '. $input->getOption('table') .' have '. $input->getOption('number').' content create successful!');
       }else{
         $output->writeln('['.date("Y-m-d H:i:s").'] '. $input->getOption('table') .' have '. $input->getOption('number').' content create failed!');
@@ -77,19 +96,19 @@ class FakerContentCmd extends BaseCommand {
        if (!$fields) {
            while (true) {
               $field_choices = db_get_fields($table);
-              $field_choices[count($field_choices)] = '';
+              $field_choices[count($field_choices)] = 'DONE';
               $question = new ChoiceQuestion(
                 'Select the field name (leave empty and press enter when done) []:',
                 $field_choices,
-                ''
+                'DONE'
               );
               $field_name = $helper->ask($input, $output, $question);
 
-              if ($field_name === '') {
+              if ($field_name === 'DONE') {
                   break;
               }
 
-              $field_type_choices = array('name', 'address', 'text', 'randomNumber');
+              $field_type_choices = array('name', 'imageUrl', 'address', 'text', 'word', 'randomTwo', 'email', 'password', 'ipv4', 'uuid', 'hexcolor', 'ean6', 'languageCode', 'boolean', 'phoneNumber', 'unixTime');
               $question = new ChoiceQuestion(
                 'Select the field type []:',
                 $field_type_choices
