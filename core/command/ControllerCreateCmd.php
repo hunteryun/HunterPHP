@@ -128,7 +128,7 @@ class ControllerCreateCmd extends BaseCommand {
               $default = $values[$default_name];
            }
            $question = new ChoiceQuestion(
-              'Enter the modue name ['.$default_name.']:',
+              'Select the modue name ['.$default_name.']:',
               $choices,
               $default
            );

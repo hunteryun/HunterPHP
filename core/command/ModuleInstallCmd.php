@@ -4,6 +4,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
@@ -78,7 +79,17 @@ class ModuleInstallCmd extends BaseCommand {
        // --module option
        $module = $input->getOption('module');
        if (!$module) {
-           $question = new Question('Please enter modue name:', '');
+           $choices = array_keys($this->moduleList);
+           $default_name = current($choices);
+           if (null !== $default_name) {
+              $values = array_flip($choices);
+              $default = $values[$default_name];
+           }
+           $question = new ChoiceQuestion(
+              'Enter the modue name ['.$default_name.']:',
+              $choices,
+              $default
+           );
            $module = $helper->ask($input, $output, $question);
            $input->setOption('module', $module);
        }

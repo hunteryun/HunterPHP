@@ -230,3 +230,16 @@ function db_schema($target = 'default') {
     return Database::getConnection($options['target'])->schema($options);
 }
 
+/**
+ * 获取表数据.
+ */
+function db_get_tables($target = 'default') {
+  return array_keys(db_schema($target)->getSchema());
+}
+
+/**
+ * 获取字段数据.
+ */
+function db_get_fields($table, $target = 'default') {
+  return array_keys(db_schema($target)->fieldLists($table));
+}

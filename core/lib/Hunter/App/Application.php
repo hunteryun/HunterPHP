@@ -147,7 +147,7 @@ class Application {
     public function boot() {
         if (!$this->booted) {
             date_default_timezone_set('PRC');
-            
+
             // load all core file.
             $this->loadLegacyIncludes();
 

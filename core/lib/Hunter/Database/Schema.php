@@ -123,6 +123,14 @@ class Schema extends Query {
     }
 
     /**
+     * 获取表字段列表
+     */
+    public function fieldLists($table) {
+        $table = $this->connection->replacePrefix('{' . $table . '}');
+        return $this->schema[$table];
+    }
+
+    /**
      * 创建表
      */
     public function createTable($name, $table) {
@@ -316,7 +324,6 @@ class Schema extends Query {
         }
         return implode(', ', $return);
     }
-
 
     /**
      * 创建数据表SQL
