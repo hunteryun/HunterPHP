@@ -18,34 +18,6 @@ use Faker\Factory;
 class FakerContentCmd extends BaseCommand {
 
    /**
-    * @var moduleList
-    */
-   protected $moduleList;
-
-   /**
-    * @var routeList
-    */
-   protected $routeList;
-
-   /**
-    * @var StringConverter
-    */
-   protected $stringConverter;
-
-   /**
-    * InstallCommand constructor.
-    * @param Site $site
-    */
-   public function __construct() {
-       $application = new Application();
-       $this->moduleList = $application->boot()->getModulesList();
-       $this->routeList = $application->boot()->getRoutesList();
-       $this->stringConverter = new StringConverter();
-
-       parent::__construct();
-   }
-
-   /**
     * {@inheritdoc}
     */
    protected function configure() {
