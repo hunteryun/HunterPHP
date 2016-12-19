@@ -104,11 +104,12 @@ class Environment {
     }
 
     public function display($name, $parameters = array()) {
+      global $hunter_debug;
       $this->addGlobal('messages', $this->renderMessages());
       $compile = new BladeCompiler($name, $this->loader->getCachePath());
       $compiled = $compile->getCompiledPath($name);
 
-      if($this->exists($compiled, TRUE)){
+      if($this->exists($compiled, TRUE) && !$hunter_debug){
         $variables = $this->mergeGlobals($parameters);
         extract($variables);
         include $compiled;

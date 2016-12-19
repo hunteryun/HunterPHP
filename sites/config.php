@@ -3,6 +3,9 @@
 //配置: 根目录
 $root_dir = '/';
 
+//配置: 开发模式
+$hunter_debug = true;
+
 //配置: 数据库
 $databases = array(
     'default' => array(
