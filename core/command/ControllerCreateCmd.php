@@ -32,6 +32,11 @@ class ControllerCreateCmd extends BaseCommand {
    protected $stringConverter;
 
    /**
+    * @var StringConverter
+    */
+   protected $append = false;
+
+   /**
     * InstallCommand constructor.
     * @param Site $site
     */
@@ -90,6 +95,7 @@ class ControllerCreateCmd extends BaseCommand {
          'class_name' => $class,
          'module' => $module,
          'routes' => $routes,
+         'append' => $this->append
        ];
 
        $writed = $this->renderFile(
@@ -139,7 +145,7 @@ class ControllerCreateCmd extends BaseCommand {
        // --class option
        $class = $input->getOption('class');
        if (!$class) {
-           $question = new Question('Enter the Controller class name [DefaultController]:', 'DefaultController');
+           $question = new Question('Enter the Controller class name [Default]:', 'Default');
            $class = $helper->ask($input, $output, $question);
            $input->setOption('class', $class);
        }
@@ -147,20 +153,10 @@ class ControllerCreateCmd extends BaseCommand {
        // --routes option
        $routes = $input->getOption('routes');
        if (!$routes) {
-           if(isset($this->routeList[$module])){
-             foreach ($this->routeList[$module] as $key => $info) {
-               list($classname, $method) = explode("::", $info['defaults']['_controller']);
-               if(basename($classname) == $class){
-                 $routes[] = [
-                   'title' => $info['defaults']['_title'],
-                   'name' => $key,
-                   'method' => $method,
-                   'path' => $info['path'],
-                   'args' => $this->getArgumentsFromRoute($info['path'])
-                 ];
-               }
-             }
+           if(isset($this->routeList[$module]) && !empty($this->routeList[$module])){
+             $this->append = true;
            }
+           
            while (true) {
               $title_question = new Question('Enter the Controller method title (leave empty and press enter when done) []:', '');
               $title = $helper->ask($input, $output, $title_question);
@@ -186,7 +182,7 @@ class ControllerCreateCmd extends BaseCommand {
                   'args' => $this->getArgumentsFromRoute($path)
               ];
            }
-
+ 
            $input->setOption('routes', $routes);
        }
    }

@@ -5,7 +5,7 @@
  *
  * Blade Compiler
  */
- 
+
 namespace Hunter\Core\Templating\Blade;
 
 class BladeCompiler extends Compiler implements CompilerInterface {
