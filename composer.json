@@ -7,9 +7,7 @@
         "symfony/console": "^3.1",
         "opis/session": "^3.1",
         "backup-manager/backup-manager": "^1.1",
-        "fzaninotto/faker": "^1.6",
-        "monolog/monolog": "^1.21",
-        "vakata/user": "^3.0"
+        "fzaninotto/faker": "^1.6"
     },
     "autoload": {
         "psr-4": {
