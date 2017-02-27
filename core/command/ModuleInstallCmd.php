@@ -45,22 +45,24 @@ class ModuleInstallCmd extends BaseCommand {
       $installed = false;
       if(isset($this->moduleList[$input->getOption('module')])){
           $install_file = str_replace('info.yml', 'install', $this->moduleList[$input->getOption('module')]['pathname']);
+      }else {
+          $install_file = 'module/'.$input->getOption('module').'/'.$input->getOption('module').'.install';
+      }
 
-          if(file_exists($install_file)){
-            require_once $install_file;
-          }
+      if(file_exists($install_file)){
+        require_once $install_file;
 
-          $schema_fun = $input->getOption('module').'_schema';
-          $install_fun = $input->getOption('module').'_install';
-          if (function_exists($schema_fun)) {
-            $schemas = $schema_fun();
-          }
+        $schema_fun = $input->getOption('module').'_schema';
+        $install_fun = $input->getOption('module').'_install';
+        if (function_exists($schema_fun)) {
+          $schemas = $schema_fun();
+        }
 
-          $installed = db_schema()->installSchema($schemas);
+        $installed = db_schema()->installSchema($schemas);
 
-          if (function_exists($install_fun)) {
-            $install_fun();
-          }
+        if (function_exists($install_fun)) {
+          $install_fun();
+        }
       }
 
       if($installed){

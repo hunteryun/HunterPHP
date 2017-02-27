@@ -1,0 +1,127 @@
+<?php print "<?php"; ?>
+
+
+namespace Hunter\<?php print $module; ?>\Controller;
+
+use Zend\Diactoros\ServerRequest;
+
+/**
+ * Class <?php print $module; ?>.
+ *
+ * @package Hunter\<?php print $module; ?>\Controller
+ */
+class <?php print ucfirst($module); ?>Controller {
+  /**
+   * <?php print $module; ?>_list.
+   *
+   * @return string
+   *   Return <?php print $module; ?>_list string.
+   */
+  public function <?php print $module; ?>_list() {
+    $<?php print $module; ?>_list = $this->get_<?php print $module; ?>_list();
+
+    return view('/admin/<?php print $module; ?>-list.html', array('<?php print $module; ?>s' => $<?php print $module; ?>_list));
+  }
+
+  /**
+   * <?php print $module; ?>_add.
+   *
+   * @return string
+   *   Return <?php print $module; ?>_add string.
+   */
+  public function <?php print $module; ?>_add(ServerRequest $request) {
+    if ($parms = $request->getParsedBody()) {
+      $title = $parms['title'];
+      $content = $parms['content'];
+      $status = $parms['status'];
+      $user = session()->get('admin');
+
+      $<?php print substr($module, 0, 1 ); ?>id = db_insert('<?php print $module; ?>')
+        ->fields(array(
+          'title' => $title,
+          'content' => $content,
+          'status' => $status,
+          'uid' => $user->uid,
+          'created' => time(),
+          'updated' => time(),
+        ))
+        ->execute();
+
+      return $<?php print substr($module, 0, 1 ); ?>id;
+    }
+
+    return view('/admin/<?php print $module; ?>-add.html');
+  }
+
+  /**
+   * <?php print $module; ?>_edit.
+   *
+   * @return string
+   *   Return <?php print $module; ?>_edit string.
+   */
+  public function <?php print $module; ?>_edit($<?php print substr($module, 0, 1 ); ?>id) {
+      $<?php print $module; ?> = get_<?php print $module; ?>_byid($<?php print substr($module, 0, 1 ); ?>id);
+
+      return view('/admin/<?php print $module; ?>-edit.html', array('<?php print $module; ?>' => $<?php print $module; ?>, '<?php print substr($module, 0, 1 ); ?>id' => $<?php print substr($module, 0, 1 ); ?>id));
+  }
+
+  /**
+   * <?php print $module; ?>_update.
+   *
+   * @return string
+   *   Return <?php print $module; ?>_update string.
+   */
+  public function <?php print $module; ?>_update(ServerRequest $request) {
+    if ($parms = $request->getParsedBody()) {
+      $<?php print substr($module, 0, 1 ); ?>id = $parms['<?php print substr($module, 0, 1 ); ?>id'];
+      $title = $parms['title'];
+      $content = $parms['content'];
+      $status = $parms['status'];
+      $user = session()->get('admin');
+
+       db_update('<?php print $module; ?>')
+         ->fields(array(
+           'title' => $title,
+           'content' => $content,
+           'status' => $status,
+           'uid' => $user->uid,
+           'updated' => time(),
+         ))
+         ->condition('<?php print substr($module, 0, 1 ); ?>id', $<?php print substr($module, 0, 1 ); ?>id)
+         ->execute();
+
+       return true;
+     }
+     return false;
+  }
+
+  /**
+   * <?php print $module; ?>_del.
+   *
+   * @return string
+   *   Return <?php print $module; ?>_del string.
+   */
+  public function <?php print $module; ?>_del($<?php print substr($module, 0, 1 ); ?>id) {
+    $result = db_delete('<?php print $module; ?>')
+            ->condition('<?php print substr($module, 0, 1 ); ?>id', $<?php print substr($module, 0, 1 ); ?>id)
+            ->execute();
+
+    if ($result) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * get <?php print $module; ?> list
+   */
+  public function get_<?php print $module; ?>_list() {
+      $<?php print $module; ?>_list = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
+        ->fields('<?php print substr($module, 0, 1 ); ?>')
+        ->execute()
+        ->fetchAllAssoc('<?php print substr($module, 0, 1 ); ?>id');
+
+      return $<?php print $module; ?>_list;
+  }
+}

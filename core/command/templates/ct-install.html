@@ -1,0 +1,82 @@
+<?php print "<?php"; ?>
+
+/**
+ * @file
+ * <?php print $type; ?> database info.
+ */
+
+function <?php print $type; ?>_schema() {
+  $schema['<?php print $type; ?>'] = array(
+    'description' => 'Stores <?php print $type; ?> data.',
+    'fields' => array(
+      '<?php print substr($type, 0, 1 ); ?>id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'ID of <?php print $type; ?>.',
+      ),
+      'title' => array(
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => '<?php print $type; ?> title.',
+      ),
+      'content' => array(
+        'type' => 'text',
+        'size' => 'normal',
+        'description' => "<?php print $type; ?> content.",
+      ),
+      'images' => array(
+        'type' => 'blob',
+        'not null' => TRUE,
+        'size' => 'big',
+        'description' => '<?php print $type; ?> images.',
+      ),
+      'attach_files' => array(
+        'type' => 'blob',
+        'not null' => TRUE,
+        'size' => 'big',
+        'description' => '<?php print $type; ?> attach files.',
+      ),
+      'uid' => array(
+        'type' => 'varchar',
+        'length' => 60,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => "<?php print $type; ?> uid.",
+      ),
+      'status' => array(
+        'type' => 'varchar',
+        'length' => 9,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => '<?php print $type; ?> status.',
+      ),
+      'created' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Unix timestamp when the user was created.',
+      ),
+      'updated' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The Unix timestamp when the user was updated.',
+      ),
+    ),
+    'primary key' => array('<?php print substr($type, 0, 1 ); ?>id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Insert init <?php print $type; ?>.
+ */
+function <?php print $type; ?>_install() {
+
+}

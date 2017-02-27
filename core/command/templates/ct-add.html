@@ -1,0 +1,97 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Add <?php print $name; ?></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <link rel="stylesheet" href="/theme/admin/assets/css/index.css">
+    <link rel="stylesheet" href="/theme/admin/assets/layui/css/layui.css">
+    <script src="/theme/admin/assets/js/lib/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="pd-20 gallery-add">
+        <form class="layui-form" action="">
+          <div class="layui-form-item">
+              <label class="layui-form-label">Title</label>
+              <div class="layui-input-block">
+                  <input type="text" name="title" lay-verify="title" placeholder="Enter <?php print $type; ?> title" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label class="layui-form-label">Content</label>
+              <div class="layui-input-block">
+                  <textarea id="content" name="content" style="display: none;" lay-verify="content"></textarea>
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label class="layui-form-label">Status</label>
+              <div class="layui-input-block">
+                  <input type="radio" name="status" value="1" title="published">
+                  <input type="radio" name="status" value="0" title="not published">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <div class="layui-input-block submit">
+                  <button class="layui-btn" lay-submit="" lay-filter="<?php print $type; ?>Add">Save</button>
+              </div>
+          </div>
+        </form>
+    </div>
+    <script src="/theme/admin/assets/layui/layui.js"></script>
+    <script src="/theme/admin/assets/js/define/common.js"></script>
+    <script>
+        layui.use(['form', 'layedit', 'layer'], function() {
+            var form = layui.form();
+            var layedit = layui.layedit;
+            var index = layedit.build('content',{
+              uploadImage: {
+            		url:'/admin/upload/image'
+            		,type: 'post'
+              }
+      			}); //建立编辑器
+
+            form.verify({
+               title: function(value) {
+                   if(value.length < 5){
+                       return '标题至少得5个字符!';
+                     }
+               },
+               content: function(value) {
+                   return layedit.sync(index);
+               },
+               categoryid: function(i) {
+                   if ("" == i) return "请选择一个类别"
+               }
+            });
+
+            //监听提交
+            form.on('submit(<?php print $type; ?>Add)', function(data) {
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/<?php print $type; ?>/add", //后台程序地址
+                    data: data.field, //需要post的数据
+                    success: function(msg) { //后台程序返回的标签，比如我喜欢使用1和0 表示成功或者失败
+                        var index = parent.layer.getFrameIndex(window.name);
+                        if (!msg) {
+                            layer.msg('操作失败', {
+                                icon: 5
+                            });
+
+                            parent.layui.jquery("#iframe_status").val('0');
+                            parent.layer.close(index);
+                        } else {
+                            parent.layui.jquery("#iframe_status").val('1');
+                            parent.layer.close(index);
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</body>
+
+</html>

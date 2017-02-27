@@ -84,6 +84,11 @@ class ModuleCreateCmd extends BaseCommand {
                 '',
                 InputOption::VALUE_NONE,
                 'commands.create.module.options.module-file'
+            )
+            ->addArgument(
+                'isContentType',
+                InputArgument::OPTIONAL,
+                'Is this a new content type?'
             );
    }
 
@@ -98,6 +103,7 @@ class ModuleCreateCmd extends BaseCommand {
        $core = $input->getOption('core');
        $package = $input->getOption('package');
        $moduleFile = $input->getOption('module-file');
+       $isContentType = $input->getArgument('isContentType');
 
        $dir .= '/'.$machineName;
        if (file_exists($dir)) {
@@ -135,6 +141,7 @@ class ModuleCreateCmd extends BaseCommand {
          'core' => $core,
          'description' => $description,
          'package' => $package,
+         'isContentType' => $isContentType,
        );
 
        $writed = $this->renderFile(

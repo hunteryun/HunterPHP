@@ -73,6 +73,11 @@ class ControllerCreateCmd extends BaseCommand {
                 '',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'commands.create.controller.options.routes'
+            )
+            ->addArgument(
+                'isContentType',
+                InputArgument::OPTIONAL,
+                'Is this a new content type?'
             );
    }
 
@@ -83,9 +88,12 @@ class ControllerCreateCmd extends BaseCommand {
        $module = $input->getOption('module');
        $class = $input->getOption('class');
        $routes = $input->getOption('routes');
+       $isContentType = $input->getArgument('isContentType');
 
        if(isset($this->moduleList[$module])){
          $module_path = HUNTER_ROOT .'/'. dirname($this->moduleList[$module]['pathname']);
+       }else{
+         $module_path = HUNTER_ROOT .'/module/'.strtolower($module);
        }
 
        $routes = $this->inlineValueAsArray($routes);
@@ -98,9 +106,15 @@ class ControllerCreateCmd extends BaseCommand {
          'append' => $this->append
        ];
 
+       if($isContentType){
+         $ctltemplate = 'ctcontroller.php.html';
+       }else {
+         $ctltemplate = 'controller.php.html';
+       }
+
        $writed = $this->renderFile(
-           'controller.php.html',
-           $module_path.'/src/Controller/'.$class.'.php',
+           $ctltemplate,
+           $module_path.'/src/Controller/'.$class.'Controller.php',
            $parameters
        );
 
@@ -112,9 +126,9 @@ class ControllerCreateCmd extends BaseCommand {
        );
 
        if($writed){
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' create successful!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' Controller create successful!');
        }else{
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' create failed!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' Controller create failed!');
        }
    }
 
@@ -156,7 +170,7 @@ class ControllerCreateCmd extends BaseCommand {
            if(isset($this->routeList[$module]) && !empty($this->routeList[$module])){
              $this->append = true;
            }
-           
+
            while (true) {
               $title_question = new Question('Enter the Controller method title (leave empty and press enter when done) []:', '');
               $title = $helper->ask($input, $output, $title_question);
@@ -182,7 +196,7 @@ class ControllerCreateCmd extends BaseCommand {
                   'args' => $this->getArgumentsFromRoute($path)
               ];
            }
- 
+
            $input->setOption('routes', $routes);
        }
    }

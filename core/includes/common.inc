@@ -154,6 +154,11 @@ function base_path() {
   return $GLOBALS['base_path'];
 }
 
+//Returns the base root path.
+function base_root() {
+  return $GLOBALS['base_root'];
+}
+
 //Get current path.
 function request_uri() {
   if (isset($_SERVER['REQUEST_URI'])) {
