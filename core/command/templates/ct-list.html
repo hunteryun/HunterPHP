@@ -32,21 +32,26 @@
             </thead>
             <tbody>
               <?php print '<?php foreach ($'.$type.'s as $r): ?>'; ?>
-                <tr role="row" class="even">
+
+                  <tr role="row" class="even">
                     <td>
                         <?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>
                     </td>
                     <td>
                         <?php print '<?php echo $r->title; ?>'; ?>
+
                     </td>
                     <td>
                         <?php print '<?php echo get_username_byid($r->uid); ?>'; ?>
+
                     </td>
                     <td>
                         <span class="status"><?php print '<?php echo $r->status ? "published" : "not published"; ?>'; ?></span>
+
                     </td>
                     <td>
                         <?php print '<?php echo date("Y-m-d H:i:s", $r->created); ?>'; ?>
+
                     </td>
                     <td class=" td-handle">
                         <a href="javascript:;" onclick="<?php print $type; ?>Edit('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-normal layui-btn-mini">edit</a>
@@ -54,6 +59,7 @@
                     </td>
                 </tr>
               <?php print '<?php endforeach;?>';?>
+              
             </tbody>
         </table>
         <input id="iframe_status" value="" hidden="hidden">

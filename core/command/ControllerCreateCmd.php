@@ -112,11 +112,13 @@ class ControllerCreateCmd extends BaseCommand {
          $ctltemplate = 'controller.php.html';
        }
 
-       $writed = $this->renderFile(
-           $ctltemplate,
-           $module_path.'/src/Controller/'.$class.'Controller.php',
-           $parameters
-       );
+       if(!$this->append || !file_exists($module_path.'/src/Controller/'.$class.'Controller.php')){
+         $writed = $this->renderFile(
+             $ctltemplate,
+             $module_path.'/src/Controller/'.$class.'Controller.php',
+             $parameters
+         );
+       }
 
        $writed = $this->renderFile(
            'routing-controller.yml.html',
