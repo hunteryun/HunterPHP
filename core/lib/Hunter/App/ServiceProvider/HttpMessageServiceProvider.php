@@ -22,7 +22,7 @@ class HttpMessageServiceProvider extends AbstractServiceProvider
         $this->getContainer()->share('Zend\Diactoros\Response\SapiEmitter', 'Zend\Diactoros\Response\SapiEmitter');
 
         $this->getContainer()->share('Zend\Diactoros\ServerRequest', function () {
-            if (isset($GLOBALS['root_dir']) && $GLOBALS['root_dir'] != '/') {
+            if (isset($GLOBALS['root_dir']) && $GLOBALS['root_dir'] != '/' && !is_cli()) {
                 $_SERVER['REQUEST_URI'] = str_replace($GLOBALS['root_dir'], '', $_SERVER['REQUEST_URI']);
             }
             return ServerRequestFactory::fromGlobals();
