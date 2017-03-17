@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Edit <?php print $name; ?></title>
+    <title>编辑<?php print $name; ?></title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
@@ -15,28 +15,78 @@
     <div class="pd-20 <?php print $type; ?>-edit">
         <form class="layui-form" action="">
           <div class="layui-form-item">
-              <label class="layui-form-label">Title</label>
+              <label class="layui-form-label">标题</label>
               <div class="layui-input-block">
-                  <input type="text" name="title" lay-verify="title" placeholder="please enter <?php print $type; ?> title" value="<?php print '<?php echo $'.$type.'->title; ?>'; ?>" class="layui-input">
+                  <input type="text" name="title" lay-verify="title" value="<?php print '<?php echo $'.$type.'->title; ?>'; ?>" class="layui-input">
               </div>
           </div>
-          <div class="layui-form-item">
-              <label class="layui-form-label">Content</label>
-              <div class="layui-input-block">
-                  <textarea id="content" name="content" style="display: none;" lay-verify="content"><?php print '<?php echo $'.$type.'->content; ?>'; ?></textarea>
+          <?php foreach ($fields as $field): ?>
+            <?php if($field['html_type'] == 'select'): ?>
+
+              <div class="layui-form-item">
+                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
+                  <div class="layui-input-block">
+                    <select name="<?php echo $field['name']; ?>">
+                    <?php foreach ($field['html_type_option'] as $h):?>
+                    <option value="<?php echo $h['value']; ?>"><?php echo $h['lable']; ?></option>
+                    <?php endforeach;?>
+                    </select>
+                  </div>
               </div>
-          </div>
-          <div class="layui-form-item">
-              <label class="layui-form-label">Status</label>
-              <div class="layui-input-block">
-                  <input type="radio" name="status" value="1" title="published">
-                  <input type="radio" name="status" value="0" title="not published">
+            <?php elseif($field['html_type'] == 'textarea'): ?>
+
+              <div class="layui-form-item">
+                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
+                  <div class="layui-input-block">
+                      <textarea id="<?php print $field['name']; ?>" name="<?php print $field['name']; ?>" style="display: none;"><?php print '<?php echo $'.$type.'->'.$field['name'].'; ?>'; ?></textarea>
+                  </div>
               </div>
-          </div>
+            <?php elseif($field['html_type'] == 'checkbox'): ?>
+
+              <div class="layui-form-item">
+                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
+                  <div class="layui-input-block">
+                    <?php foreach ($field['html_type_option'] as $h):?>
+                        <input type="checkbox" name="<?php echo $field['name']; ?>[<?php echo $h['value']; ?>]" title="<?php echo $h['lable']; ?>">
+                    <?php endforeach;?>
+                  </div>
+              </div>
+            <?php elseif($field['html_type'] == 'radio'): ?>
+
+              <div class="layui-form-item">
+                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
+                  <div class="layui-input-block">
+                      <?php foreach ($field['html_type_option'] as $h):?>
+                          <input type="radio" name="<?php echo $field['name']; ?>" value="<?php echo $h['value']; ?>" title="<?php echo $h['lable']; ?>">
+                      <?php endforeach;?>
+                  </div>
+              </div>
+            <?php elseif($field['html_type'] == 'file' || $field['html_type'] == 'image'): ?>
+
+              <div class="layui-form-item">
+                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
+                  <div class="layui-input-block">
+                    <input type="text" name="<?php echo $field['name']; ?>" value="<?php print '<?php echo $'.$type.'->'.$field['name'].'; ?>'; ?>" class="layui-input layui-input-inline" id="<?php echo $field['name']; ?>">
+                    <div class="layui-box layui-upload-button">
+                      <input type="file" name="file"<?php echo $field['html_type'] == 'file' ? ' lay-type="file"' : ''; ?> class="layui-upload-file-<?php echo $field['name']; ?>">
+                    </div>
+                  </div>
+              </div>
+            <?php else: ?>
+
+              <div class="layui-form-item">
+                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
+                  <div class="layui-input-block">
+                      <input type="<?php print $field['html_type']; ?>" name="<?php print $field['name']; ?>" value="<?php print '<?php echo $'.$type.'->'.$field['name'].'; ?>'; ?>" class="layui-input">
+                  </div>
+              </div>
+            <?php endif; ?>
+          <?php endforeach; ?>
+
           <input type="hidden" name="<?php print substr($type, 0, 1 ); ?>id" value="<?php print '<?php echo $'.substr($type, 0, 1 ); ?>id; ?>" />
           <div class="layui-form-item">
               <div class="layui-input-block submit">
-                  <button class="layui-btn" lay-submit="" lay-filter="<?php print $type; ?>update">Submit</button>
+                  <button class="layui-btn" lay-submit="" lay-filter="<?php print $type; ?>update">提交</button>
               </div>
           </div>
         </form>
@@ -44,29 +94,29 @@
     <script src="/theme/admin/assets/layui/layui.js"></script>
     <script src="/theme/admin/assets/js/define/common.js"></script>
     <script>
-        layui.use(['form', 'layedit', 'layer'], function() {
+        layui.use(['form', 'layedit', 'layer', 'upload'], function() {
             var form = layui.form();
             var layedit = layui.layedit;
-            var index = layedit.build('content',{
-              uploadImage: {
-            		url:'/admin/upload/image'
-            		,type: 'post'
-              }
-      			}); //建立编辑器
+            <?php foreach ($fields as $field): ?>
+              <?php if($field['html_type'] == 'textarea'): ?>
+              var index = layedit.build('<?php print $field['name']; ?>',{
+                uploadImage: {
+              		url:'/admin/<?php print $type; ?>/upload/image'
+              		,type: 'post'
+                }
+        			}); //建立编辑器
 
-            form.verify({
-               title: function(value) {
-                   if(value.length < 5){
-                       return '标题至少得5个字符!';
-                     }
-               },
-               content: function(value) {
-                   return layedit.sync(index);
-               },
-               categoryid: function(i) {
-                   if ("" == i) return "请选择一个类别"
-               }
-            });
+              <?php elseif($field['html_type'] == 'image' || $field['html_type'] == 'file'): ?>
+
+              layui.upload({
+                url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload',
+                elem: '.layui-upload-file-<?php echo $field['name']; ?>',
+                success: function (result) {
+                    document.getElementById('<?php print $field['name']; ?>').value = result.filename;
+                }
+              });
+              <?php endif; ?>
+            <?php endforeach; ?>
 
             //监听提交
             form.on('submit(<?php print $type; ?>update)', function(data) {

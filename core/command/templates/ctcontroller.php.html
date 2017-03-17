@@ -4,6 +4,8 @@
 namespace Hunter\<?php print $module; ?>\Controller;
 
 use Zend\Diactoros\ServerRequest;
+use Psr\Http\Message\UploadedFileInterface;
+use Zend\Diactoros\Response\JsonResponse;
 
 /**
  * Class <?php print $module; ?>.
@@ -32,15 +34,17 @@ class <?php print ucfirst($module); ?>Controller {
   public function <?php print $module; ?>_add(ServerRequest $request) {
     if ($parms = $request->getParsedBody()) {
       $title = $parms['title'];
-      $content = $parms['content'];
-      $status = $parms['status'];
+      <?php foreach($fields as $field): ?>
+      $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
+      <?php endforeach; ?>
       $user = session()->get('admin');
 
       $<?php print substr($module, 0, 1 ); ?>id = db_insert('<?php print $module; ?>')
         ->fields(array(
           'title' => $title,
-          'content' => $content,
-          'status' => $status,
+          <?php foreach($fields as $field): ?>
+          '<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
+          <?php endforeach; ?>
           'uid' => $user->uid,
           'created' => time(),
           'updated' => time(),
@@ -75,15 +79,17 @@ class <?php print ucfirst($module); ?>Controller {
     if ($parms = $request->getParsedBody()) {
       $<?php print substr($module, 0, 1 ); ?>id = $parms['<?php print substr($module, 0, 1 ); ?>id'];
       $title = $parms['title'];
-      $content = $parms['content'];
-      $status = $parms['status'];
+      <?php foreach($fields as $field): ?>
+      $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
+      <?php endforeach; ?>
       $user = session()->get('admin');
 
        db_update('<?php print $module; ?>')
          ->fields(array(
            'title' => $title,
-           'content' => $content,
-           'status' => $status,
+           <?php foreach($fields as $field): ?>
+           '<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
+           <?php endforeach; ?>
            'uid' => $user->uid,
            'updated' => time(),
          ))
@@ -124,4 +130,34 @@ class <?php print ucfirst($module); ?>Controller {
 
       return $<?php print $module; ?>_list;
   }
+
+  <?php foreach ($fields as $field): ?>
+    <?php if($field['html_type'] == 'file' || $field['html_type'] == 'image'): ?>
+  /**
+   * <?php print $module; ?>_<?php print $field['name']; ?>_upload.
+   *
+   * @return string
+   *   Return <?php print $module; ?>_<?php print $field['name']; ?>_upload string.
+   */
+  public function <?php print $module; ?>_<?php print $field['name']; ?>_upload(ServerRequest $request) {
+    $uploadedFiles = $request->getUploadedFiles();
+    if (!empty($uploadedFiles)) {
+      $files = array();
+      foreach ($uploadedFiles as $key => $value) {
+        if ($value instanceof UploadedFileInterface) {
+          $url = 'sites/upload/<?php print $module; ?>/<?php print $field['name']; ?>/'. $value->getClientFilename();
+          if (!is_dir(dirname($url))){
+            mkdir(dirname($url), 0755, true);
+          }
+          $value->moveTo($url);
+          return new JsonResponse(array('filename' => base_path().$url, 'ext' => $value->getClientMediaType()));
+        }
+      }
+    }
+
+    return new JsonResponse(array('filename' => flase));
+  }
+<?php endif; ?>
+<?php endforeach; ?>
+
 }

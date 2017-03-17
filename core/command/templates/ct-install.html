@@ -22,36 +22,44 @@ function <?php print $type; ?>_schema() {
         'default' => '',
         'description' => '<?php print $type; ?> title.',
       ),
-      'content' => array(
+<?php foreach($fields as $field): ?>
+<?php if($field['type'] == 'int'): ?>
+      '<?php print $field['name']; ?>' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => <?php print $field['type_setting']['notnull']; ?>,
+        'default' => <?php print $field['type_setting']['default']; ?>,
+        'description' => '<?php print $type; ?> <?php print $field['name']; ?>.',
+      ),
+      <?php elseif($field['type'] == 'text'): ?>
+      '<?php print $field['name']; ?>' => array(
         'type' => 'text',
         'size' => 'normal',
-        'description' => "<?php print $type; ?> content.",
+        'description' => "<?php print $type; ?> <?php print $field['name']; ?>.",
       ),
-      'images' => array(
+      <?php elseif($field['type'] == 'blob'): ?>
+      '<?php print $field['name']; ?>' => array(
         'type' => 'blob',
-        'not null' => TRUE,
+        'not null' => <?php print $field['type_setting']['notnull']; ?>,
         'size' => 'big',
-        'description' => '<?php print $type; ?> images.',
+        'description' => '<?php print $type; ?> <?php print $field['name']; ?>.',
       ),
-      'attach_files' => array(
-        'type' => 'blob',
-        'not null' => TRUE,
-        'size' => 'big',
-        'description' => '<?php print $type; ?> attach files.',
+      <?php else: ?>
+      '<?php print $field['name']; ?>' => array(
+        'type' => 'varchar',
+        'length' => <?php print $field['type_setting']['length']; ?>,
+        'not null' => <?php print $field['type_setting']['notnull']; ?>,
+        'default' => '<?php print $field['type_setting']['default']; ?>',
+        'description' => '<?php print $type; ?> <?php print $field['name']; ?>.',
       ),
+<?php endif; ?>
+<?php endforeach; ?>
       'uid' => array(
         'type' => 'varchar',
         'length' => 60,
         'not null' => TRUE,
         'default' => '',
-        'description' => "<?php print $type; ?> uid.",
-      ),
-      'status' => array(
-        'type' => 'varchar',
-        'length' => 9,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => '<?php print $type; ?> status.',
+        'description' => "page uid.",
       ),
       'created' => array(
         'type' => 'int',

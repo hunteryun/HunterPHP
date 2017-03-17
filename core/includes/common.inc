@@ -235,6 +235,61 @@ function variable_del($name) {
   unset($conf[$name]);
 }
 
+/**
+ * 分页数据输出.
+ */
+if (!function_exists('themePager')) {
+    function themePager($pager, $pageurl = '', $nojump = false) {
+        static $li = '<li><a href="%spage=%s">%s</a></li>';
+        static $lt = '<li><span>%s</span></li>';
+        static $hasjs;
+        $unique   = uniqid();
+        $pageurl .= strpos($pageurl,'?') ? '&' : '?';
+        $return  = '<ul class="page-list" id="pageList">';
+        $return .= sprintf($lt, $pager['page'].'/<strong>'.$pager['pages'].'</strong> 页');
+        $return .= sprintf($lt, "共 <strong>{$pager['total']}</strong> 条");
+        if ($pager['page'] > 1) {
+            $return .= sprintf($li, $pageurl, $pager['page']-1, '上一页');
+        }
+        if ($pager['page'] < $pager['pages']) {
+            $return .= sprintf($li, $pageurl, $pager['page']+1, '下一页');
+        }
+        if (!$nojump) {
+          $return .= "<li><a href='javascript:showjumpdiv(\"{$unique}\");'>跳转</a></li>"
+            . "<form method='post' action='{$pageurl}'>"
+            . "<div id='div{$unique}' class='jumpdiv'> <input id='input{$unique}' type='text' name='page' /> 页 "
+            . "<button type='submit' class='btn btn-info btn-xs'>确定</button></div>"
+            . "</form>";
+        }
+        $return .= '</ul>';
+        if (!$hasjs) {
+            $return .= '<script>function showjumpdiv(unique) { $("#div"+unique).toggle();$("#input"+unique).focus();}</script>';
+            $hasjs = true;
+        }
+        return $return;
+    }
+}
+
+/**
+ * 字符转换成utf-8.
+ */
+function hunter_convert_to_utf8($data) {
+  if (function_exists('iconv')) {
+    $out = @iconv('GB2312', 'utf-8', $data);
+  }
+  elseif (function_exists('mb_convert_encoding')) {
+    $out = @mb_convert_encoding($data, 'utf-8', 'GB2312');
+  }
+  elseif (function_exists('recode_string')) {
+    $out = @recode_string('GB2312' . '..utf-8', $data);
+  }
+  else {
+    return FALSE;
+  }
+
+  return $out;
+}
+
 if (!function_exists('e')) {
     /**
      * Escape HTML entities in a string.

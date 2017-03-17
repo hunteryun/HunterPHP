@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title><?php print $name; ?> List</title>
+    <title><?php print $name; ?>列表</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
@@ -16,16 +16,14 @@
     <div class="tab-body">
         <div class="handle-box">
             <ul>
-                <li class="handle-item"><a href="javascript:;" onclick="<?php print $type; ?>Add();" class="layui-btn btn-add btn-default" id="btn-add<?php print $type; ?>"><i class="linyer icon-add"></i> Add <?php print $name; ?></a></li>
+                <li class="handle-item"><a href="javascript:;" onclick="<?php print $type; ?>Add();" class="layui-btn btn-add btn-default" id="btn-add<?php print $type; ?>"><i class="linyer icon-add"></i> 添加<?php print $name; ?></a></li>
             </ul>
         </div>
         <table class="table-box table-sort" id="userTable">
             <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Name</th>
-                  <th>author</th>
-                  <th>Status</th>
+                  <th>Title</th>
                   <th>Created</th>
                   <th>Operations</th>
                 </tr>
@@ -42,24 +40,16 @@
 
                     </td>
                     <td>
-                        <?php print '<?php echo get_username_byid($r->uid); ?>'; ?>
-
-                    </td>
-                    <td>
-                        <span class="status"><?php print '<?php echo $r->status ? "published" : "not published"; ?>'; ?></span>
-
-                    </td>
-                    <td>
                         <?php print '<?php echo date("Y-m-d H:i:s", $r->created); ?>'; ?>
 
                     </td>
                     <td class=" td-handle">
-                        <a href="javascript:;" onclick="<?php print $type; ?>Edit('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-normal layui-btn-mini">edit</a>
-                        <a href="javascript:;" onclick="<?php print $type; ?>Del('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-danger layui-btn-mini ajax-delete">delete</a>
+                        <a href="javascript:;" onclick="<?php print $type; ?>Edit('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-normal layui-btn-mini">编辑</a>
+                        <a href="javascript:;" onclick="<?php print $type; ?>Del('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-danger layui-btn-mini ajax-delete">删除</a>
                     </td>
                 </tr>
               <?php print '<?php endforeach;?>';?>
-              
+
             </tbody>
         </table>
         <input id="iframe_status" value="" hidden="hidden">
@@ -73,7 +63,7 @@
                 var layer = layui.layer;
 
                 var index = layer.open({
-                    title: 'Add <?php print $name; ?>',
+                    title: '添加<?php print $name; ?>',
                     type: 2,
                     area: ['800px', '590px'],
                     fix: false, //不固定
@@ -97,6 +87,7 @@
                         }
                     }
                 });
+                layer.full(index);
             });
         }
 
@@ -106,7 +97,7 @@
                 var layer = layui.layer;
 
                 var index = layer.open({
-                    title: 'Edit <?php print $name; ?>',
+                    title: '编辑<?php print $name; ?>',
                     type: 2,
                     area: ['800px', '590px'],
                     fix: false, //不固定
@@ -130,6 +121,7 @@
                         } else if (iframe_status == '') {}
                     }
                 });
+                layer.full(index);
             });
         }
 
@@ -138,17 +130,16 @@
                 var $ = layui.jquery;
                 var layer = layui.layer;
 
-                layer.confirm('Are you sure delete this <?php print $type; ?>?', {
+                layer.confirm('你确定要删除此项吗?', {
                     icon: 3,
-                    title: 'Delete <?php print $name; ?>',
-                    btn: ['Yes','Cancel']
+                    title: '删除<?php print $name; ?>'
                 }, function(index) {
                     $.ajax({
                         type: "GET",
                         url: '/admin/<?php print $type; ?>/del/' + <?php print substr($type, 0, 1 ); ?>id,
                         success: function(msg) {
                             if (msg) { //如果成功了
-                                layer.msg('Delete success!', {
+                                layer.msg('删除成功!', {
                                     icon: 1,
                                     time: 1000,
                                     shade: 0.1
@@ -156,7 +147,7 @@
                                     location.reload();
                                 });
                             } else {
-                                layer.msg('Delete failed', {
+                                layer.msg('删除失败!', {
                                     icon: 5
                                 });
                             }

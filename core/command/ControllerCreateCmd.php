@@ -78,6 +78,11 @@ class ControllerCreateCmd extends BaseCommand {
                 'isContentType',
                 InputArgument::OPTIONAL,
                 'Is this a new content type?'
+            )
+            ->addArgument(
+                'fields',
+                InputArgument::OPTIONAL,
+                'content type fields'
             );
    }
 
@@ -89,6 +94,7 @@ class ControllerCreateCmd extends BaseCommand {
        $class = $input->getOption('class');
        $routes = $input->getOption('routes');
        $isContentType = $input->getArgument('isContentType');
+       $fields = $input->getArgument('fields');
 
        if(isset($this->moduleList[$module])){
          $module_path = HUNTER_ROOT .'/'. dirname($this->moduleList[$module]['pathname']);
@@ -103,7 +109,8 @@ class ControllerCreateCmd extends BaseCommand {
          'class_name' => $class,
          'module' => $module,
          'routes' => $routes,
-         'append' => $this->append
+         'append' => $this->append,
+         'fields' => $fields,
        ];
 
        if($isContentType){

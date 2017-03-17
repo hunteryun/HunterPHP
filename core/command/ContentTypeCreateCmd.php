@@ -56,24 +56,30 @@ class ContentTypeCreateCmd extends BaseCommand {
    protected function configure() {
        $this
            ->setName('ct:create')
-           ->setDescription('commands.controller.create.description')
+           ->setDescription('commands.content-type.create.description')
            ->addOption(
                 'type',
                 '',
                 InputOption::VALUE_REQUIRED,
-                'commands.create.controller.options.type'
+                'commands.create.content-type.options.type'
             )
             ->addOption(
                 'name',
                 '',
                 InputOption::VALUE_OPTIONAL,
-                'commands.create.controller.options.name'
+                'commands.create.content-type.options.name'
             )
             ->addOption(
                  'description',
                  '',
                  InputOption::VALUE_REQUIRED,
-                 'commands.create.controller.options.description'
+                 'commands.create.content-type.options.description'
+             )
+             ->addOption(
+                 'fields',
+                 '',
+                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                 'commands.create.content-type.options.fields'
              );
    }
 
@@ -84,6 +90,7 @@ class ContentTypeCreateCmd extends BaseCommand {
        $type = $input->getOption('type');
        $name = $input->getOption('name');
        $description = $input->getOption('description');
+       $fields = $input->getOption('fields');
 
        $modulecommand = $this->getApplication()->find('module:create');
 
@@ -146,15 +153,28 @@ class ContentTypeCreateCmd extends BaseCommand {
            )
          ),
          'isContentType' => TRUE,
+         'fields' => $fields,
        );
+
+       foreach ($fields as $field) {
+         if($field['html_type'] == 'file' || $field['html_type'] == 'image'){
+           $ctlearguments['--routes'][] = array(
+             'title' => $type.' '.$field['name']. ' upload',
+             'name' => $type.'.'.$type.'_'.$field['name'].'_upload',
+             'method' => $type.'_'.$field['name'].'_upload',
+             'path' => '/admin/'.$type.'/'.$field['name'].'/upload',
+             'args' => array(),
+           );
+         }
+       }
 
        $ctltypeInput = new ArrayInput($ctlearguments);
        $returnCode = $ctlcommand->run($ctltypeInput, $output);
 
-       $writed = $this->renderFile('ct-list.html', HUNTER_ROOT .'/theme/admin/'.$type.'-list.html', array('type' => $type, 'name' => $name));
-       $writed = $this->renderFile('ct-add.html', HUNTER_ROOT .'/theme/admin/'.$type.'-add.html', array('type' => $type, 'name' => $name));
-       $writed = $this->renderFile('ct-edit.html', HUNTER_ROOT .'/theme/admin/'.$type.'-edit.html', array('type' => $type, 'name' => $name));
-       $writed = $this->renderFile('ct-install.html', HUNTER_ROOT .'/module/'.$type.'/'.$type.'.install', array('type' => $type, 'name' => $name));
+       $writed = $this->renderFile('ct-list.html', HUNTER_ROOT .'/theme/admin/'.$type.'-list.html', array('type' => $type, 'name' => $name, 'fields' => $fields));
+       $writed = $this->renderFile('ct-add.html', HUNTER_ROOT .'/theme/admin/'.$type.'-add.html', array('type' => $type, 'name' => $name, 'fields' => $fields));
+       $writed = $this->renderFile('ct-edit.html', HUNTER_ROOT .'/theme/admin/'.$type.'-edit.html', array('type' => $type, 'name' => $name, 'fields' => $fields));
+       $writed = $this->renderFile('ct-install.html', HUNTER_ROOT .'/module/'.$type.'/'.$type.'.install', array('type' => $type, 'name' => $name, 'fields' => $fields));
 
        $module_install_command = $this->getApplication()->find('module:install');
 
@@ -191,7 +211,7 @@ class ContentTypeCreateCmd extends BaseCommand {
        $name = $input->getOption('name');
        if (!$name) {
            $question = new Question('Enter the name:', '');
-           $name = $helper->ask($input, $output, $question);
+           $name = hunter_convert_to_utf8($helper->ask($input, $output, $question));
            $input->setOption('name', $name);
        }
 
@@ -199,8 +219,107 @@ class ContentTypeCreateCmd extends BaseCommand {
        $description = $input->getOption('description');
        if (!$description) {
            $question = new Question('Enter type description [My custom content type]:', 'My custom content type');
-           $description = $helper->ask($input, $output, $question);
+           $description = hunter_convert_to_utf8($helper->ask($input, $output, $question));
            $input->setOption('description', $description);
+       }
+
+       // --fields option
+       $fields = $input->getOption('fields');
+       if (!$fields) {
+           while (true) {
+              //name
+              $field_name_question = new Question('Enter the field name (leave empty and press enter when done) []:', '');
+              $name = str_replace(' ','_',strtolower($helper->ask($input, $output, $field_name_question)));
+
+              if ($name === '') {
+                  break;
+              }
+
+              //lable
+              $lable_question = new Question('Enter the lable name []:', '');
+              $lable = hunter_convert_to_utf8($helper->ask($input, $output, $lable_question));
+
+              //type
+              $type_question = new ChoiceQuestion(
+                 'Choose the field type [varchar]:',
+                 array('varchar', 'int', 'blob', 'text'),
+                 0
+              );
+              $type = $helper->ask($input, $output, $type_question);
+
+              switch ($type)
+              {
+              case 'int':
+                $type_setting_default_question = new Question('Enter the int default value [0]:', 0);
+                $type_setting[$name]['default'] = $helper->ask($input, $output, $type_setting_default_question);
+                $type_setting_notnull_question = new Question('Not null value [TRUE]:', TRUE);
+                $type_setting[$name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
+                break;
+              case 'blob':
+                $type_setting_notnull_question = new Question('Not null value [TRUE]:', TRUE);
+                $type_setting[$name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
+                break;
+              case 'text':
+                $type_setting_size_question = new ChoiceQuestion(
+                   'Choose the field type [big]:',
+                   array('big', 'normal'),
+                   0
+                );
+                $type_setting[$name]['size'] = $helper->ask($input, $output, $type_setting_size_question);
+                break;
+              default:
+                $type_setting_length_question = new Question('Enter the varchar length [255]:', '255');
+                $type_setting[$name]['length'] = $helper->ask($input, $output, $type_setting_length_question);
+                $type_setting_default_question = new Question('Enter the int default value []:', '');
+                $type_setting[$name]['default'] = $helper->ask($input, $output, $type_setting_default_question);
+                $type_setting_notnull_question = new Question('Not null value [TRUE]:', TRUE);
+                $type_setting[$name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
+              }
+
+              //html_type
+              $html_type_question = new ChoiceQuestion(
+                 'Choose the field html type [varchar]:',
+                 array('text', 'select', 'textarea', 'image', 'radio', 'checkbox', 'file', 'password', 'tel'),
+                 0
+              );
+              $html_type = $helper->ask($input, $output, $html_type_question);
+
+              switch ($html_type)
+              {
+              case 'select':
+              case 'radio':
+              case 'checkbox':
+                $i = 0;
+                while (true) {
+                  //option
+                  $html_type_option_value_question = new Question('Enter the options value (leave empty and press enter when done) []:', '');
+                  $html_type_option[$name][$i]['value'] = str_replace(' ','_',strtolower($helper->ask($input, $output, $html_type_option_value_question)));
+
+                  if ($html_type_option[$name][$i]['value'] === '') {
+                      break;
+                  }
+
+                  //html type option lable
+                  $html_type_option_lable_question = new Question('Enter the options lable []:', '');
+                  $html_type_option[$name][$i]['lable'] = hunter_convert_to_utf8($helper->ask($input, $output, $html_type_option_lable_question));
+                  $i++;
+                }
+                break;
+              default:
+                $html_type_option[$name] = array();
+              }
+              unset($html_type_option[$name][count($html_type_option[$name])-1]);
+              $fields[$name] = [
+                  'name' => $name,
+                  'lable' => $lable,
+                  'type' => $type,
+                  'type_setting' => $type_setting[$name],
+                  'html_type' => $html_type,
+                  'html_type_option' => $html_type_option[$name],
+              ];
+           }
+
+           $input->setOption('fields', $fields);
        }
    }
 
