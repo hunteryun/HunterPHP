@@ -7,6 +7,7 @@ use League\Container\Container;
 use League\Container\ContainerInterface;
 use League\Container\ReflectionContainer;
 use League\Route\RouteCollection;
+use League\Route\Http\Exception\NotFoundException;
 use Hunter\Core\App\Strategy\HunterStrategy;
 use Symfony\Component\Console\Application as ConsoleApp;
 use Hunter\Core\Discovery\YamlDiscovery;
@@ -397,7 +398,15 @@ class Application {
 
         $response = $this->container->get('Zend\Diactoros\Response');
 
-        $response = $this->routers->dispatch($request, $response);
+        try {
+
+          $response = $this->routers->dispatch($request, $response);
+
+        } catch (NotFoundException $e) {
+
+          $response->getBody()->write('Sorry, this page '.$e->getMessage());
+
+        }
 
         $this->container->get('Zend\Diactoros\Response\SapiEmitter')->emit($response);
     }
