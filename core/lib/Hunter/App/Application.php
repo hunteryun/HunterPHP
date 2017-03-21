@@ -30,6 +30,7 @@ class Application {
     protected $routers = array();
     protected $routeList;
     protected $routePermission = array();
+    protected $routeTitles = array();
     protected $moduleHandler;
     protected $permissionHandler;
     protected $serviceYamls;
@@ -328,6 +329,10 @@ class Application {
               $this->routePermission[$route_info['path']] = $route_info['requirements']['_permission'];
             }
 
+            if(isset($route_info['defaults']['_title'])){
+              $this->routeTitles[$route_info['path']] = $route_info['defaults']['_title'];
+            }
+
             if(isset($route_info['methods']) && isset($route_info['defaults']['_controller'])){
               foreach ($route_info['methods'] as $method) {
                 $routers->map($method, $route_info['path'], $route_info['defaults']['_controller']);
@@ -340,6 +345,7 @@ class Application {
 
         $this->routers = $routers;
         $this->container->add('routePermission', $this->routePermission);
+        $this->container->add('routeTitles', $this->routeTitles);
     }
 
     /**

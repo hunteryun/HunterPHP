@@ -15,8 +15,13 @@ class HunterStrategy extends AbstractStrategy implements StrategyInterface
     public function dispatch(callable $controller, array $vars, Route $route = null)
     {
         $permissions = $this->getContainer()->get('routePermission');
+        $routeTitles = $this->getContainer()->get('routeTitles');
         $path = $route->getPath();
         $callback_permissions = FALSE;
+
+        if(isset($routeTitles[$path])){
+          theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
+        }
 
         if(isset($permissions[$path])){
           $perm_name = 'hunter_permission_'.str_replace(" ", "_", $permissions[$path]);
