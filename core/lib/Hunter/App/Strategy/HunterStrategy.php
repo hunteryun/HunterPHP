@@ -12,6 +12,9 @@ use League\Route\Strategy\ApplicationStrategy;
 use RuntimeException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 
 class HunterStrategy extends ApplicationStrategy implements StrategyInterface
 {
@@ -105,6 +108,11 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
             exit;
           }
 
+          $log = new Logger('['.$_SERVER['HTTP_HOST'].']');
+          $log->pushHandler(new StreamHandler('sites/log/error.log', Logger::WARNING));
+
+          $log->error($msg);
+
           header('HTTP/1.1 500 Internal Server Error');
           header("status: 500 Internal Server Error");
           $trace = $exception->getTrace();
@@ -150,7 +158,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
           margin-top: 1em;
           padding: 4px;}
           -->
-          </style></head><body><div id="container"><h1>HunterPHP DEBUG</h1><div class="info">(1146)'.$msg.'</div><div class="info"><p><strong>PHP Trace</strong></p><table cellpadding="5" cellspacing="1" width="100%" class="table"><tr class="bg2"><td style="width:2%">No.</td><td style="width:45%">File</td><td style="width:5%">Line</td><td style="width:48%">Code</td></tr>'.$traceMessageHtml.'</table><p><strong>SQL Query</strong></p><table cellpadding="5" cellspacing="1" width="100%" class="table"><tr class="bg2"><td style="width:2%">No.</td><td style="width:73%">SQL</td><td style="width:10%">Cost Time</td><td style="width:15%">Affected Rows</td></tr>'.$sqlTraceHtml.'</table></div> <div class="help"><a href="http://'.$_SERVER['HTTP_HOST'].'">'.$_SERVER['HTTP_HOST'].'</a> 已经将此出错信息详细记录, 由此给您带来的访问不便我们深感歉意.</div></div></body></html>';
+          </style></head><body><div id="container"><h1>HunterPHP DEBUG</h1><div class="info">(1146)'.$msg.'</div><div class="info"><p><strong>PHP Trace</strong></p><table cellpadding="5" cellspacing="1" width="100%" class="table"><tr class="bg2"><td style="width:2%">No.</td><td style="width:45%">File</td><td style="width:5%">Line</td><td style="width:48%">Code</td></tr>'.$traceMessageHtml.'</table></div> <div class="help"><a href="http://'.$_SERVER['HTTP_HOST'].'">'.$_SERVER['HTTP_HOST'].'</a> 已经将此出错信息详细记录, 由此给您带来的访问不便我们深感歉意.</div></div></body></html>';
 
           $response->getBody()->write($body);
           return $response;

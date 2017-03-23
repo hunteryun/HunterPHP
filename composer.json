@@ -8,7 +8,8 @@
         "opis/session": "^3.1",
         "backup-manager/backup-manager": "^1.1",
         "fzaninotto/faker": "^1.6",
-        "creitive/breadcrumbs": "^3.1"
+        "creitive/breadcrumbs": "^3.1",
+        "monolog/monolog": "^1.22"
     },
     "autoload": {
         "psr-4": {
