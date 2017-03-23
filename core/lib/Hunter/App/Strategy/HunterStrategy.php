@@ -75,7 +75,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
     public function getNotFoundDecorator(NotFoundException $exception)
     {
         return function (ServerRequestInterface $request, ResponseInterface $response) use ($exception) {
-            $response->getBody()->write('Sorry, this page '.$exception->getMessage());
+            $response->getBody()->write('Sorry, this page have a error : '.$exception->getMessage());
             return $response;
         };
     }
@@ -86,7 +86,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
     public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
     {
         return function (ServerRequestInterface $request, ResponseInterface $response) use ($exception) {
-            $response->getBody()->write('Sorry, this page '.$exception->getMessage());
+            $response->getBody()->write('Sorry, this page have a error : '.$exception->getMessage());
             return $response;
         };
     }
@@ -97,7 +97,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
     public function getExceptionDecorator(Exception $exception)
     {
         return function (ServerRequestInterface $request, ResponseInterface $response) use ($exception) {
-            $response->getBody()->write('Sorry, this page '.$exception->getMessage());
+            $response->getBody()->write('Sorry, this page have a error : '.$exception->getMessage());
             return $response;
         };
     }
