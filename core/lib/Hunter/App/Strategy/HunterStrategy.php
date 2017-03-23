@@ -2,74 +2,104 @@
 
 namespace Hunter\Core\App\Strategy;
 
-use League\Route\Strategy\AbstractStrategy;
-use League\Route\Strategy\StrategyInterface;
+use \Exception;
+use League\Route\Http\Exception\MethodNotAllowedException;
+use League\Route\Http\Exception\NotFoundException;
+use League\Route\Middleware\ExecutionChain;
 use League\Route\Route;
+use League\Route\Strategy\StrategyInterface;
+use League\Route\Strategy\ApplicationStrategy;
 use RuntimeException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
-class HunterStrategy extends AbstractStrategy implements StrategyInterface
+class HunterStrategy extends ApplicationStrategy implements StrategyInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function dispatch(callable $controller, array $vars, Route $route = null)
+    public function getCallable(Route $route, array $vars)
     {
-        $permissions = $this->getContainer()->get('routePermission');
-        $routeTitles = $this->getContainer()->get('routeTitles');
-        $path = $route->getPath();
-        $callback_permissions = FALSE;
+        return function (ServerRequestInterface $request, ResponseInterface $response, callable $next) use ($route, $vars) {
+            $permissions = $route->getContainer()->get('routePermission');
+            $routeTitles = $route->getContainer()->get('routeTitles');
+            $path = $route->getPath();
+            $callback_permissions = FALSE;
 
-        if(isset($routeTitles[$path])){
-          theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
-        }
+            if(isset($routeTitles[$path])){
+              theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
+            }
 
-        if(isset($permissions[$path])){
-          $perm_name = 'hunter_permission_'.str_replace(" ", "_", $permissions[$path]);
-          $callback = $this->getContainer()->get($perm_name);
-          $permission_controller = $this->getCallable($callback['_callback']);
-          $callback_permissions = $this->getContainer()->call($permission_controller, $vars);
+            if(isset($permissions[$path])){
+              $perm_name = 'hunter_permission_'.str_replace(" ", "_", $permissions[$path]);
+              $callback = $route->getContainer()->get($perm_name);
+              $permission_controller = $route->getCallable($callback['_callback']);
+              $callback_permissions = $route->getContainer()->call($permission_controller, $vars);
 
-          if (method_exists($this->getContainer(), 'call')) {
-              if($callback_permissions === TRUE){
-                  $response = $this->getContainer()->call($controller, $vars);
-                  return $this->determineResponse($response);
-              }else {
-                  $response = $this->getResponse();
-                  $response->getBody()->write('Sorry, you do not have permission to access this page!');
-                  return $response;
+              if (method_exists($route->getContainer(), 'call')) {
+                  if($callback_permissions === TRUE){
+                      $body = $route->getContainer()->call($route->getCallable(), $vars);
+
+                      if ($response->getBody()->isWritable()) {
+                          $response->getBody()->write($body);
+                      }
+                      return $response;
+                  }else {
+                      $response->getBody()->write('Sorry, you do not have permission to access this page!');
+                      return $response;
+                  }
               }
-          }
-        }else {
-            $response = $this->getContainer()->call($controller, $vars);
-            return $this->determineResponse($response);
-        }
+            }else {
+                $body = $route->getContainer()->call($route->getCallable(), $vars);
 
-        throw new RuntimeException(
-            sprintf(
-                'To use the parameter strategy, the container must implement the (::call) method. (%s) does not.',
-                get_class($this->getContainer())
-            )
-        );
+                if ($response->getBody()->isWritable()) {
+                    $response->getBody()->write($body);
+                }
+                return $response;
+            }
+
+            throw new RuntimeException(
+                sprintf(
+                    'To use the parameter strategy, the container must implement the (::call) method. (%s) does not.',
+                    get_class($route->getContainer())
+                )
+            );
+
+            return $next($request, $response);
+        };
     }
 
-    protected function getCallable($callable)
+    /**
+     * {@inheritdoc}
+     */
+    public function getNotFoundDecorator(NotFoundException $exception)
     {
-        if (is_string($callable) && strpos($callable, '::') !== false) {
-            $callable = explode('::', $callable);
-        }
-
-        if (is_array($callable) && isset($callable[0]) && is_object($callable[0])) {
-            $callable = [$callable[0], $callable[1]];
-        }
-
-        if (is_array($callable) && isset($callable[0]) && is_string($callable[0])) {
-            $class = ($this->getContainer()->has($callable[0]))
-                   ? $this->getContainer()->get($callable[0])
-                   : new $callable[0];
-
-            $callable = [$class, $callable[1]];
-        }
-
-        return $callable;
+        return function (ServerRequestInterface $request, ResponseInterface $response) use ($exception) {
+            $response->getBody()->write('Sorry, this page '.$exception->getMessage());
+            return $response;
+        };
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
+    {
+        return function (ServerRequestInterface $request, ResponseInterface $response) use ($exception) {
+            $response->getBody()->write('Sorry, this page '.$exception->getMessage());
+            return $response;
+        };
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExceptionDecorator(Exception $exception)
+    {
+        return function (ServerRequestInterface $request, ResponseInterface $response) use ($exception) {
+            $response->getBody()->write('Sorry, this page '.$exception->getMessage());
+            return $response;
+        };
+    }
+
 }
