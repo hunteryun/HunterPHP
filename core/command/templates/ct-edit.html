@@ -38,7 +38,7 @@
               <div class="layui-form-item">
                   <label class="layui-form-label"><?php print $field['lable']; ?></label>
                   <div class="layui-input-block">
-                      <textarea id="<?php print $field['name']; ?>" name="<?php print $field['name']; ?>" style="display: none;"><?php print '<?php echo $'.$type.'->'.$field['name'].'; ?>'; ?></textarea>
+                      <textarea id="<?php print $field['name']; ?>" name="<?php print $field['name']; ?>" lay-verify="<?php print $field['name']; ?>_content" style="display: none;"><?php print '<?php echo $'.$type.'->'.$field['name'].'; ?>'; ?></textarea>
                   </div>
               </div>
             <?php elseif($field['html_type'] == 'checkbox'): ?>
@@ -99,12 +99,19 @@
             var layedit = layui.layedit;
             <?php foreach ($fields as $field): ?>
               <?php if($field['html_type'] == 'textarea'): ?>
-              var index = layedit.build('<?php print $field['name']; ?>',{
+
+              var <?php print $field['name']; ?>_index = layedit.build('<?php print $field['name']; ?>',{
                 uploadImage: {
-              		url:'/admin/<?php print $type; ?>/upload/image'
+              		url:'/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload'
               		,type: 'post'
                 }
         			}); //建立编辑器
+
+              form.verify({
+                 <?php print $field['name']; ?>_content: function(value) {
+                     return layedit.sync(<?php print $field['name']; ?>_index);
+                 }
+              });
 
               <?php elseif($field['html_type'] == 'image' || $field['html_type'] == 'file'): ?>
 

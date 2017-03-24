@@ -157,7 +157,7 @@ class ContentTypeCreateCmd extends BaseCommand {
        );
 
        foreach ($fields as $field) {
-         if($field['html_type'] == 'file' || $field['html_type'] == 'image'){
+         if($field['html_type'] == 'file' || $field['html_type'] == 'image' || $field['html_type'] == 'textarea'){
            $ctlearguments['--routes'][] = array(
              'title' => $type.' '.$field['name']. ' upload',
              'name' => $type.'.'.$type.'_'.$field['name'].'_upload',

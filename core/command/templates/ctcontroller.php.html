@@ -33,17 +33,17 @@ class <?php print ucfirst($module); ?>Controller {
    */
   public function <?php print $module; ?>_add(ServerRequest $request) {
     if ($parms = $request->getParsedBody()) {
+      $user = session()->get('admin');
       $title = $parms['title'];
       <?php foreach($fields as $field): ?>
-      $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
+$<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
       <?php endforeach; ?>
-      $user = session()->get('admin');
 
       $<?php print substr($module, 0, 1 ); ?>id = db_insert('<?php print $module; ?>')
         ->fields(array(
           'title' => $title,
           <?php foreach($fields as $field): ?>
-          '<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
+'<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
           <?php endforeach; ?>
           'uid' => $user->uid,
           'created' => time(),
@@ -78,17 +78,17 @@ class <?php print ucfirst($module); ?>Controller {
   public function <?php print $module; ?>_update(ServerRequest $request) {
     if ($parms = $request->getParsedBody()) {
       $<?php print substr($module, 0, 1 ); ?>id = $parms['<?php print substr($module, 0, 1 ); ?>id'];
+      $user = session()->get('admin');
       $title = $parms['title'];
       <?php foreach($fields as $field): ?>
-      $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
+$<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
       <?php endforeach; ?>
-      $user = session()->get('admin');
 
        db_update('<?php print $module; ?>')
          ->fields(array(
            'title' => $title,
            <?php foreach($fields as $field): ?>
-           '<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
+'<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
            <?php endforeach; ?>
            'uid' => $user->uid,
            'updated' => time(),
@@ -132,7 +132,8 @@ class <?php print ucfirst($module); ?>Controller {
   }
 
   <?php foreach ($fields as $field): ?>
-    <?php if($field['html_type'] == 'file' || $field['html_type'] == 'image'): ?>
+    <?php if($field['html_type'] == 'file' || $field['html_type'] == 'image' || $field['html_type'] == 'textarea'): ?>
+
   /**
    * <?php print $module; ?>_<?php print $field['name']; ?>_upload.
    *

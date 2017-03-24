@@ -32,20 +32,20 @@ function <?php print $type; ?>_schema() {
         'description' => '<?php print $type; ?> <?php print $field['name']; ?>.',
       ),
       <?php elseif($field['type'] == 'text'): ?>
-      '<?php print $field['name']; ?>' => array(
+'<?php print $field['name']; ?>' => array(
         'type' => 'text',
         'size' => 'normal',
         'description' => "<?php print $type; ?> <?php print $field['name']; ?>.",
       ),
       <?php elseif($field['type'] == 'blob'): ?>
-      '<?php print $field['name']; ?>' => array(
+'<?php print $field['name']; ?>' => array(
         'type' => 'blob',
         'not null' => <?php print $field['type_setting']['notnull']; ?>,
         'size' => 'big',
         'description' => '<?php print $type; ?> <?php print $field['name']; ?>.',
       ),
       <?php else: ?>
-      '<?php print $field['name']; ?>' => array(
+'<?php print $field['name']; ?>' => array(
         'type' => 'varchar',
         'length' => <?php print $field['type_setting']['length']; ?>,
         'not null' => <?php print $field['type_setting']['notnull']; ?>,
@@ -54,7 +54,7 @@ function <?php print $type; ?>_schema() {
       ),
 <?php endif; ?>
 <?php endforeach; ?>
-      'uid' => array(
+'uid' => array(
         'type' => 'varchar',
         'length' => 60,
         'not null' => TRUE,
