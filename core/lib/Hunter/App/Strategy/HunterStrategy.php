@@ -53,19 +53,19 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
                   if($callback_permissions === TRUE){
                       $body = $route->getContainer()->call($route->getCallable(), $vars);
 
-                      if ($body instanceof RedirectResponse) {
-                        return $body;
-                      }
-
                       if(is_array($body)){
                         $response->getBody()->write(json_encode($body));
                         return $response->withAddedHeader('content-type', 'application/json');
                       }
 
-                      if ($response->getBody()->isWritable()) {
-                          $response->getBody()->write($body);
+                      if(is_string($body)){
+                          if ($response->getBody()->isWritable()) {
+                              $response->getBody()->write($body);
+                          }
+                          return $response;
                       }
-                      return $response;
+
+                      return $body;
                   }else {
                       $response->getBody()->write('Sorry, you do not have permission to access this page!');
                       return $response;
@@ -74,19 +74,19 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
             } else {
                 $body = $route->getContainer()->call($route->getCallable(), $vars);
 
-                if ($body instanceof RedirectResponse) {
-                  return $body;
-                }
-
                 if(is_array($body)){
                   $response->getBody()->write(json_encode($body));
                   return $response->withAddedHeader('content-type', 'application/json');
                 }
 
-                if ($response->getBody()->isWritable()) {
-                    $response->getBody()->write($body);
+                if(is_string($body)){
+                    if ($response->getBody()->isWritable()) {
+                        $response->getBody()->write($body);
+                    }
+                    return $response;
                 }
-                return $response;
+
+                return $body;
             }
 
             throw new RuntimeException(
