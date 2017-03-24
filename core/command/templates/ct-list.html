@@ -68,7 +68,7 @@
                     area: ['800px', '590px'],
                     fix: false, //不固定
                     maxmin: true,
-                    content: ['/admin/<?php print $type; ?>/add', 'no'],
+                    content: ['/admin/<?php print $type; ?>/add', 'yes'],
                     success: function(layero, index) {},
                     end: function() {
                         var iframe_status = $("#iframe_status").val();
@@ -102,7 +102,7 @@
                     area: ['800px', '590px'],
                     fix: false, //不固定
                     maxmin: true,
-                    content: ['/admin/<?php print $type; ?>/edit/' + <?php print substr($type, 0, 1 ); ?>id, 'no'],
+                    content: ['/admin/<?php print $type; ?>/edit/' + <?php print substr($type, 0, 1 ); ?>id, 'yes'],
                     success: function(layero, index) {},
                     end: function() {
                         var iframe_status = $("#iframe_status").val();
