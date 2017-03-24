@@ -14,6 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Zend\Diactoros\Response\RedirectResponse;
 
 
 class HunterStrategy extends ApplicationStrategy implements StrategyInterface
@@ -36,12 +37,30 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
             if(isset($permissions[$path])){
               $perm_name = 'hunter_permission_'.str_replace(" ", "_", $permissions[$path]);
               $callback = $route->getContainer()->get($perm_name);
-              $permission_controller = $route->getCallable($callback['_callback']);
-              $callback_permissions = $route->getContainer()->call($permission_controller, $vars);
+              $permission_callable = explode('::', $callback['_callback']);
+
+              if (is_array($permission_callable) && isset($permission_callable[0]) && is_string($permission_callable[0])) {
+                  $class = ($route->getContainer()->has($permission_callable[0]))
+                         ? $route->getContainer()->get($permission_callable[0])
+                         : new $permission_callable[0];
+
+                  $permission_callable = [$class, $permission_callable[1]];
+              }
+
+              $callback_permissions = $route->getContainer()->call($permission_callable, $vars);
 
               if (method_exists($route->getContainer(), 'call')) {
                   if($callback_permissions === TRUE){
                       $body = $route->getContainer()->call($route->getCallable(), $vars);
+
+                      if ($body instanceof RedirectResponse) {
+                        return $body;
+                      }
+
+                      if(is_array($body)){
+                        $response->getBody()->write(json_encode($body));
+                        return $response->withAddedHeader('content-type', 'application/json');
+                      }
 
                       if ($response->getBody()->isWritable()) {
                           $response->getBody()->write($body);
@@ -52,8 +71,17 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
                       return $response;
                   }
               }
-            }else {
+            } else {
                 $body = $route->getContainer()->call($route->getCallable(), $vars);
+
+                if ($body instanceof RedirectResponse) {
+                  return $body;
+                }
+
+                if(is_array($body)){
+                  $response->getBody()->write(json_encode($body));
+                  return $response->withAddedHeader('content-type', 'application/json');
+                }
 
                 if ($response->getBody()->isWritable()) {
                     $response->getBody()->write($body);
@@ -109,7 +137,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
           }
 
           $log = new Logger('['.$_SERVER['HTTP_HOST'].']');
-          $log->pushHandler(new StreamHandler('sites/log/error.log', Logger::WARNING));
+          $log->pushHandler(new StreamHandler('sites/logs/error.log', Logger::WARNING));
 
           $log->error($msg);
 
