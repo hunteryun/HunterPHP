@@ -1,29 +1,29 @@
 <?php print "<?php"; ?>
 
 <?php if($isContentType): ?>
-  /**
-   * get <?php print $module; ?> by id
-   */
-  function get_<?php print $module; ?>_byid($<?php print substr($module, 0, 1 ); ?>id) {
-      $<?php print $module; ?> = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
-        ->fields('<?php print substr($module, 0, 1 ); ?>')
-        ->condition('<?php print substr($module, 0, 1 ); ?>.<?php print substr($module, 0, 1 ); ?>id', $<?php print substr($module, 0, 1 ); ?>id)
-        ->execute()
-        ->fetchObject();
+/**
+ * get <?php print $module; ?> by id
+ */
+function get_<?php print $module; ?>_byid($<?php print substr($module, 0, 1 ); ?>id) {
+    $<?php print $module; ?> = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
+      ->fields('<?php print substr($module, 0, 1 ); ?>')
+      ->condition('<?php print substr($module, 0, 1 ); ?>.<?php print substr($module, 0, 1 ); ?>id', $<?php print substr($module, 0, 1 ); ?>id)
+      ->execute()
+      ->fetchObject();
 
-      return $<?php print $module; ?>;
-  }
+    return $<?php print $module; ?>;
+}
 
-  /**
-   * get all <?php print $module; ?>.
-   */
-  function get_all_<?php print $module; ?>() {
-      $<?php print $module; ?>s = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
-        ->fields('<?php print substr($module, 0, 1 ); ?>')
-        ->execute()
-        ->fetchAll();
+/**
+ * get all <?php print $module; ?>.
+ */
+function get_all_<?php print $module; ?>() {
+    $<?php print $module; ?>s = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
+      ->fields('<?php print substr($module, 0, 1 ); ?>')
+      ->execute()
+      ->fetchAll();
 
-      return $<?php print $module; ?>s;
-  }
+    return $<?php print $module; ?>s;
+}
 
 <?php endif; ?>

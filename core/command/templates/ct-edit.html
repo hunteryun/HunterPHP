@@ -72,6 +72,10 @@
                     </div>
                   </div>
               </div>
+
+            <?php elseif($field['html_type'] == 'hidden'): ?>
+
+              <input type="<?php print $field['html_type']; ?>" name="<?php print $field['name']; ?>" value="1"> 
             <?php else: ?>
 
               <div class="layui-form-item">

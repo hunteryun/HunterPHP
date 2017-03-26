@@ -53,12 +53,12 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
                   if($callback_permissions === TRUE){
                       $body = $route->getContainer()->call($route->getCallable(), $vars);
 
-                      if(is_array($body)){
+                      if(is_array($body) || is_object($body)){
                         $response->getBody()->write(json_encode($body));
                         return $response->withAddedHeader('content-type', 'application/json');
                       }
 
-                      if(is_string($body)){
+                      if(is_string($body) || is_bool($body)){
                           if ($response->getBody()->isWritable()) {
                               $response->getBody()->write($body);
                           }
@@ -74,12 +74,12 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
             } else {
                 $body = $route->getContainer()->call($route->getCallable(), $vars);
 
-                if(is_array($body)){
+                if(is_array($body) || is_object($body)){
                   $response->getBody()->write(json_encode($body));
                   return $response->withAddedHeader('content-type', 'application/json');
                 }
 
-                if(is_string($body)){
+                if(is_string($body) || is_bool($body)){
                     if ($response->getBody()->isWritable()) {
                         $response->getBody()->write($body);
                     }

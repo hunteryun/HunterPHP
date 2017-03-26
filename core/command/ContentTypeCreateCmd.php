@@ -279,7 +279,7 @@ class ContentTypeCreateCmd extends BaseCommand {
               //html_type
               $html_type_question = new ChoiceQuestion(
                  'Choose the field html type [varchar]:',
-                 array('text', 'select', 'textarea', 'image', 'radio', 'checkbox', 'file', 'password', 'tel'),
+                 array('text', 'select', 'textarea', 'image', 'radio', 'checkbox', 'file', 'password', 'tel', 'hidden'),
                  0
               );
               $html_type = $helper->ask($input, $output, $html_type_question);
