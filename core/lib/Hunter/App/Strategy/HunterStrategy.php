@@ -53,11 +53,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
                   if($callback_permissions === TRUE){
                       $body = $route->getContainer()->call($route->getCallable(), $vars);
 
-                      if ($body instanceof RedirectResponse) {
-                        return $body;
-                      }
-
-                      if(is_array($body) || is_object($body)){
+                      if(is_array($body) || (is_object($body) && get_class($body) == 'stdClass')){
                         $response->getBody()->write(json_encode($body));
                         return $response->withAddedHeader('content-type', 'application/json');
                       }
@@ -78,11 +74,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
             } else {
                 $body = $route->getContainer()->call($route->getCallable(), $vars);
 
-                if ($body instanceof RedirectResponse) {
-                  return $body;
-                }
-
-                if(is_array($body) || is_object($body)){
+                if(is_array($body) || (is_object($body) && get_class($body) == 'stdClass')){
                   $response->getBody()->write(json_encode($body));
                   return $response->withAddedHeader('content-type', 'application/json');
                 }
