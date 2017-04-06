@@ -28,8 +28,8 @@
                   <div class="layui-input-block">
                     <select name="<?php echo $field['name']; ?>">
                     <?php foreach ($field['html_type_option'] as $h):?>
-                    <option value="<?php echo $h['value']; ?>"><?php echo $h['lable']; ?></option>
-                    <?php endforeach;?>
+              <option value="<?php echo $h['value']; ?>"><?php echo $h['lable']; ?></option>
+              <?php endforeach;?>
                     </select>
                   </div>
               </div>
@@ -75,7 +75,7 @@
 
             <?php elseif($field['html_type'] == 'hidden'): ?>
 
-              <input type="<?php print $field['html_type']; ?>" name="<?php print $field['name']; ?>" value="1"> 
+              <input type="<?php print $field['html_type']; ?>" name="<?php print $field['name']; ?>" value="1">
             <?php else: ?>
 
               <div class="layui-form-item">

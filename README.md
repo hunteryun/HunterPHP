@@ -1,6 +1,6 @@
 <p align="center">
   <a href="http://www.hunterphp.com">
-    <img src="http://hunterphp.com/images/logo-big.png" alt="HunterPHP" width="520">
+    <img src="http://hunterphp.com/theme/hunter/assets/images/logo-big.png" alt="HunterPHP" width="520">
   </a>
 </p>
 <p align="center">
@@ -10,16 +10,14 @@
 ---
 
 # HunterPHP
-Best PHP CMF for chinese, Draws on a lot of excellent frameworks, front-end use vuejs.  so powerful, easy use,  flexible. 
+Best PHP CMF for chinese, Draws on a lot of excellent frameworks, front-end use vuejs.  so powerful, easy use,  flexible.
 
-My master : M (www.berule.com)
+My master : M
 
-My website : 
+My website :
 
 www.hunterphp.com
 
 www.drupalhunter.com
 
 www.hunteryun.com
-
-
