@@ -33,8 +33,7 @@ class ModuleUninstallCmd extends BaseCommand {
      $this
           ->setName('module:uninstall')
           ->setDescription('commands.module.uninstall.description')
-          ->addArgument('module', InputArgument::REQUIRED, 'commands.module.uninstall.options.module')
-          ->addOption('force', '', InputOption::VALUE_NONE, 'commands.module.uninstall.options.force');
+          ->addArgument('module', InputArgument::REQUIRED, 'commands.module.uninstall.options.module');
    }
 
    /**
