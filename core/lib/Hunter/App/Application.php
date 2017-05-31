@@ -202,7 +202,11 @@ class Application {
             if(!empty($services['services'])){
               foreach ($services['services'] as $name => $service) {
                 if (class_exists($service['class'])) {
-                  $container->share($service['class'])->withArguments($service['arguments']);
+                  if(isset($service['arguments'])){
+                    $container->share($service['class'])->withArguments($service['arguments']);
+                  }else{
+                    $container->share($service['class']);
+                  }
                 }
               }
             }
@@ -397,6 +401,12 @@ class Application {
     public function run() {
         if (!$this->booted) {
             $this->boot();
+        }
+
+        foreach ($this->moduleList as $module_name => $info) {
+          if(function_exists($module_name.'_init')){
+            call_user_func($module_name.'_init');
+          }
         }
 
         $request = $this->container->get('Zend\Diactoros\ServerRequest');
