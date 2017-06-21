@@ -203,39 +203,6 @@ function hunter_password_needs_rehash($hash, $algo = 1) {
 }
 
 /**
- * Returns a persistent variable.
- */
-function variable_get($name, $default = NULL) {
-  global $conf;
-
-  return isset($conf[$name]) ? $conf[$name] : $default;
-}
-
-/**
- * Sets a persistent variable.
- */
-function variable_set($name, $value) {
-  global $conf;
-
-  db_merge('variable')->key(array('name' => $name))->fields(array('value' => serialize($value)))->execute();
-
-  $conf[$name] = $value;
-}
-
-/**
- * Unsets a persistent variable.
- */
-function variable_del($name) {
-  global $conf;
-
-  db_delete('variable')
-    ->condition('name', $name)
-    ->execute();
-
-  unset($conf[$name]);
-}
-
-/**
  * 分页数据输出.
  */
 if (!function_exists('themePager')) {
