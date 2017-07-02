@@ -210,6 +210,14 @@ class Application {
                 }
               }
             }
+
+            if(!empty($services['providers'])){
+              foreach ($services['providers'] as $name => $provider) {
+                if (class_exists($provider['class'])) {
+                  $container->addServiceProvider($provider['class']);
+                }
+              }
+            }
           }
         }
 
