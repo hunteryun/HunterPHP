@@ -12,6 +12,8 @@ use Hunter\Core\Utility\Timer;
 use Hunter\Core\Password\Password;
 use Zend\Diactoros\ServerRequestFactory;
 use Zend\Diactoros\Response\RedirectResponse;
+use Hunter\Core\FormApi\Layui;
+use Hunter\Core\FormApi\NoHtml;
 
 //file scan
 function file_scan($dir, $regx, $options = array(), $depth = 1) {
@@ -255,6 +257,114 @@ function hunter_convert_to_utf8($data) {
   }
 
   return $out;
+}
+
+/**
+ * Converts an associative array to attribute string.
+ */
+function hunter_attributes(array $attributes = array()) {
+  foreach ($attributes as $attribute => &$data) {
+    $data = implode(' ', (array) $data);
+    $data = $attribute . '="' . htmlspecialchars($data, ENT_QUOTES, 'UTF-8') . '"';
+  }
+  return $attributes ? ' ' . implode(' ', $attributes) : '';
+}
+
+/**
+ * Sets HTML attributes based on element properties.
+ */
+function element_set_attributes(array &$field, array $map) {
+  foreach ($map as $property => $attribute) {
+    // If the key is numeric, the attribute name needs to be taken over.
+    if (is_int($property)) {
+      $property = '#' . $attribute;
+    }
+    // Do not overwrite already existing attributes.
+    if (isset($field[$property]) && !isset($field['#attributes'][$attribute])) {
+      $field['#attributes'][$attribute] = $field[$property];
+    }
+  }
+}
+
+/**
+ * Forms an associative array from a linear array.
+ */
+function hunter_map_assoc($array, $function = NULL) {
+  $array = !empty($array) ? array_combine($array, $array) : array();
+  if (is_callable($function)) {
+    $array = array_map($function, $array);
+  }
+  return $array;
+}
+
+/**
+ * render_form api
+ */
+function render_form($type, $fields, $redirect = '#') {
+  if($type == 'layui'){
+    $form = Layui::create()->start($redirect);
+  }else{
+    $form = NoHtml::create()->start($redirect);
+  }
+
+  foreach ($fields as $name => $field) {
+    if (!isset($field['#name'])) {
+      $field['#name'] = $name;
+    }
+
+    if(!isset($field['#attributes'])){
+      $field['#attributes'] = array();
+    }
+
+    if(!isset($field['#value'])){
+      $field['#value'] = isset($field['#default_value']) ? $field['#default_value'] : '';
+    }
+
+    switch ($field['#type'])
+    {
+    case 'textfield':
+      $field['#attributes']['type'] = 'text';
+      element_set_attributes($field, array('id', 'name', 'value', 'size', 'maxlength'));
+      $form->input($name, $field);
+      break;
+    case 'radios':
+      $field['#attributes']['type'] = 'radio';
+      element_set_attributes($field, array('id', 'name'));
+      $form->radio($name, $field);
+      break;
+    case 'checkboxes':
+      $field['#attributes']['type'] = 'checkbox';
+      element_set_attributes($field, array('id', 'name'));
+      $form->checkbox($name, $field);
+      break;
+    case 'file':
+      element_set_attributes($field, array('id', 'name', 'value', 'size'));
+      $field['#attributes']['class'][] = 'layui-input layui-input-inline';
+      $form->file($name, $field);
+      break;
+    case 'select':
+      element_set_attributes($field, array('id', 'name', 'size'));
+      $form->select($name, $field);
+      break;
+    case 'textarea':
+      element_set_attributes($field, array('id', 'name', 'cols', 'rows'));
+      $field['#attributes']['class'][] = 'layui-textarea';
+      $form->textarea($name, $field);
+      break;
+    case 'hidden':
+      $form->hidden($name, $field['#value']);
+      break;
+    case 'img':
+      $form->img($name, $field);
+      break;
+    default:
+      $field['#attributes']['type'] = 'submit';
+      $form->submit($name, $field);
+      break;
+    }
+  }
+
+  return $form->end();
 }
 
 if (!function_exists('e')) {
