@@ -178,6 +178,10 @@ function request_uri() {
   // Prevent multiple slashes to avoid cross site requests via the Form API.
   $uri = '/' . ltrim($uri, '/');
 
+  if(strpos($uri,'?')){
+    $uri = substr($uri, 0, strpos($uri,'?'));
+  }
+
   return $uri;
 }
 
@@ -222,17 +226,13 @@ if (!function_exists('themePager')) {
             $return .= sprintf($li, $pageurl, $pager['page']+1, '下一页');
         }
         if (!$nojump) {
-          $return .= "<li><a href='javascript:showjumpdiv(\"{$unique}\");'>跳转</a></li>"
-            . "<form method='post' action='{$pageurl}'>"
+          $return .= "<li> <span>跳转</span></li>"
+            . "<form method='get' action='{$pageurl}'>"
             . "<div id='div{$unique}' class='jumpdiv'> <input id='input{$unique}' type='text' name='page' /> 页 "
             . "<button type='submit' class='btn btn-info btn-xs'>确定</button></div>"
             . "</form>";
         }
         $return .= '</ul>';
-        if (!$hasjs) {
-            $return .= '<script>function showjumpdiv(unique) { $("#div"+unique).toggle();$("#input"+unique).focus();}</script>';
-            $hasjs = true;
-        }
         return $return;
     }
 }
