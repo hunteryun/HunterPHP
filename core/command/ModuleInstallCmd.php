@@ -1,11 +1,9 @@
 <?php
 
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
 
@@ -32,10 +30,10 @@ class ModuleInstallCmd extends BaseCommand {
     * {@inheritdoc}
     */
    protected function configure() {
-       $this
-           ->setName('module:install')
-           ->setDescription('commands.module.install.description')
-           ->addOption('module', '', InputOption::VALUE_REQUIRED, 'commands.module.install.options.module');
+     $this
+          ->setName('module:install')
+          ->setDescription('commands.module.install.description')
+          ->addArgument('module', InputArgument::REQUIRED, 'commands.module.install.argument.module');
    }
 
    /**
@@ -43,17 +41,17 @@ class ModuleInstallCmd extends BaseCommand {
     */
    protected function execute(InputInterface $input, OutputInterface $output) {
       $installed = false;
-      if(isset($this->moduleList[$input->getOption('module')])){
-          $install_file = str_replace('info.yml', 'install', $this->moduleList[$input->getOption('module')]['pathname']);
+      if(isset($this->moduleList[$input->getArgument('module')])){
+          $install_file = str_replace('info.yml', 'install', $this->moduleList[$input->getArgument('module')]['pathname']);
       }else {
-          $install_file = 'module/'.$input->getOption('module').'/'.$input->getOption('module').'.install';
+          $install_file = 'module/'.$input->getArgument('module').'/'.$input->getArgument('module').'.install';
       }
 
       if(file_exists($install_file)){
         require_once $install_file;
 
-        $schema_fun = $input->getOption('module').'_schema';
-        $install_fun = $input->getOption('module').'_install';
+        $schema_fun = $input->getArgument('module').'_schema';
+        $install_fun = $input->getArgument('module').'_install';
         if (function_exists($schema_fun)) {
           $schemas = $schema_fun();
         }
@@ -66,35 +64,10 @@ class ModuleInstallCmd extends BaseCommand {
       }
 
       if($installed){
-        $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getOption('module').' module install successful!');
+        $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getArgument('module').' module install successful!');
       }else{
-        $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getOption('module').' module install failed!');
+        $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getArgument('module').' module install failed!');
       }
-   }
-
-   /**
-    * {@inheritdoc}
-    */
-   protected function interact(InputInterface $input, OutputInterface $output) {
-       $helper = $this->getHelper('question');
-
-       // --module option
-       $module = $input->getOption('module');
-       if (!$module) {
-           $choices = array_keys($this->moduleList);
-           $default_name = current($choices);
-           if (null !== $default_name) {
-              $values = array_flip($choices);
-              $default = $values[$default_name];
-           }
-           $question = new ChoiceQuestion(
-              'Enter the modue name ['.$default_name.']:',
-              $choices,
-              $default
-           );
-           $module = $helper->ask($input, $output, $question);
-           $input->setOption('module', $module);
-       }
    }
 
 }
