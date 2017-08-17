@@ -145,6 +145,11 @@ $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
     if (!empty($uploadedFiles)) {
       $files = array();
       foreach ($uploadedFiles as $key => $value) {
+
+        if(empty(strstr($value->getClientMediaType(), 'image'))){
+          return new JsonResponse(array('filename' => false));
+        }
+
         if ($value instanceof UploadedFileInterface) {
           $url = 'sites/upload/<?php print $module; ?>/<?php print $field['name']; ?>/'. $value->getClientFilename();
           if (!is_dir(dirname($url))){
