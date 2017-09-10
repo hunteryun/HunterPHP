@@ -22,15 +22,15 @@ class Layui extends Form {
      * @param string $charset
      * @return $this
      */
-    public function start($action, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8')
+    public function start($action, $id = null, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8')
     {
         switch ($enctype)
         {
             case true:
-                $this->form = '<form action="'.$action.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'" enctype="multipart/form-data">';
+                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'" enctype="multipart/form-data">';
             break;
             default :
-                $this->form =  $this->form = '<form action="'.$action.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'">';
+                $this->form =  $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'">';
             break;
         }
         return $this;
@@ -307,7 +307,7 @@ class Layui extends Form {
         if(!empty($field['#options'])){
           foreach ($field['#options'] as $v => $title) {
             $field['#attributes']['title'] = $title;
-            if(is_array($field['#value']) && in_array($v, $field['#value'])){
+            if((is_array($field['#value']) && in_array($v, $field['#value'])) || $field['#value'] == $field['#attributes']['value']){
               $field['#attributes']['checked'] = 'checked';
               $this->form .= '<input'.hunter_attributes($field['#attributes']).'>';
             }else {
@@ -341,6 +341,7 @@ class Layui extends Form {
 
         if(!empty($field['#options'])){
           foreach ($field['#options'] as $v => $title) {
+            $field['#attributes']['value'] = $v;
             $field['#attributes']['title'] = $title;
             if($v == $field['#value']){
               $field['#attributes']['checked'] = 'checked';
@@ -363,8 +364,12 @@ class Layui extends Form {
      *
      * @return string
      */
-    public function end()
+    public function end($form_id)
     {
+       if(!empty($form_id)){
+         $this->form .= '<input type="hidden" name="form_id" value="'.$form_id.'">';
+       }
+
        $this->form .= '</form>';
 
        return $this->form;

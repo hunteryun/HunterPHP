@@ -22,15 +22,15 @@ class NoHtml extends Form {
      * @param string $charset
      * @return $this
      */
-    public function start($action, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8')
+    public function start($action, $id = null, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8')
     {
         switch ($enctype)
         {
             case true:
-                $this->form = '<form action="'.$action.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'" enctype="multipart/form-data">';
+                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'" enctype="multipart/form-data">';
             break;
             default :
-                $this->form =  $this->form = '<form action="'.$action.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'">';
+                $this->form =  $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'">';
             break;
         }
         return $this;
@@ -523,8 +523,12 @@ class NoHtml extends Form {
      *
      * @return string
      */
-    public function end()
+    public function end($form_id)
     {
+       if(!empty($form_id)){
+         $this->form .= '<input type="hidden" name="form_id" value="'.$form_id.'">';
+       }
+
        $this->form .= '</form>';
 
        return $this->form;

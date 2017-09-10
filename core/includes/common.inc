@@ -298,14 +298,34 @@ function hunter_map_assoc($array, $function = NULL) {
 }
 
 /**
- * render_form api
+ * hunter render form api
  */
-function render_form($type, $fields, $redirect = '#') {
-  if($type == 'layui'){
-    $form = Layui::create()->start($redirect);
-  }else{
-    $form = NoHtml::create()->start($redirect);
+function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
+  $form_id = '';
+  if(isset($fields['form_id'])){
+    $form_id = $fields['form_id'];
+    unset($fields['form_id']);
   }
+
+  $form_redirect = '#';
+  if(isset($fields['redirect'])){
+    $form_redirect = $fields['redirect'];
+    unset($fields['redirect']);
+  }
+
+  if($type == 'layui'){
+    $form = Layui::create()->start($form_redirect, $form_id);
+  }else{
+    $form = NoHtml::create()->start($form_redirect, $form_id);
+  }
+
+  foreach ($GLOBALS['app']->getModulesList() as $module_name => $info) {
+    if(function_exists($function = $module_name.'_form_alter')){
+      $function($fields, $form_id, $module, $parms);
+    }
+  }
+
+  $submit_field = array();
 
   foreach ($fields as $name => $field) {
     if (!isset($field['#name'])) {
@@ -357,14 +377,51 @@ function render_form($type, $fields, $redirect = '#') {
     case 'img':
       $form->img($name, $field);
       break;
+    case 'submit':
+      $submit_field = $field;
+      break;
     default:
-      $field['#attributes']['type'] = 'submit';
-      $form->submit($name, $field);
       break;
     }
   }
 
-  return $form->end();
+  if(!empty($submit_field)){
+    $submit_field['#attributes']['type'] = 'submit';
+    $form->submit($submit_field['#name'], $submit_field);
+  }
+
+  return $form->end($form_id);
+}
+
+/**
+ * hunter submit form api
+ */
+function hunter_form_submit($parms, $module = NULl, $result = NULL) {
+  foreach ($GLOBALS['app']->getModulesList() as $module_name => $info) {
+    if(function_exists($function = $module_name.'_form_submit')){
+      $call_result = $function($parms, $module, $result);
+
+      if($call_result){
+        return $call_result;
+      }
+    }
+  }
+
+  return $result;
+}
+
+/**
+ * Determines whether a given module exists.
+ *
+ * @param string $module
+ *   The name of the module (without the .module extension).
+ *
+ * @return bool
+ *   TRUE if the module is both installed and enabled, FALSE otherwise.
+ */
+function module_exists($module) {
+  $list = $GLOBALS['app']->getModulesList();
+  return isset($list[$module]);
 }
 
 if (!function_exists('e')) {
