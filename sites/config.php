@@ -6,6 +6,9 @@ $root_dir = '/';
 //配置: 开发模式
 $hunter_debug = true;
 
+//配置: 静态缓存
+$hunter_static = true;
+
 //配置: 缓存目录
 $cache_dir = HUNTER_ROOT . '/sites/files';
 

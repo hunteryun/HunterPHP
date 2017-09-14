@@ -27,8 +27,15 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
         return function (ServerRequestInterface $request, ResponseInterface $response, callable $next) use ($route, $vars) {
             $permissions = $route->getContainer()->get('routePermission');
             $routeTitles = $route->getContainer()->get('routeTitles');
+            $routeNames = $route->getContainer()->get('routeNames');
             $path = $route->getPath();
             $callback_permissions = FALSE;
+
+            //if enabled html static, and file exists, then load it
+            if($GLOBALS['hunter_static'] && isset($routeNames[$path]) && is_file('sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html')){
+              require_once('/sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html');
+              die;
+            }
 
             if(isset($routeTitles[$path])){
               theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
