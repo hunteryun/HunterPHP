@@ -25,17 +25,23 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
     public function getCallable(Route $route, array $vars)
     {
         return function (ServerRequestInterface $request, ResponseInterface $response, callable $next) use ($route, $vars) {
+            $generate_html = false;
+            $path = $route->getPath();
+            $routeNames = $route->getContainer()->get('routeNames');
+            //if enabled html static, and file exists, then load it
+            if($GLOBALS['hunter_static'] && isset($routeNames[$path])) {
+              if(is_file('sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html')){
+                require_once('/sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html');
+                die;
+              }else {
+                $generate_file = 'sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html';
+                $generate_html = true;
+              }
+            }
+
             $permissions = $route->getContainer()->get('routePermission');
             $routeTitles = $route->getContainer()->get('routeTitles');
-            $routeNames = $route->getContainer()->get('routeNames');
-            $path = $route->getPath();
             $callback_permissions = FALSE;
-
-            //if enabled html static, and file exists, then load it
-            if($GLOBALS['hunter_static'] && isset($routeNames[$path]) && is_file('sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html')){
-              require_once('/sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html');
-              die;
-            }
 
             if(isset($routeTitles[$path])){
               theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
@@ -60,6 +66,10 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
                   if($callback_permissions === TRUE){
                       $body = $route->getContainer()->call($route->getCallable(), $vars);
 
+                      if($generate_html){
+                        $this->htmlMake($body, $generate_file);
+                      }
+
                       if(is_array($body) || (is_object($body) && get_class($body) == 'stdClass')){
                         $response->getBody()->write(json_encode($body));
                         return $response->withAddedHeader('content-type', 'application/json');
@@ -80,6 +90,10 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
               }
             } else {
                 $body = $route->getContainer()->call($route->getCallable(), $vars);
+
+                if($generate_html){
+                  $this->htmlMake($body, $generate_file);
+                }
 
                 if(is_array($body) || (is_object($body) && get_class($body) == 'stdClass')){
                   $response->getBody()->write(json_encode($body));
@@ -214,6 +228,17 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
           break;
         }
       }
+    }
+
+    /**
+     * generate html
+     */
+    public function htmlMake($body, $file) {
+      if(!is_dir(dirname($file))) {
+      	mkdir(dirname($file), 0777, true);
+      }
+
+      return file_put_contents($file, $body) !== false;
     }
 
 }
