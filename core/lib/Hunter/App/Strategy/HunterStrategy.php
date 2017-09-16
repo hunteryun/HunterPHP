@@ -29,12 +29,15 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
             $path = $route->getPath();
             $routeNames = $route->getContainer()->get('routeNames');
             //if enabled html static, and file exists, then load it
-            if($GLOBALS['hunter_static'] && isset($routeNames[$path])) {
-              if(is_file('sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html')){
-                require_once('sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html');
+            if($GLOBALS['hunter_static'] && isset($routeNames[$path]) && substr($path, 0, 7) != '/admin/' && substr($path, 0, 5) != '/api/') {
+              $generate_file = 'sites/html/'.str_replace('.', '/', $routeNames[$path]);
+              if($vars){
+                $generate_file .= '_'.implode('_',array_values($vars));
+              }
+              if(is_file($generate_file.'.html')){
+                require_once($generate_file.'.html');
                 die;
               }else {
-                $generate_file = 'sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html';
                 $generate_html = true;
               }
             }
@@ -238,7 +241,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
       	mkdir(dirname($file), 0777, true);
       }
 
-      return file_put_contents($file, $body) !== false;
+      return file_put_contents($file.'.html', $body) !== false;
     }
 
 }
