@@ -31,7 +31,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
             //if enabled html static, and file exists, then load it
             if($GLOBALS['hunter_static'] && isset($routeNames[$path])) {
               if(is_file('sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html')){
-                require_once('/sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html');
+                require_once('sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html');
                 die;
               }else {
                 $generate_file = 'sites/html/'.str_replace('.', '/', $routeNames[$path]).'.html';
