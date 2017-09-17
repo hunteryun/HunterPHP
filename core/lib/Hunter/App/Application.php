@@ -29,6 +29,7 @@ class Application {
     protected $routers = array();
     protected $routeList;
     protected $routePermission = array();
+    protected $routeOptions = array();
     protected $routeTitles = array();
     protected $routeNames = array();
     protected $moduleHandler;
@@ -341,6 +342,10 @@ class Application {
               $this->routePermission[$route_info['path']] = $route_info['requirements']['_permission'];
             }
 
+            if(isset($route_info['options'])){
+              $this->routeOptions[$route_info['path']] = $route_info['options'];
+            }
+
             if(isset($route_info['defaults']['_title'])){
               $this->routeTitles[$route_info['path']] = $route_info['defaults']['_title'];
             }
@@ -359,6 +364,7 @@ class Application {
 
         $this->routers = $routers;
         $this->container->add('routePermission', $this->routePermission);
+        $this->container->add('routeOptions', $this->routeOptions);
         $this->container->add('routeTitles', $this->routeTitles);
         $this->container->add('routeNames', $this->routeNames);
     }
