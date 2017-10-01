@@ -31,7 +31,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
             $routeOptions = $route->getContainer()->get('routeOptions');
             //if enabled html static, and file exists, then load it
             if($GLOBALS['hunter_static'] && isset($routeNames[$path]) && !isset($routeOptions[$path]['no_cache']) && substr($path, 0, 6) != '/admin' && substr($path, 0, 5) != '/api/') {
-              $generate_file = 'sites/html/'.str_replace('.', '/', $routeNames[$path]);
+              $generate_file = 'sites/html/'.$GLOBALS['default_theme'].'/'.str_replace('.', '/', $routeNames[$path]);
               if($vars){
                 $generate_file .= '_'.implode('_',array_values($vars));
               }

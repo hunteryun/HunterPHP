@@ -11,3 +11,5 @@ test.homepage:
   defaults:
     _controller: 'Hunter\test\Controller\TestController::index'
     _title: 'Home Page'
+  options:
+    no_cache: TRUE

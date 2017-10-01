@@ -12,6 +12,9 @@ $hunter_static = true;
 //配置: 缓存目录
 $cache_dir = HUNTER_ROOT . '/sites/files';
 
+//配置: 默认主题
+$default_theme = 'hunter';
+
 //配置: 数据库
 $databases = array(
     'default' => array(
