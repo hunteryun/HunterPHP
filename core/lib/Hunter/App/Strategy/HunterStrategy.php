@@ -25,13 +25,14 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
     public function getCallable(Route $route, array $vars)
     {
         return function (ServerRequestInterface $request, ResponseInterface $response, callable $next) use ($route, $vars) {
+            global $default_theme, $hunter_static;
             $generate_html = false;
             $path = $route->getPath();
             $routeNames = $route->getContainer()->get('routeNames');
             $routeOptions = $route->getContainer()->get('routeOptions');
             //if enabled html static, and file exists, then load it
-            if($GLOBALS['hunter_static'] && isset($routeNames[$path]) && !isset($routeOptions[$path]['no_cache']) && substr($path, 0, 6) != '/admin' && substr($path, 0, 5) != '/api/') {
-              $generate_file = 'sites/html/'.$GLOBALS['default_theme'].'/'.str_replace('.', '/', $routeNames[$path]);
+            if($hunter_static && isset($routeNames[$path]) && !isset($routeOptions[$path]['no_cache']) && substr($path, 0, 6) != '/admin' && substr($path, 0, 5) != '/api/') {
+              $generate_file = 'sites/html/'.$default_theme.'/'.str_replace('.', '/', $routeNames[$path]);
               if($vars){
                 $generate_file .= '_'.implode('_',array_values($vars));
               }

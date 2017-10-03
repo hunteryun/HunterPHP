@@ -25,63 +25,63 @@ class Connection extends PDO {
      * @var string
      */
     protected $target = null;
-    
+
     /**
      * 库配置
      *
      * @var array
      */
     protected $options = array();
-    
+
     /**
      * 日志记录器
      *
      * @var Hunter\Core\Database\Log
      */
     protected $logger = null;
-    
+
     /**
      * 表前缀
      *
      * @var array
      */
     protected $prefixes = array();
-    
+
     /**
      * {table}前缀替换前
      *
      * @var array
      */
     protected $prefixSearch = array();
-    
+
     /**
      * {table}前缀替换后
      *
      * @var array
      */
     protected $prefixReplace = array();
-    
+
     /**
      * Statement
      *
      * @var string
      */
     protected $statementClass = 'Hunter\\Core\\Database\\Statement';
-    
+
     /**
      * 是否支持事务
      *
      * @var bool
      */
     protected $transactionSupport = true;
-    
+
     /**
      * 事务层级数组
      *
      * @var array
      */
     protected $transactionLayers = array();
-    
+
     /**
      * 析构函数
      *
@@ -90,12 +90,14 @@ class Connection extends PDO {
      */
     public function __construct(array $options = array()) {
         $this->transactionSupport = !isset($options['transactions']) || ($options['transactions'] !== false);
-        if (isset($options['unix_socket'])) {
+        if (isset($options['driver']) && $options['driver'] == 'sqlite') {
+            $dsn = 'sqlite:' . $options['database'];
+        } elseif(isset($options['unix_socket'])) {
             $dsn = 'mysql:unix_socket=' . $options['unix_socket'];
         } else {
             $dsn = 'mysql:host=' . $options['host'] . ';port=' . (empty($options['port']) ? 3306 : $options['port']);
         }
-        if (!empty($options['database'])) {
+        if (!empty($options['database']) && !isset($options['driver'])) {
             $dsn .= ';dbname=' . $options['database'];
         }
         $options += array(
@@ -106,16 +108,29 @@ class Connection extends PDO {
             PDO::ATTR_EMULATE_PREPARES         => true,
             PDO::ATTR_ERRMODE                  => PDO::ERRMODE_EXCEPTION,
         );
+
+        if (isset($options['driver']) && $options['driver'] == 'sqlite') {
+          $options['pdo'] += array(
+            // Convert numeric values to strings when fetching.
+            PDO::ATTR_STRINGIFY_FETCHES => TRUE,
+          );
+        }
+
         $this->options = $options;
         $this->setPrefix(isset($options['prefix']) ? $options['prefix'] : '');
-        parent::__construct($dsn, $options['username'], $options['password'], $options['pdo']);
-        $charset = empty($options['charset']) ? 'utf8' : $options['charset'];
-        if (!empty($options['collation'])) {
-            $this->exec('SET NAMES ' . $charset . ' COLLATE ' . $options['collation']);
-        } else {
-            $this->exec('SET NAMES ' . $charset);
+
+        if (isset($options['driver']) && $options['driver'] == 'sqlite') {
+          parent::__construct($dsn, '', '', $options['pdo']);
+        }else{
+          parent::__construct($dsn, $options['username'], $options['password'], $options['pdo']);
+          $charset = empty($options['charset']) ? 'utf8' : $options['charset'];
+          if (!empty($options['collation'])) {
+              $this->exec('SET NAMES ' . $charset . ' COLLATE ' . $options['collation']);
+          } else {
+              $this->exec('SET NAMES ' . $charset);
+          }
         }
-        
+
         if (!empty($this->statementClass)) {
             $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array($this->statementClass, array($this)));
         }
@@ -127,14 +142,14 @@ class Connection extends PDO {
     public function getOptions() {
         return $this->options;
     }
-    
+
     /**
      * 销毁这个连接对象
      */
     public function destroy() {
         $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('PDOStatement', array()));
     }
-    
+
     /**
      * 设置库目标
      */
@@ -143,7 +158,7 @@ class Connection extends PDO {
             $this->target = $target;
         }
     }
-    
+
     /**
      * 获取库目标
      *
@@ -152,7 +167,7 @@ class Connection extends PDO {
     public function getTarget() {
         return $this->target;
     }
-  
+
     /**
      * 设置日志记录器
      *
@@ -161,7 +176,7 @@ class Connection extends PDO {
     public function setLogger(Log $logger) {
         $this->logger = $logger;
     }
-  
+
     /**
      * 获取日志记录器
      *
@@ -170,7 +185,7 @@ class Connection extends PDO {
     public function getLogger() {
         return $this->logger;
     }
-    
+
     /**
      * 直接SQL
      *
@@ -207,7 +222,7 @@ class Connection extends PDO {
             return null;
         }
     }
-    
+
     /**
      * 前置query处理
      *
@@ -217,7 +232,7 @@ class Connection extends PDO {
         $sql = $this->replacePrefix($sql);
         return parent::prepare($sql);
     }
-    
+
     /**
      * 转换前缀
      */
@@ -229,57 +244,57 @@ class Connection extends PDO {
      * SELECT
      *
      * @return Hunter\Core\Database\Select
-     */    
+     */
     public function select($table, $alias = null, array $options = array()) {
         return new Select($table, $alias, $this, $options);
     }
-    
+
     /**
      * INSERT
      *
      * @return Hunter\Core\Database\Insert
-     */  
+     */
     public function insert($table, array $options = array()) {
         return new Insert($this, $table, $options);
     }
-    
+
     /**
      * UPDATE
      *
      * @return Hunter\Core\Database\Update
-     */  
+     */
     public function update($table, array $options = array()) {
         return new Update($this, $table, $options);
     }
-    
+
     /**
      * DELETE
      *
      * @return Hunter\Core\Database\Delete
-     */  
+     */
     public function delete($table, array $options = array()) {
         return new Delete($this, $table, $options);
     }
-    
+
     /**
      * MERGE
      *
      * @return Hunter\Core\Database\Merge
-     */  
+     */
     public function merge($table, array $options = array()) {
         return new Merge($this, $table, $options);
     }
-    
+
     /**
      * Schema
      *
      * @return Hunter\Core\Database\Schema
-     */  
+     */
     public function schema(array $options = array()) {
         $options = $this->options + $options;
         return new Schema($this, $options);
     }
-    
+
     /**
      * 返回数据库版本信息
      *
@@ -288,42 +303,42 @@ class Connection extends PDO {
     public function version() {
         return $this->getAttribute(PDO::ATTR_SERVER_VERSION);
     }
-    
+
     /**
      * 操作符关联
      */
     public function mapConditionOperator($operator) {
         return null;
     }
-  
+
     /**
      * 转义LIKE时的一些特殊字符
      */
     public function escapeLike($string) {
         return addcslashes($string, '\%_');
     }
-    
+
     /**
      * 开始一个事务
      */
     public function startTransaction($name = '') {
         return new Transaction($this, $name);
     }
-    
+
     /**
      * 是否已经在事务中
      */
     public function inTransaction() {
         return ($this->transactionDepth() > 0);
     }
-    
+
     /**
      * 读取事务的层级数
      */
     public function transactionDepth() {
         return count($this->transactionLayers);
     }
-    
+
     /**
      * 执行事务query
      */
@@ -341,7 +356,7 @@ class Connection extends PDO {
         }
         $this->transactionLayers[$name] = $name;
     }
-    
+
     /**
      * 提交事务
      */
@@ -355,7 +370,7 @@ class Connection extends PDO {
         $this->transactionLayers[$name] = false;
         $this->popCommittableTransactions();
     }
-    
+
     /**
      * 事务回滚
      */
@@ -391,7 +406,7 @@ class Connection extends PDO {
             throw new RuntimeException();
         }
     }
-    
+
     /**
      * 执行事务query
      */
@@ -410,7 +425,7 @@ class Connection extends PDO {
             }
         }
     }
-    
+
     /**
      * 默认的返回结果配置
      */
@@ -422,7 +437,7 @@ class Connection extends PDO {
           'throw_exception' => true,
         );
     }
-    
+
     /**
      * 替换参数占位符
      */
@@ -439,10 +454,10 @@ class Connection extends PDO {
             $args += $new_keys;
             $modified = true;
         }
-        
+
         return $modified;
     }
-    
+
     /**
      * 设置{table}替换列表
      */
