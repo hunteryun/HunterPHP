@@ -184,11 +184,6 @@ interface ModuleHandlerInterface {
   public function getImplementations($hook);
 
   /**
-   * Write the hook implementation info to the cache.
-   */
-  public function writeCache();
-
-  /**
    * Resets the cached list of hook implementations.
    */
   public function resetImplementations();

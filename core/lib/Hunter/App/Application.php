@@ -421,10 +421,8 @@ class Application {
             $this->boot();
         }
 
-        foreach ($this->moduleList as $module_name => $info) {
-          if(function_exists($module_name.'_init')){
-            call_user_func($module_name.'_init');
-          }
+        foreach ($this->moduleHandler->getImplementations('init') as $module) {
+          $this->moduleHandler->invoke($module, 'init');
         }
 
         $request = $this->container->get('Zend\Diactoros\ServerRequest');

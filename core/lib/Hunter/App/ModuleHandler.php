@@ -57,13 +57,6 @@ class ModuleHandler implements ModuleHandlerInterface {
   protected $hookInfo;
 
   /**
-   * Cache backend for storing module hook implementation information.
-   *
-   * @var \Hunter\Core\Cache\CacheBackendInterface
-   */
-  protected $cacheBackend;
-
-  /**
    * Whether the cache needs to be written.
    *
    * @var bool
@@ -97,11 +90,6 @@ class ModuleHandler implements ModuleHandlerInterface {
    * @param string $root
    *   The app root.
    * @param array $module_list
-   *   An associative array whose keys are the names of installed modules and
-   *   whose values are Extension class parameters. This is normally the
-   *   %container.modules% parameter being set up by HunterKernel.
-   * @param \Hunter\Core\Cache\CacheBackendInterface $cache_backend
-   *   Cache backend for storing module hook implementation information.
    *
    * @see \Hunter\Core\HunterKernel
    * @see \Hunter\Core\CoreServiceProvider
@@ -287,13 +275,7 @@ class ModuleHandler implements ModuleHandlerInterface {
    */
   public function getHookInfo() {
     if (!isset($this->hookInfo)) {
-      if ($cache = $this->cacheBackend->get('hook_info')) {
-        $this->hookInfo = $cache->data;
-      }
-      else {
-        $this->buildHookInfo();
-        $this->cacheBackend->set('hook_info', $this->hookInfo);
-      }
+      $this->buildHookInfo();
     }
     return $this->hookInfo;
   }
@@ -330,33 +312,10 @@ class ModuleHandler implements ModuleHandlerInterface {
   /**
    * {@inheritdoc}
    */
-  public function writeCache() {
-    if ($this->cacheNeedsWriting) {
-      $this->cacheBackend->set('module_implements', $this->implementations);
-      $this->cacheNeedsWriting = FALSE;
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function resetImplementations() {
     $this->implementations = NULL;
     $this->hookInfo = NULL;
     $this->alterFunctions = NULL;
-    // We maintain a persistent cache of hook implementations in addition to the
-    // static cache to avoid looping through every module and every hook on each
-    // request. Benchmarks show that the benefit of this caching outweighs the
-    // additional database hit even when using the default database caching
-    // backend and only a small number of modules are enabled. The cost of the
-    // $this->cacheBackend->get() is more or less constant and reduced further
-    // when non-database caching backends are used, so there will be more
-    // significant gains when a large number of modules are installed or hooks
-    // invoked, since this can quickly lead to
-    // \Hunter::moduleHandler()->implementsHook() being called several thousand
-    // times per request.
-    $this->cacheBackend->set('module_implements', array());
-    $this->cacheBackend->delete('hook_info');
   }
 
   /**
@@ -517,9 +476,6 @@ class ModuleHandler implements ModuleHandlerInterface {
     if (!isset($this->implementations)) {
       $this->implementations = array();
       $this->verified = array();
-      if ($cache = $this->cacheBackend->get('module_implements')) {
-        $this->implementations = $cache->data;
-      }
     }
     if (!isset($this->implementations[$hook])) {
       // The hook is not cached, so ensure that whether or not it has
