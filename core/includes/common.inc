@@ -320,8 +320,8 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
     $form = NoHtml::create()->start($form_redirect, $form_id);
   }
 
-  foreach ($app->getModuleHandle()->getImplementations('form_alter') as $module_name)) {
-    $args = array($fields, $form_id, $module, $parms);
+  foreach ($app->getModuleHandle()->getImplementations('form_alter') as $module_name) {
+    $args = array(&$fields, $form_id, $module, $parms);
     $app->getModuleHandle()->invoke($module_name, 'form_alter', $args);
   }
 
@@ -399,7 +399,7 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
 function hunter_form_submit($parms, $module = NULl, $result = NULL) {
   global $app;
 
-  foreach ($app->getModuleHandle()->getImplementations('form_submit') as $module_name)) {
+  foreach ($app->getModuleHandle()->getImplementations('form_submit') as $module_name) {
     $args = array($parms, $module, $result);
     $call_result = $app->getModuleHandle()->invoke($module_name, 'form_submit', $args);
     if($call_result){
