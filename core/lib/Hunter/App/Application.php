@@ -412,6 +412,13 @@ class Application {
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getModuleHandle() {
+        return $this->moduleHandler;
+    }
+
+    /**
      * Handles the request and delivers the response.
      *
      * @param Request|null $request Request to process

@@ -301,6 +301,7 @@ function hunter_map_assoc($array, $function = NULL) {
  * hunter render form api
  */
 function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
+  global $app;
   $form_id = '';
   if(isset($fields['form_id'])){
     $form_id = $fields['form_id'];
@@ -319,10 +320,9 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
     $form = NoHtml::create()->start($form_redirect, $form_id);
   }
 
-  foreach ($GLOBALS['app']->getModulesList() as $module_name => $info) {
-    if(function_exists($function = $module_name.'_form_alter')){
-      $function($fields, $form_id, $module, $parms);
-    }
+  foreach ($app->getModuleHandle()->getImplementations('form_alter') as $module_name)) {
+    $args = array($fields, $form_id, $module, $parms);
+    $app->getModuleHandle()->invoke($module_name, 'form_alter', $args);
   }
 
   $submit_field = array();
@@ -397,13 +397,13 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
  * hunter submit form api
  */
 function hunter_form_submit($parms, $module = NULl, $result = NULL) {
-  foreach ($GLOBALS['app']->getModulesList() as $module_name => $info) {
-    if(function_exists($function = $module_name.'_form_submit')){
-      $call_result = $function($parms, $module, $result);
+  global $app;
 
-      if($call_result){
-        return $call_result;
-      }
+  foreach ($app->getModuleHandle()->getImplementations('form_submit') as $module_name)) {
+    $args = array($parms, $module, $result);
+    $call_result = $app->getModuleHandle()->invoke($module_name, 'form_submit', $args);
+    if($call_result){
+      return $call_result;
     }
   }
 
@@ -420,8 +420,8 @@ function hunter_form_submit($parms, $module = NULl, $result = NULL) {
  *   TRUE if the module is both installed and enabled, FALSE otherwise.
  */
 function module_exists($module) {
-  $list = $GLOBALS['app']->getModulesList();
-  return isset($list[$module]);
+  global $app;
+  return $app->getModuleHandle()->moduleExists($module);
 }
 
 if (!function_exists('e')) {
