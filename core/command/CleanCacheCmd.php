@@ -5,8 +5,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 
 /**
- * 迁移数据库命令
- * php hunter migrate:db
+ * 清空缓存命令
+ * php hunter cc
  */
 class CleanCacheCmd extends BaseCommand {
     protected function configure() {
@@ -25,7 +25,6 @@ class CleanCacheCmd extends BaseCommand {
 
     /**
      * 清空缓存
-     * @route /admin/clean/cache
      */
     protected function clean_cache($dir) {
       if(is_dir($dir)){
@@ -42,6 +41,6 @@ class CleanCacheCmd extends BaseCommand {
         }
 
         closedir($dh);
-      }      
+      }
     }
 }
