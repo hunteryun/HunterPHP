@@ -4,8 +4,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
 use Hunter\Core\Utility\StringConverter;
@@ -197,12 +198,16 @@ class ControllerCreateCmd extends BaseCommand {
               $classMachineName = $this->stringConverter->createMachineName($class);
               $routeName = $module . '.' . str_replace("controller", "", $classMachineName) . '_' . $method;
 
+              $nocache_question = new ConfirmationQuestion('Enable cache [No]? ', FALSE);
+              $nocache = $helper->ask($input, $output, $nocache_question);
+
               $routes[] = [
                   'title' => $title,
                   'name' => $routeName,
                   'method' => $method,
                   'path' => $path,
-                  'args' => $this->getArgumentsFromRoute($path)
+                  'args' => $this->getArgumentsFromRoute($path),
+                  'nocache' => $nocache
               ];
            }
 
