@@ -14,45 +14,34 @@ class CleanCacheCmd extends BaseCommand {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $dirs = array('sites/cache', 'sites/temp', 'sites/backup', 'sites/logs');
+        $dirs = array('sites/cache', 'sites/html', 'sites/temp', 'sites/backup', 'sites/logs');
 
-        $result = $this->clean_cache($dirs);
-
-        if($result){
-          $output->writeln('['.date("Y-m-d H:i:s").'] cache clean finished!');
-        }else{
-          $output->writeln('['.date("Y-m-d H:i:s").'] cache clean failed!');
+        foreach ($dirs as $dir) {
+          $this->clean_cache($dir);
         }
+
+        $output->writeln('['.date("Y-m-d H:i:s").'] cache clean finished!');
     }
 
     /**
      * 清空缓存
      * @route /admin/clean/cache
      */
-    protected function clean_cache($dirs) {
-      foreach ($dirs as $dir) {
-        if (is_dir($dir)) {
-            //先删除目录下的文件：
-            $dh = opendir($dir);
-            while ($file = readdir($dh)) {
-                if ($file != "." && $file != "..") {
-                    $fullpath = $dir . "/" . $file;
-                    if (!is_dir($fullpath)) {
-                        unlink($fullpath);
-                    } else {
-                        $this->clean_cache($fullpath);
-                    }
-                }
+    protected function clean_cache($dir) {
+      if(is_dir($dir)){
+        $dh=opendir($dir);
+        while ($file=readdir($dh)) {
+          if($file!="." && $file!="..") {
+            $fullpath=$dir."/".$file;
+            if(!is_dir($fullpath)) {
+                unlink($fullpath);
+            } else {
+                $this->clean_cache($fullpath);
             }
-            closedir($dh);
-            return true;
-        } else {
-            if (file_exists($dir)) {
-                unlink($dir);
-            }
-            return true;
+          }
         }
-        return false;
-      }
+
+        closedir($dh);
+      }      
     }
 }
