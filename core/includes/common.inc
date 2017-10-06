@@ -209,37 +209,6 @@ function hunter_password_needs_rehash($hash, $algo = 1) {
 }
 
 /**
- * 分页数据输出.
- */
-if (!function_exists('themePager')) {
-    function themePager($pager, $pageurl = '', $nojump = false) {
-        static $li = '<li><a href="%spage=%s">%s</a></li>';
-        static $lt = '<li><span>%s</span></li>';
-        static $hasjs;
-        $unique   = uniqid();
-        $pageurl .= strpos($pageurl,'?') ? '&' : '?';
-        $return  = '<ul class="page-list" id="pageList">';
-        $return .= sprintf($lt, $pager['page'].'/<strong>'.$pager['pages'].'</strong> 页');
-        $return .= sprintf($lt, "共 <strong>{$pager['total']}</strong> 条");
-        if ($pager['page'] > 1) {
-            $return .= sprintf($li, $pageurl, $pager['page']-1, '上一页');
-        }
-        if ($pager['page'] < $pager['pages']) {
-            $return .= sprintf($li, $pageurl, $pager['page']+1, '下一页');
-        }
-        if (!$nojump) {
-          $return .= "<li> <span>跳转</span></li>"
-            . "<form method='get' action='{$pageurl}'>"
-            . "<div id='div{$unique}' class='jumpdiv'> <input id='input{$unique}' type='text' name='page' /> 页 "
-            . "<button type='submit' class='btn btn-info btn-xs'>确定</button></div>"
-            . "</form>";
-        }
-        $return .= '</ul>';
-        return $return;
-    }
-}
-
-/**
  * 字符转换成utf-8.
  */
 function hunter_convert_to_utf8($data) {
