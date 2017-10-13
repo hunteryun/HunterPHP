@@ -96,23 +96,14 @@ interface ModuleHandlerInterface {
   public function addProfile($name, $path);
 
   /**
-   * Determines which modules require and are required by each module.
+   * Check which modules require and are required by each module.
    *
    * @param array $modules
    *   An array of module objects keyed by module name. Each object contains
    *   information discovered during a Hunter\Core\Extension\ExtensionDiscovery
    *   scan.
-   *
-   * @return
-   *   The same array with the new keys for each module:
-   *   - requires: An array with the keys being the modules that this module
-   *     requires.
-   *   - required_by: An array with the keys being the modules that will not work
-   *     without this module.
-   *
-   * @see \Hunter\Core\Extension\ExtensionDiscovery
    */
-  public function buildModuleDependencies(array $modules);
+  public function checkModuleDependencies(array $modules);
 
   /**
    * Determines whether a given module is enabled.

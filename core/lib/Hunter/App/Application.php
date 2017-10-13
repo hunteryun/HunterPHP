@@ -245,9 +245,9 @@ class Application {
 
       // Load each module's serviceProvider class.
       foreach ($this->moduleList as $module => $filename) {
-        $filename = dirname($filename['pathname']) . "/$module.services.yml";
-        if (file_exists($filename)) {
-          $this->serviceYamls[$module] = Yaml::decode(file_get_contents($filename));
+        $service_filename = dirname($filename['pathname']) . "/$module.services.yml";
+        if (file_exists($service_filename)) {
+          $this->serviceYamls[$module] = Yaml::decode(file_get_contents($service_filename));
         }
       }
     }
@@ -306,6 +306,7 @@ class Application {
      */
     protected function initializeModuleList() {
       $this->moduleHandler = new ModuleHandler($this->root, $this->moduleList);
+      $this->moduleHandler->checkModuleDependencies($this->moduleHandler->getModuleList());
       $this->moduleHandler->loadAll();
     }
 

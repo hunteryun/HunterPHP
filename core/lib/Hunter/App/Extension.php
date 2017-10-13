@@ -45,6 +45,13 @@ class Extension implements \Serializable {
   protected $root;
 
   /**
+   * The info.
+   *
+   * @var array
+   */
+  protected $info;
+
+  /**
    * Constructs a new Extension object.
    *
    * @param string $root
@@ -57,11 +64,12 @@ class Extension implements \Serializable {
    * @param string $filename
    *   (optional) The filename of the main extension file; e.g., 'node.module'.
    */
-  public function __construct($root, $type, $pathname, $filename = NULL) {
+  public function __construct($root, $type, $pathname, $filename = NULL, $info = array()) {
     $this->root = $root;
     $this->type = $type;
     $this->pathname = $pathname;
     $this->filename = $filename;
+    $this->info = $info;
   }
 
   /**
@@ -107,6 +115,16 @@ class Extension implements \Serializable {
    */
   public function getFilename() {
     return basename($this->pathname);
+  }
+
+
+  /**
+   * Returns the info.
+   *
+   * @return string
+   */
+  public function getInfo() {
+    return $this->info;
   }
 
   /**
