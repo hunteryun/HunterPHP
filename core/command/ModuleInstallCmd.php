@@ -54,11 +54,11 @@ class ModuleInstallCmd extends BaseCommand {
         $install_fun = $input->getArgument('module').'_install';
         if (function_exists($schema_fun)) {
           $schemas = $schema_fun();
+          $installed = db_schema()->installSchema($schemas);
         }
 
-        $installed = db_schema()->installSchema($schemas);
-
         if (function_exists($install_fun)) {
+          $installed = true;
           $install_fun();
         }
       }

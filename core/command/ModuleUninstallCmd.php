@@ -52,14 +52,14 @@ class ModuleUninstallCmd extends BaseCommand {
           $schema_fun = $module.'_schema';
           $uninstall_fun = $module.'_uninstall';
           if (function_exists($schema_fun)) {
-              $tables = array_keys($schema_fun());
-          }
-
-          foreach ($tables as $table) {
-            $uninstalled = db_schema()->dropTable($table);
+            $tables = array_keys($schema_fun());
+            foreach ($tables as $table) {
+              $uninstalled = db_schema()->dropTable($table);
+            }
           }
 
           if (function_exists($uninstall_fun)) {
+            $uninstalled = true;
             $uninstall_fun();
           }
       }
