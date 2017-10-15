@@ -8,3 +8,10 @@ core: <?php print $core; ?>
 
 package: <?php print $package; ?>
 
+<?php if(!empty($dependencies)): ?>
+dependencies:
+<?php foreach ($dependencies as $dep_module): ?>
+  - <?php print $dep_module; ?>
+  
+<?php endforeach; ?>
+<?php endif; ?>

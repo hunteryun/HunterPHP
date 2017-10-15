@@ -25,7 +25,6 @@ class ModuleCreateCmd extends BaseCommand {
 
    /**
     * InstallCommand constructor.
-    * @param Site $site
     */
    public function __construct() {
        $application = new Application();
@@ -85,6 +84,12 @@ class ModuleCreateCmd extends BaseCommand {
                 InputOption::VALUE_NONE,
                 'commands.create.module.options.module-file'
             )
+            ->addOption(
+                'dependencies',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'commands.create.module.options.dependencies'
+            )
             ->addArgument(
                 'isContentType',
                 InputArgument::OPTIONAL,
@@ -103,6 +108,7 @@ class ModuleCreateCmd extends BaseCommand {
        $core = $input->getOption('core');
        $package = $input->getOption('package');
        $moduleFile = $input->getOption('module-file');
+       $dependencies = explode(',', $input->getOption('dependencies'));
        $isContentType = $input->getArgument('isContentType');
 
        $dir .= '/'.$machineName;
@@ -141,6 +147,7 @@ class ModuleCreateCmd extends BaseCommand {
          'core' => $core,
          'description' => $description,
          'package' => $package,
+         'dependencies' => $dependencies,
          'isContentType' => $isContentType,
        );
 
@@ -226,6 +233,14 @@ class ModuleCreateCmd extends BaseCommand {
            $question = new Question('Do you want to create a .module file (yes/no) [yes]:', 'yes');
            $moduleFile = $helper->ask($input, $output, $question);
            $input->setOption('module-file', $moduleFile);
+       }
+
+       // --module dependencies option
+       $dependencies = $input->getOption('dependencies');
+       if (!$dependencies) {
+           $question = new Question('Enter dependency module (Use comma separated):', '');
+           $dependencies = $helper->ask($input, $output, $question);
+           $input->setOption('dependencies', $dependencies);
        }
    }
 
