@@ -7,7 +7,11 @@
   defaults:
     _controller: '\Hunter\<?php print $module; ?>\Controller\<?php print $class_name; ?>Controller::<?php print $route['method']; ?>'
     _title: '<?php print $route['title']; ?>'
-  <?php if($route['nocache']): ?>
+  <?php if($route['permission']): ?>
+requirements:
+    _permission: '<?php print $route['permission']; ?>'
+  <?php endif; ?>
+<?php if($route['nocache']): ?>
 options:
     nocache: TRUE
   <?php endif; ?>

@@ -26,6 +26,7 @@ class Application {
     protected $classLoader;
     protected $container;
     protected $moduleList;
+    protected $permissionList;
     protected $routers = array();
     protected $routeList;
     protected $routePermission = array();
@@ -315,9 +316,9 @@ class Application {
      */
     protected function initializePermissionList() {
       $this->permissionHandler = new PermissionHandler($this->moduleHandler);
-      $permissions = $this->permissionHandler->getPermissions();
-      if(!empty($permissions)){
-        foreach ($permissions as $name => $info) {
+      $this->permissionList = $this->permissionHandler->getPermissions();
+      if(!empty($this->permissionList)){
+        foreach ($this->permissionList as $name => $info) {
           if(isset($info['_callback'])){
             list($class, $method) = explode('::', $info['_callback'], 2);
             $this->container->add($class);
@@ -403,6 +404,13 @@ class Application {
      */
     public function getModulesList() {
         return $this->moduleList;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPermissionsList() {
+        return $this->permissionList;
     }
 
     /**

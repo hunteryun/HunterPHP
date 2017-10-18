@@ -23,6 +23,11 @@ class ControllerCreateCmd extends BaseCommand {
    protected $moduleList;
 
    /**
+    * @var permissionList
+    */
+   protected $permissionList;
+
+   /**
     * @var routeList
     */
    protected $routeList;
@@ -45,6 +50,7 @@ class ControllerCreateCmd extends BaseCommand {
        $application = new Application();
        $this->moduleList = $application->boot()->getModulesList();
        $this->routeList = $application->boot()->getRoutesList();
+       $this->permissionList = $application->boot()->getPermissionsList();
        $this->stringConverter = new StringConverter();
 
        parent::__construct();
@@ -182,6 +188,7 @@ class ControllerCreateCmd extends BaseCommand {
            }
 
            while (true) {
+              //route method title
               $title_question = new Question('Enter the Controller method title (leave empty and press enter when done) []:', '');
               $title = $helper->ask($input, $output, $title_question);
 
@@ -189,16 +196,36 @@ class ControllerCreateCmd extends BaseCommand {
                   break;
               }
 
+              //route method
               $method_question = new Question('Enter the action method name [hello]:', 'hello');
               $method = $helper->ask($input, $output, $method_question);
 
+              //route path
               $path_question = new Question('Enter the route path [/'.$module.'/hello/{name}]:', '/'.$module.'/hello/{name}');
               $path = $helper->ask($input, $output, $path_question);
 
+              //route name
               $classMachineName = $this->stringConverter->createMachineName($class);
               $routeName = $module . '.' . str_replace("controller", "", $classMachineName) . '_' . $method;
 
-              $nocache_question = new ConfirmationQuestion('Enable cache [No]? ', FALSE);
+              //permission
+              $en_permission_question = new ConfirmationQuestion('Enable permission (y/n) [No]? ', FALSE);
+              $en_permission = $helper->ask($input, $output, $en_permission_question);
+
+              $permission = false;
+              if($en_permission){
+                $permission_choices = array_keys($this->permissionList);
+                $default_permission_vaule = array_search('access admin page', $permission_choices);
+                $permission_question = new ChoiceQuestion(
+                   'Select the permission name []:',
+                   $permission_choices,
+                   $default_permission_vaule
+                );
+                $permission = $helper->ask($input, $output, $permission_question);
+              }
+
+              //nocache
+              $nocache_question = new ConfirmationQuestion('Enable cache (y/n) [No]? ', FALSE);
               $nocache = $helper->ask($input, $output, $nocache_question);
 
               $routes[] = [
@@ -207,6 +234,7 @@ class ControllerCreateCmd extends BaseCommand {
                   'method' => $method,
                   'path' => $path,
                   'args' => $this->getArgumentsFromRoute($path),
+                  'permission' => $permission,
                   'nocache' => $nocache
               ];
            }
