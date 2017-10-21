@@ -31,7 +31,7 @@ abstract class Compiler {
      * @param  string  $cachePath
      * @return void
      */
-    public function __construct($file, $cachePath)
+    public function __construct($file = null, $cachePath = 'sites/cache')
     {
         $this->files = $file;
         $this->cachePath = $cachePath;

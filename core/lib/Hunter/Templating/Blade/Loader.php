@@ -60,6 +60,10 @@ class Loader {
           return $name;
         }
 
+        if(is_file($name)){
+          return $name;
+        }
+
         foreach ($this->paths[$namespace] as $dir) {
             $file = $dir . '/' . $name;
             if (is_file($file)) {
