@@ -224,6 +224,15 @@ class Connection extends PDO {
     }
 
     /**
+     * 范围查询SQL
+     *
+     * @see db_query_range
+     */
+    public function queryRange($query, $from, $count, array $args = array(), array $options = array()) {
+      return $this->query($query . ' LIMIT ' . (int) $from . ', ' . (int) $count, $args, $options);
+    }
+
+    /**
      * 前置query处理
      *
      * @return Hunter\Core\Database\Statement

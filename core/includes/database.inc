@@ -46,6 +46,17 @@ function db_query($query, array $args = array(), array $options = array()) {
 }
 
 /**
+ * Executes a query against the active database, restricted to a range.
+ */
+function db_query_range($query, $from, $count, array $args = array(), array $options = array()) {
+  if (empty($options['target'])) {
+    $options['target'] = 'default';
+  }
+
+  return Database::getConnection($options['target'])->queryRange($query, $from, $count, $args, $options);
+}
+
+/**
  * @usage
  *
  * db_select('table', 'alias')
