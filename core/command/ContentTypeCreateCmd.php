@@ -122,6 +122,8 @@ class ContentTypeCreateCmd extends BaseCommand {
              'method' => $type.'_list',
              'path' => '/admin/'.$type.'/list',
              'args' => array(),
+             'permission' => 'access admin page',
+             'nocache' => false
            ),
            array(
              'title' => $type.' add',
@@ -129,6 +131,8 @@ class ContentTypeCreateCmd extends BaseCommand {
              'method' => $type.'_add',
              'path' => '/admin/'.$type.'/add',
              'args' => array(),
+             'permission' => 'access admin page',
+             'nocache' => false
            ),
            array(
              'title' => $type.' edit',
@@ -136,6 +140,8 @@ class ContentTypeCreateCmd extends BaseCommand {
              'method' => $type.'_edit',
              'path' => '/admin/'.$type.'/edit/{'.substr($type, 0, 1 ).'id}',
              'args' => array('$'.substr($type, 0, 1 ).'id'),
+             'permission' => 'access admin page',
+             'nocache' => false
            ),
            array(
              'title' => $type.' update',
@@ -143,6 +149,8 @@ class ContentTypeCreateCmd extends BaseCommand {
              'method' => $type.'_update',
              'path' => '/admin/'.$type.'/update',
              'args' => array(),
+             'permission' => 'access admin page',
+             'nocache' => false
            ),
            array(
              'title' => $type.' del',
@@ -150,6 +158,8 @@ class ContentTypeCreateCmd extends BaseCommand {
              'method' => $type.'_del',
              'path' => '/admin/'.$type.'/del/{'.substr($type, 0, 1 ).'id}',
              'args' => array('$'.substr($type, 0, 1 ).'id'),
+             'permission' => 'access admin page',
+             'nocache' => false
            )
          ),
          'isContentType' => TRUE,
@@ -164,6 +174,8 @@ class ContentTypeCreateCmd extends BaseCommand {
              'method' => $type.'_'.$field['name'].'_upload',
              'path' => '/admin/'.$type.'/'.$field['name'].'/upload',
              'args' => array(),
+             'permission' => 'access admin page',
+             'nocache' => false
            );
          }
        }
@@ -180,7 +192,7 @@ class ContentTypeCreateCmd extends BaseCommand {
 
        $module_install_arguments = array(
          'command' => 'module:install',
-         '--module' => $type,
+         'module' => $type,
        );
 
        $module_install_typeInput = new ArrayInput($module_install_arguments);
