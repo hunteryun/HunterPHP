@@ -416,6 +416,13 @@ class Application {
     /**
      * {@inheritdoc}
      */
+    public function getRoutes() {
+        return $this->routers;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getRoutesList() {
         return $this->routeList;
     }

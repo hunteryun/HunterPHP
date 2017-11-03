@@ -41,7 +41,6 @@ $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
 
       $<?php print substr($module, 0, 1 ); ?>id = db_insert('<?php print $module; ?>')
         ->fields(array(
-          'title' => $title,
           <?php foreach($fields as $field): ?>
 '<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
           <?php endforeach; ?>
@@ -86,7 +85,6 @@ $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
 
        db_update('<?php print $module; ?>')
          ->fields(array(
-           'title' => $title,
            <?php foreach($fields as $field): ?>
 '<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
            <?php endforeach; ?>
