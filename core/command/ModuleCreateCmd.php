@@ -108,7 +108,7 @@ class ModuleCreateCmd extends BaseCommand {
        $core = $input->getOption('core');
        $package = $input->getOption('package');
        $moduleFile = $input->getOption('module-file');
-       $dependencies = explode(',', $input->getOption('dependencies'));
+       $dependencies = $input->getOption('dependencies') == '' ? '' : explode(',', $input->getOption('dependencies'));
        $isContentType = $input->getArgument('isContentType');
 
        $dir .= '/'.$machineName;

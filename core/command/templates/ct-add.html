@@ -21,10 +21,10 @@
                   <label class="layui-form-label"><?php print $field['lable']; ?></label>
                   <div class="layui-input-block">
                     <select name="<?php echo $field['name']; ?>">
-                    <?php foreach ($field['html_type_option'] as $h):?>
-              <option value="<?php echo $h['value']; ?>"><?php echo $h['lable']; ?></option>
-              <?php endforeach;?>
-                    </select>
+          <?php foreach ($field['html_type_option'] as $h):?>
+            <option value="<?php echo $h['value']; ?>"><?php echo $h['lable']; ?></option>
+          <?php endforeach;?>
+          </select>
                   </div>
               </div>
             <?php elseif($field['html_type'] == 'textarea'): ?>
@@ -50,10 +50,10 @@
               <div class="layui-form-item">
                   <label class="layui-form-label"><?php print $field['lable']; ?></label>
                   <div class="layui-input-block">
-                      <?php foreach ($field['html_type_option'] as $h):?>
-                          <input type="radio" name="<?php echo $field['name']; ?>" value="<?php echo $h['value']; ?>" title="<?php echo $h['lable']; ?>">
-                      <?php endforeach;?>
-                  </div>
+              <?php foreach ($field['html_type_option'] as $h):?>
+              <input type="radio" name="<?php echo $field['name']; ?>" value="<?php echo $h['value']; ?>" title="<?php echo $h['lable']; ?>">
+              <?php endforeach;?>
+                </div>
               </div>
             <?php elseif($field['html_type'] == 'file' || $field['html_type'] == 'image'): ?>
 

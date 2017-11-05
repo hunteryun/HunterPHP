@@ -15,13 +15,6 @@ function <?php print $type; ?>_schema() {
         'not null' => TRUE,
         'description' => 'ID of <?php print $type; ?>.',
       ),
-      'title' => array(
-        'type' => 'varchar',
-        'length' => 60,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => '<?php print $type; ?> title.',
-      ),
 <?php foreach($fields as $field): ?>
 <?php if($field['type'] == 'int'): ?>
       '<?php print $field['name']; ?>' => array(
@@ -45,7 +38,7 @@ function <?php print $type; ?>_schema() {
         'description' => '<?php print $type; ?> <?php print $field['name']; ?>.',
       ),
       <?php else: ?>
-'<?php print $field['name']; ?>' => array(
+      '<?php print $field['name']; ?>' => array(
         'type' => 'varchar',
         'length' => <?php print $field['type_setting']['length']; ?>,
         'not null' => <?php print $field['type_setting']['notnull']; ?>,
@@ -54,7 +47,7 @@ function <?php print $type; ?>_schema() {
       ),
 <?php endif; ?>
 <?php endforeach; ?>
-'uid' => array(
+      'uid' => array(
         'type' => 'varchar',
         'length' => 60,
         'not null' => TRUE,

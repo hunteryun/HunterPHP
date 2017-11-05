@@ -103,6 +103,7 @@ class ContentTypeCreateCmd extends BaseCommand {
          '--core' => '1.x',
          '--package' => 'Custom',
          '--module-file' => 'yes',
+         '--dependencies' => '',
          'isContentType' => TRUE,
        );
 
