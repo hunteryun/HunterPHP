@@ -55,6 +55,7 @@ class <?php print ucfirst($module); ?>Controller {
       '#type' => 'textarea',
       '#title' => '<?php print $field['lable']; ?>',
       '#required' => TRUE,
+      '#attributes' => array('id' => '<?php print $field['name']; ?>', 'lay-verify' => '<?php print $field['name']; ?>_content'),
     );
 <?php elseif($field['html_type'] == 'radio'): ?>
     $form['<?php print $field['name']; ?>'] = array(
@@ -134,6 +135,7 @@ $form['<?php print $field['name']; ?>'] = array(
         '#title' => '<?php print $field['lable']; ?>',
         '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
         '#required' => TRUE,
+        '#attributes' => array('id' => '<?php print $field['name']; ?>', 'lay-verify' => '<?php print $field['name']; ?>_content'),
       );
   <?php elseif($field['html_type'] == 'radio'): ?>
 $form['<?php print $field['name']; ?>'] = array(
@@ -277,9 +279,11 @@ $form['<?php print $field['name']; ?>'] = array(
       $files = array();
       foreach ($uploadedFiles as $key => $value) {
 
+<?php if($field['html_type'] != 'file'): ?>
         if(empty(strstr($value->getClientMediaType(), 'image'))){
           return new JsonResponse(array('filename' => false));
         }
+<?php endif; ?>
 
         if ($value instanceof UploadedFileInterface) {
           $url = 'sites/upload/<?php print $module; ?>/<?php print $field['name']; ?>/'. $value->getClientFilename();
@@ -287,7 +291,12 @@ $form['<?php print $field['name']; ?>'] = array(
             mkdir(dirname($url), 0755, true);
           }
           $value->moveTo($url);
+
+          <?php if($field['html_type'] == 'textarea'): ?>
+          return new JsonResponse(array('code' => 0, 'msg' => t('Upload Success'), "data" => array('src' => base_path().$url)));
+          <?php else: ?>
           return new JsonResponse(array('filename' => base_path().$url, 'ext' => $value->getClientMediaType()));
+          <?php endif; ?>
         }
       }
     }

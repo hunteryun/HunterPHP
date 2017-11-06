@@ -39,9 +39,14 @@
                         <?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>
                     </td>
 <?php foreach ($fields as $field): ?>
-<?php if($field['html_type'] == 'text' || $field['html_type'] == 'image'): ?>
+<?php if($field['html_type'] == 'text'): ?>
 <td>
 <?php print '<?php echo $r->'.$field['name'].'; ?>'; ?>
+</td>
+<?php endif; ?>
+<?php if($field['html_type'] == 'image'): ?>
+<td>
+<img src="<?php print '<?php echo $r->'.$field['name'].'; ?>'; ?>" width="70">
 </td>
 <?php endif; ?>
 <?php endforeach; ?>
