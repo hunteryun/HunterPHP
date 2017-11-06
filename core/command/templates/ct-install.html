@@ -25,13 +25,13 @@ function <?php print $type; ?>_schema() {
         'description' => '<?php print $type; ?> <?php print $field['name']; ?>.',
       ),
       <?php elseif($field['type'] == 'text'): ?>
-'<?php print $field['name']; ?>' => array(
+      '<?php print $field['name']; ?>' => array(
         'type' => 'text',
         'size' => 'normal',
         'description' => "<?php print $type; ?> <?php print $field['name']; ?>.",
       ),
       <?php elseif($field['type'] == 'blob'): ?>
-'<?php print $field['name']; ?>' => array(
+      '<?php print $field['name']; ?>' => array(
         'type' => 'blob',
         'not null' => <?php print $field['type_setting']['notnull']; ?>,
         'size' => 'big',

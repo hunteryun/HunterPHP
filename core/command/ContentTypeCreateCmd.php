@@ -292,7 +292,7 @@ class ContentTypeCreateCmd extends BaseCommand {
               //html_type
               $html_type_question = new ChoiceQuestion(
                  'Choose the field html type [varchar]:',
-                 array('text', 'select', 'textarea', 'image', 'radio', 'checkbox', 'file', 'password', 'tel', 'hidden'),
+                 array('text', 'textarea', 'image', 'file', 'select', 'radio', 'checkbox', 'hidden', 'password', 'tel'),
                  0
               );
               $html_type = $helper->ask($input, $output, $html_type_question);
@@ -317,6 +317,31 @@ class ContentTypeCreateCmd extends BaseCommand {
                   $html_type_option[$name][$i]['lable'] = hunter_convert_to_utf8($helper->ask($input, $output, $html_type_option_lable_question));
                   $i++;
                 }
+                break;
+              case 'file':
+                //accept option
+                $file_accept_question = new ChoiceQuestion(
+                   'Choose the file accept type [file]:',
+                   array('file', 'video', 'audio'),
+                   0
+                );
+                $html_type_option[$name]['file_accept'] = $helper->ask($input, $output, $file_accept_question);
+
+                if($html_type_option[$name]['file_accept'] == 'video') {
+                  $default_exts = 'rm|rmvb|wmv|avi|mp4|3gp|mkv';
+                }elseif ($html_type_option[$name]['file_accept'] == 'audio') {
+                  $default_exts = 'wav|mp3|ogg|wma|aac';
+                }else {
+                  $default_exts = 'doc|pdf|txt|xls|zip|rar|7z';
+                }
+
+                //file exts
+                $file_exts_question = new Question('Enter the allowed extensions ['.$default_exts.']:', $default_exts);
+                $html_type_option[$name]['file_exts'] = $helper->ask($input, $output, $file_exts_question);
+
+                //file size
+                $file_size_question = new Question('Enter the file size, default no limited [KB]:', 0);
+                $html_type_option[$name]['file_size'] = $helper->ask($input, $output, $file_size_question);
                 break;
               default:
                 $html_type_option[$name] = array();

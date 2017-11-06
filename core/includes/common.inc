@@ -296,61 +296,68 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
 
   $submit_field = array();
 
-  foreach ($fields as $name => $field) {
-    if (!isset($field['#name'])) {
-      $field['#name'] = $name;
-    }
+  if(!empty($fields)){
+    foreach ($fields as $name => $field) {
+      if (!isset($field['#name'])) {
+        $field['#name'] = $name;
+      }
 
-    if(!isset($field['#attributes'])){
-      $field['#attributes'] = array();
-    }
+      if(!isset($field['#attributes'])){
+        $field['#attributes'] = array();
+      }
 
-    if(!isset($field['#value'])){
-      $field['#value'] = isset($field['#default_value']) ? $field['#default_value'] : '';
-    }
+      if(!isset($field['#value'])){
+        $field['#value'] = isset($field['#default_value']) ? $field['#default_value'] : '';
+      }
 
-    switch ($field['#type'])
-    {
-    case 'textfield':
-      $field['#attributes']['type'] = 'text';
-      element_set_attributes($field, array('id', 'name', 'value', 'size', 'maxlength'));
-      $form->input($name, $field);
-      break;
-    case 'radios':
-      $field['#attributes']['type'] = 'radio';
-      element_set_attributes($field, array('id', 'name'));
-      $form->radio($name, $field);
-      break;
-    case 'checkboxes':
-      $field['#attributes']['type'] = 'checkbox';
-      element_set_attributes($field, array('id', 'name'));
-      $form->checkbox($name, $field);
-      break;
-    case 'file':
-      element_set_attributes($field, array('id', 'name', 'value', 'size'));
-      $field['#attributes']['class'][] = 'layui-input layui-input-inline';
-      $form->file($name, $field);
-      break;
-    case 'select':
-      element_set_attributes($field, array('id', 'name', 'size'));
-      $form->select($name, $field);
-      break;
-    case 'textarea':
-      element_set_attributes($field, array('id', 'name', 'cols', 'rows'));
-      $field['#attributes']['class'][] = 'layui-textarea';
-      $form->textarea($name, $field);
-      break;
-    case 'hidden':
-      $form->hidden($name, $field['#value']);
-      break;
-    case 'img':
-      $form->img($name, $field);
-      break;
-    case 'submit':
-      $submit_field = $field;
-      break;
-    default:
-      break;
+      switch ($field['#type'])
+      {
+      case 'textfield':
+        $field['#attributes']['type'] = 'text';
+        element_set_attributes($field, array('id', 'name', 'value', 'size', 'maxlength'));
+        $form->input($name, $field);
+        break;
+      case 'radios':
+        $field['#attributes']['type'] = 'radio';
+        element_set_attributes($field, array('id', 'name'));
+        $form->radio($name, $field);
+        break;
+      case 'checkboxes':
+        $field['#attributes']['type'] = 'checkbox';
+        element_set_attributes($field, array('id', 'name'));
+        $form->checkbox($name, $field);
+        break;
+      case 'file':
+        element_set_attributes($field, array('id', 'name', 'value', 'size'));
+        $field['#attributes']['class'][] = 'layui-input layui-input-inline';
+        $form->file($name, $field);
+        break;
+      case 'image':
+        element_set_attributes($field, array('id', 'name', 'value', 'size'));
+        $field['#attributes']['class'][] = 'layui-input layui-input-inline';
+        $form->file($name, $field);
+        break;
+      case 'select':
+        element_set_attributes($field, array('id', 'name', 'size'));
+        $form->select($name, $field);
+        break;
+      case 'textarea':
+        element_set_attributes($field, array('id', 'name', 'cols', 'rows'));
+        $field['#attributes']['class'][] = 'layui-textarea';
+        $form->textarea($name, $field);
+        break;
+      case 'hidden':
+        $form->hidden($name, $field['#value']);
+        break;
+      case 'img':
+        $form->img($name, $field);
+        break;
+      case 'submit':
+        $submit_field = $field;
+        break;
+      default:
+        break;
+      }
     }
   }
 

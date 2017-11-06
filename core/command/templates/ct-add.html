@@ -6,93 +6,22 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-    <link rel="stylesheet" href="/theme/admin/assets/css/index.css">
     <link rel="stylesheet" href="/theme/admin/assets/layui/css/layui.css">
-    <script src="/theme/admin/assets/js/lib/jquery.min.js"></script>
+    <link rel="stylesheet" href="/theme/admin/assets/css/style.css">
+    <script src="/theme/admin/assets/js/jquery.min.js"></script>
 </head>
 
 <body>
     <div class="pd-20 <?php print $type; ?>-add">
-        <form class="layui-form" action="">
-          <?php foreach ($fields as $field): ?>
-            <?php if($field['html_type'] == 'select'): ?>
-
-              <div class="layui-form-item">
-                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
-                  <div class="layui-input-block">
-                    <select name="<?php echo $field['name']; ?>">
-          <?php foreach ($field['html_type_option'] as $h):?>
-            <option value="<?php echo $h['value']; ?>"><?php echo $h['lable']; ?></option>
-          <?php endforeach;?>
-          </select>
-                  </div>
-              </div>
-            <?php elseif($field['html_type'] == 'textarea'): ?>
-
-              <div class="layui-form-item">
-                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
-                  <div class="layui-input-block">
-                      <textarea id="<?php print $field['name']; ?>" name="<?php print $field['name']; ?>" lay-verify="<?php print $field['name']; ?>_content" style="display: none;"></textarea>
-                  </div>
-              </div>
-            <?php elseif($field['html_type'] == 'checkbox'): ?>
-
-              <div class="layui-form-item">
-                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
-                  <div class="layui-input-block">
-                    <?php foreach ($field['html_type_option'] as $h):?>
-                        <input type="checkbox" name="<?php echo $field['name']; ?>[<?php echo $h['value']; ?>]" title="<?php echo $h['lable']; ?>">
-                    <?php endforeach;?>
-                  </div>
-              </div>
-            <?php elseif($field['html_type'] == 'radio'): ?>
-
-              <div class="layui-form-item">
-                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
-                  <div class="layui-input-block">
-              <?php foreach ($field['html_type_option'] as $h):?>
-              <input type="radio" name="<?php echo $field['name']; ?>" value="<?php echo $h['value']; ?>" title="<?php echo $h['lable']; ?>">
-              <?php endforeach;?>
-                </div>
-              </div>
-            <?php elseif($field['html_type'] == 'file' || $field['html_type'] == 'image'): ?>
-
-              <div class="layui-form-item">
-                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
-                  <div class="layui-input-block">
-                    <input type="text" name="<?php echo $field['name']; ?>" value="" class="layui-input layui-input-inline" id="<?php echo $field['name']; ?>">
-                    <div class="layui-box layui-upload-button">
-                      <input type="file" name="file"<?php echo $field['html_type'] == 'file' ? ' lay-type="file"' : ''; ?> class="layui-upload-file-<?php echo $field['name']; ?>">
-                    </div>
-                  </div>
-              </div>
-            <?php elseif($field['html_type'] == 'hidden'): ?>
-
-              <input type="<?php print $field['html_type']; ?>" name="<?php print $field['name']; ?>" value="1">
-            <?php else: ?>
-
-              <div class="layui-form-item">
-                  <label class="layui-form-label"><?php print $field['lable']; ?></label>
-                  <div class="layui-input-block">
-                      <input type="<?php print $field['html_type']; ?>" name="<?php print $field['name']; ?>" class="layui-input">
-                  </div>
-              </div>
-            <?php endif; ?>
-          <?php endforeach; ?>
-
-          <div class="layui-form-item">
-              <div class="layui-input-block submit">
-                  <button class="layui-btn" lay-submit="" lay-filter="<?php print $type; ?>Add">保存</button>
-              </div>
-          </div>
-        </form>
+        {!! hunter_form_render('layui', $form) !!}
     </div>
     <script src="/theme/admin/assets/layui/layui.js"></script>
-    <script src="/theme/admin/assets/js/define/common.js"></script>
     <script>
         layui.use(['form', 'layedit', 'layer', 'upload'], function() {
-            var form = layui.form();
+            var form = layui.form;
             var layedit = layui.layedit;
+            var upload = layui.upload;
+            var layer = layui.layer;
             <?php foreach ($fields as $field): ?>
               <?php if($field['html_type'] == 'textarea'): ?>
 
@@ -109,13 +38,38 @@
                  }
               });
 
-              <?php elseif($field['html_type'] == 'image' || $field['html_type'] == 'file'): ?>
+              <?php elseif($field['html_type'] == 'image'): ?>
 
-              layui.upload({
-                url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload',
-                elem: '.layui-upload-file-<?php echo $field['name']; ?>',
-                success: function (result) {
-                    document.getElementById('<?php print $field['name']; ?>').value = result.filename;
+              //图片上传
+              var <?php print $field['name']; ?>Upload = upload.render({
+                elem: '#<?php print $field['name']; ?>btn' //绑定元素
+                ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload' //上传接口
+                ,done: function(result){
+                  document.getElementById('<?php print $field['name']; ?>').value = result.filename;
+                }
+                ,error: function(){
+                  layer.msg('Upload failed!', {
+                      icon: 5
+                  });
+                }
+              });
+
+              <?php elseif($field['html_type'] == 'file'): ?>
+
+              //文件上传
+              var <?php print $field['name']; ?>Upload = upload.render({
+                elem: '#<?php print $field['name']; ?>btn' //绑定元素
+                ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload' //上传接口
+                ,accept: '<?php print $field['html_type_option']['file_accept']; ?>' //允许上传的文件类型
+                ,exts: '<?php print $field['html_type_option']['file_exts']; ?>' //允许上传的文件扩展名
+                ,size: <?php print $field['html_type_option']['file_size']; ?> //最大允许上传的文件大小
+                ,done: function(result){
+                  document.getElementById('<?php print $field['name']; ?>').value = result.filename;
+                }
+                ,error: function(){
+                  layer.msg('Upload failed!', {
+                      icon: 5
+                  });
                 }
               });
               <?php endif; ?>

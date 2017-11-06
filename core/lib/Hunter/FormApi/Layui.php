@@ -77,12 +77,15 @@ class Layui extends Form {
           <div class="layui-form-item">
             <label class="layui-form-label">'.$field['#title'].'</label>
             <div class="layui-input-block">
-              <input type="text" id="'.$name.'"'.hunter_attributes($field['#attributes']).'>
-              <div class="layui-box layui-upload-button">
-                <input type="file" name="file" class="layui-upload-file">
-              </div>
-            </div>
-          </div>';
+              <input type="text" id="'.$name.'"'.hunter_attributes($field['#attributes']).'>';
+
+        if($field['#type'] == 'file'){
+          $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload File').'</button>';
+        }else {
+          $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload Image').'</button>';
+        }
+        
+        $this->form .= '</div></div>';
 
         return $this;
     }

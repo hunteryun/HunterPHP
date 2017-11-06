@@ -34,15 +34,11 @@ class <?php print ucfirst($module); ?>Controller {
   public function <?php print $module; ?>_add(ServerRequest $request) {
     if ($parms = $request->getParsedBody()) {
       $user = session()->get('admin');
-      $title = $parms['title'];
-      <?php foreach($fields as $field): ?>
-$<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
-      <?php endforeach; ?>
 
       $<?php print substr($module, 0, 1 ); ?>id = db_insert('<?php print $module; ?>')
         ->fields(array(
           <?php foreach($fields as $field): ?>
-'<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
+'<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
           <?php endforeach; ?>
 'uid' => $user->uid,
           'created' => time(),
@@ -50,10 +46,76 @@ $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
         ))
         ->execute();
 
-      return $<?php print substr($module, 0, 1 ); ?>id;
+      return hunter_form_submit($parms, '<?php print $module; ?>', $<?php print substr($module, 0, 1 ); ?>id);
     }
 
-    return view('/admin/<?php print $module; ?>-add.html');
+<?php foreach($fields as $field): ?>
+<?php if($field['html_type'] == 'textarea'): ?>
+    $form['<?php print $field['name']; ?>'] = array(
+      '#type' => 'textarea',
+      '#title' => '<?php print $field['lable']; ?>',
+      '#required' => TRUE,
+    );
+<?php elseif($field['html_type'] == 'radio'): ?>
+    $form['<?php print $field['name']; ?>'] = array(
+      '#type' => 'radios',
+      '#title' => '<?php print $field['lable']; ?>',
+      '#default_value' => '<?php print $field['html_type_option'][0]['value']; ?>',
+      '#options' => array(
+      <?php foreach($field['html_type_option'] as $item): ?>
+  '<?php print $item['value']; ?>' => '<?php print $item['lable']; ?>',
+      <?php endforeach; ?>
+),
+    );
+<?php elseif($field['html_type'] == 'image' || $field['html_type'] == 'file'): ?>
+    $form['<?php print $field['name']; ?>'] = array(
+      '#type' => '<?php print $field['html_type']; ?>',
+      '#title' => '<?php print $field['lable']; ?>',
+      '#attributes' => array('id' => '<?php print $field['name']; ?>'),
+    );
+<?php elseif($field['html_type'] == 'select'): ?>
+    $form['<?php print $field['name']; ?>'] = array(
+      '#type' => 'select',
+      '#title' => '<?php print $field['lable']; ?>',
+      '#default_value' => '<?php print $field['type_setting']['default']; ?>',
+      '#options' => array(
+      <?php foreach($field['html_type_option'] as $item): ?>
+  '<?php print $item['value']; ?>' => '<?php print $item['lable']; ?>',
+      <?php endforeach; ?>
+),
+    );
+<?php elseif($field['html_type'] == 'checkbox'): ?>
+    $form['<?php print $field['name']; ?>'] = array(
+      '#type' => 'checkboxes',
+      '#title' => '<?php print $field['lable']; ?>',
+      '#options' => array(
+      <?php foreach($field['html_type_option'] as $item): ?>
+  '<?php print $item['value']; ?>' => '<?php print $item['lable']; ?>',
+      <?php endforeach; ?>
+),
+      '#attributes' => array('lay-skin' => 'switch', 'lay-text' => 'Yes|No', 'value' => 'yes'),
+    );
+<?php elseif($field['html_type'] == 'hidden'): ?>
+    $form['<?php print $field['name']; ?>'] = array(
+      '#type' => 'hidden',
+      '#value' => '<?php print $field['type_setting']['default']; ?>',
+    );
+<?php else: ?>
+    $form['<?php print $field['name']; ?>'] = array(
+      '#type' => 'textfield',
+      '#title' => '<?php print $field['lable']; ?>',
+      '#maxlength' => <?php print $field['type_setting']['length']; ?>,
+    );
+<?php endif; ?>
+<?php endforeach; ?>
+
+    $form['save'] = array(
+     '#type' => 'submit',
+     '#value' => t('Save'),
+     '#attributes' => array('lay-submit' => '', 'lay-filter' => '<?php print $module; ?>Add'),
+    );
+
+    return view('/admin/<?php print $module; ?>-add.html', array('form' => $form));
   }
 
   /**
@@ -65,7 +127,82 @@ $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
   public function <?php print $module; ?>_edit($<?php print substr($module, 0, 1 ); ?>id) {
       $<?php print $module; ?> = get_<?php print $module; ?>_byid($<?php print substr($module, 0, 1 ); ?>id);
 
-      return view('/admin/<?php print $module; ?>-edit.html', array('<?php print $module; ?>' => $<?php print $module; ?>, '<?php print substr($module, 0, 1 ); ?>id' => $<?php print substr($module, 0, 1 ); ?>id));
+    <?php foreach($fields as $field): ?>
+  <?php if($field['html_type'] == 'textarea'): ?>
+$form['<?php print $field['name']; ?>'] = array(
+        '#type' => 'textarea',
+        '#title' => '<?php print $field['lable']; ?>',
+        '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
+        '#required' => TRUE,
+      );
+  <?php elseif($field['html_type'] == 'radio'): ?>
+$form['<?php print $field['name']; ?>'] = array(
+        '#type' => 'radios',
+        '#title' => '<?php print $field['lable']; ?>',
+        '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
+        '#options' => array(
+        <?php foreach($field['html_type_option'] as $item): ?>
+  '<?php print $item['value']; ?>' => '<?php print $item['lable']; ?>',
+        <?php endforeach; ?>
+),
+      );
+  <?php elseif($field['html_type'] == 'image' || $field['html_type'] == 'file'): ?>
+$form['<?php print $field['name']; ?>'] = array(
+        '#type' => '<?php print $field['html_type']; ?>',
+        '#title' => '<?php print $field['lable']; ?>',
+        '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
+        '#attributes' => array('id' => '<?php print $field['name']; ?>'),
+      );
+  <?php elseif($field['html_type'] == 'select'): ?>
+$form['<?php print $field['name']; ?>'] = array(
+        '#type' => 'select',
+        '#title' => '<?php print $field['lable']; ?>',
+        '#default_value' => '<?php print $field['type_setting']['default']; ?>',
+        '#options' => array(
+        <?php foreach($field['html_type_option'] as $item): ?>
+  '<?php print $item['value']; ?>' => '<?php print $item['lable']; ?>',
+        <?php endforeach; ?>
+),
+      );
+  <?php elseif($field['html_type'] == 'checkbox'): ?>
+$form['<?php print $field['name']; ?>'] = array(
+        '#type' => 'checkboxes',
+        '#title' => '<?php print $field['lable']; ?>',
+        '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
+        '#options' => array(
+        <?php foreach($field['html_type_option'] as $item): ?>
+  '<?php print $item['value']; ?>' => '<?php print $item['lable']; ?>',
+        <?php endforeach; ?>
+),
+        '#attributes' => array('lay-skin' => 'switch', 'lay-text' => 'Yes|No', 'value' => 'yes'),
+      );
+  <?php elseif($field['html_type'] == 'hidden'): ?>
+$form['<?php print $field['name']; ?>'] = array(
+        '#type' => 'hidden',
+        '#value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
+      );
+  <?php else: ?>
+$form['<?php print $field['name']; ?>'] = array(
+        '#type' => 'textfield',
+        '#title' => '<?php print $field['lable']; ?>',
+        '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
+        '#maxlength' => <?php print $field['type_setting']['length']; ?>,
+      );
+  <?php endif; ?>
+  <?php endforeach; ?>
+
+      $form['<?php print substr($module, 0, 1 ); ?>id'] = array(
+        '#type' => 'hidden',
+        '#value' => $<?php print substr($module, 0, 1 ); ?>id,
+      );
+
+      $form['save'] = array(
+       '#type' => 'submit',
+       '#value' => t('Save'),
+       '#attributes' => array('lay-submit' => '', 'lay-filter' => '<?php print $module; ?>Update'),
+      );
+
+      return view('/admin/<?php print $module; ?>-edit.html', array('form' => $form, '<?php print $module; ?>' => $<?php print $module; ?>, '<?php print substr($module, 0, 1 ); ?>id' => $<?php print substr($module, 0, 1 ); ?>id));
   }
 
   /**
@@ -78,15 +215,11 @@ $<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
     if ($parms = $request->getParsedBody()) {
       $<?php print substr($module, 0, 1 ); ?>id = $parms['<?php print substr($module, 0, 1 ); ?>id'];
       $user = session()->get('admin');
-      $title = $parms['title'];
-      <?php foreach($fields as $field): ?>
-$<?php print $field['name']; ?> = $parms['<?php print $field['name']; ?>'];
-      <?php endforeach; ?>
 
        db_update('<?php print $module; ?>')
          ->fields(array(
            <?php foreach($fields as $field): ?>
-'<?php print $field['name']; ?>' => $<?php print $field['name']; ?>,
+'<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
            <?php endforeach; ?>
            'uid' => $user->uid,
            'updated' => time(),
