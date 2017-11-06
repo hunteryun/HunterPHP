@@ -252,18 +252,6 @@ $form['<?php print $field['name']; ?>'] = array(
     return false;
   }
 
-  /**
-   * get <?php print $module; ?> list
-   */
-  public function get_<?php print $module; ?>_list() {
-      $<?php print $module; ?>_list = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
-        ->fields('<?php print substr($module, 0, 1 ); ?>')
-        ->execute()
-        ->fetchAllAssoc('<?php print substr($module, 0, 1 ); ?>id');
-
-      return $<?php print $module; ?>_list;
-  }
-
   <?php foreach ($fields as $field): ?>
     <?php if($field['html_type'] == 'file' || $field['html_type'] == 'image' || $field['html_type'] == 'textarea'): ?>
 
