@@ -229,7 +229,7 @@ class ControllerCreateCmd extends BaseCommand {
               $nocache = $helper->ask($input, $output, $nocache_question);
 
               $routes[] = [
-                  'title' => $title,
+                  'title' => hunter_convert_to_utf8($title),
                   'name' => $routeName,
                   'method' => $method,
                   'path' => $path,
