@@ -145,7 +145,7 @@ class ModuleCreateCmd extends BaseCommand {
          'machine_name' => $machineName,
          'type' => 'module',
          'core' => $core,
-         'description' => $description,
+         'description' => hunter_convert_to_utf8($description),
          'package' => $package,
          'dependencies' => $dependencies,
          'isContentType' => $isContentType,
