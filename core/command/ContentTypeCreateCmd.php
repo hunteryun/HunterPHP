@@ -267,6 +267,7 @@ class ContentTypeCreateCmd extends BaseCommand {
                 $type_setting[$name]['default'] = $helper->ask($input, $output, $type_setting_default_question);
                 $type_setting_notnull_question = new Question('Not null value [TRUE]:', TRUE);
                 $type_setting[$name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
+                $type_setting[$name]['length'] = '60';
                 break;
               case 'blob':
                 $type_setting_notnull_question = new Question('Not null value [TRUE]:', TRUE);
@@ -317,6 +318,19 @@ class ContentTypeCreateCmd extends BaseCommand {
                   $html_type_option[$name][$i]['lable'] = hunter_convert_to_utf8($helper->ask($input, $output, $html_type_option_lable_question));
                   $i++;
                 }
+                if($html_type == 'checkbox'){
+                  //checkbox skin
+                  $html_type_setting_skin_question = new ChoiceQuestion(
+                     'Choose the skin type [default]:',
+                     array('default', 'primary', 'switch'),
+                     0
+                  );
+                  $html_type_setting[$name]['skin'] = $helper->ask($input, $output, $html_type_setting_skin_question);
+
+                  //checkbox custom value
+                  $html_type_setting_custom_value_question = new Question('Enter the checkbox custom value [yes]:', 'yes');
+                  $html_type_setting[$name]['custom_value'] = $helper->ask($input, $output, $html_type_setting_custom_value_question);
+                }
                 break;
               case 'file':
                 //accept option
@@ -325,11 +339,11 @@ class ContentTypeCreateCmd extends BaseCommand {
                    array('file', 'video', 'audio'),
                    0
                 );
-                $html_type_option[$name]['file_accept'] = $helper->ask($input, $output, $file_accept_question);
+                $html_type_setting[$name]['file_accept'] = $helper->ask($input, $output, $file_accept_question);
 
-                if($html_type_option[$name]['file_accept'] == 'video') {
+                if($html_type_setting[$name]['file_accept'] == 'video') {
                   $default_exts = 'rm|rmvb|wmv|avi|mp4|3gp|mkv';
-                }elseif ($html_type_option[$name]['file_accept'] == 'audio') {
+                }elseif ($html_type_setting[$name]['file_accept'] == 'audio') {
                   $default_exts = 'wav|mp3|ogg|wma|aac';
                 }else {
                   $default_exts = 'doc|pdf|txt|xls|zip|rar|7z';
@@ -337,14 +351,15 @@ class ContentTypeCreateCmd extends BaseCommand {
 
                 //file exts
                 $file_exts_question = new Question('Enter the allowed extensions ['.$default_exts.']:', $default_exts);
-                $html_type_option[$name]['file_exts'] = $helper->ask($input, $output, $file_exts_question);
+                $html_type_setting[$name]['file_exts'] = $helper->ask($input, $output, $file_exts_question);
 
                 //file size
                 $file_size_question = new Question('Enter the file size, default no limited [KB]:', 0);
-                $html_type_option[$name]['file_size'] = $helper->ask($input, $output, $file_size_question);
+                $html_type_setting[$name]['file_size'] = $helper->ask($input, $output, $file_size_question);
                 break;
               default:
                 $html_type_option[$name] = array();
+                $html_type_setting[$name] = array();
               }
               unset($html_type_option[$name][count($html_type_option[$name])-1]);
               $fields[$name] = [
@@ -354,6 +369,7 @@ class ContentTypeCreateCmd extends BaseCommand {
                   'type_setting' => $type_setting[$name],
                   'html_type' => $html_type,
                   'html_type_option' => $html_type_option[$name],
+                  'html_type_setting' => $html_type_setting[$name],
               ];
            }
 

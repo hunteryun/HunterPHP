@@ -24,7 +24,7 @@
                   <th>ID</th>
 <?php foreach ($fields as $field): ?>
 <?php if($field['html_type'] == 'text' || $field['html_type'] == 'image'): ?>
-<th><?php print $field['lable']; ?></th>
+                  <th><?php print $field['lable']; ?></th>
 <?php endif; ?>
 <?php endforeach; ?>
                   <th><?php print t('Created'); ?></th>
@@ -34,20 +34,21 @@
             <tbody>
               <?php print '<?php foreach ($'.$type.'s as $r): ?>'; ?>
 
-                  <tr role="row" class="even">
+                  <tr>
                     <td>
                         <?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>
                     </td>
 <?php foreach ($fields as $field): ?>
 <?php if($field['html_type'] == 'text'): ?>
-<td>
-<?php print '<?php echo $r->'.$field['name'].'; ?>'; ?>
-</td>
+                    <td>
+                      <?php print '<?php echo $r->'.$field['name'].'; ?>'; ?>
+
+                    </td>
 <?php endif; ?>
 <?php if($field['html_type'] == 'image'): ?>
-<td>
-<img src="<?php print '<?php echo $r->'.$field['name'].'; ?>'; ?>" width="70">
-</td>
+                    <td>
+                      <img src="<?php print '<?php echo $r->'.$field['name'].'; ?>'; ?>" width="70">
+                    </td>
 <?php endif; ?>
 <?php endforeach; ?>
                     <td>
@@ -83,7 +84,7 @@
                     end: function() {
                         var iframe_status = $("#iframe_status").val();
                         if (iframe_status == '1') {
-                            layer.msg('Create success!', {
+                            layer.msg('添加成功!', {
                                 icon: 1,
                                 time: 1000,
                                 shade: 0.1
@@ -91,7 +92,7 @@
                                 location.reload();
                             });
                         } else if (iframe_status == '0') {
-                            layer.msg('Create failed!', {
+                            layer.msg('添加失败!', {
                                 icon: 5
                             });
                         }
@@ -117,7 +118,7 @@
                     end: function() {
                         var iframe_status = $("#iframe_status").val();
                         if (iframe_status == '1') {
-                            layer.msg('Edit success！', {
+                            layer.msg('编辑成功！', {
                                 icon: 1,
                                 time: 1000,
                                 shade: 0.1
@@ -125,7 +126,7 @@
                                 location.reload();
                             });
                         } else if (iframe_status == '0') {
-                            layer.msg('No edit content!', {
+                            layer.msg('没有可编辑的内容!', {
                                 icon: 5
                             });
                         } else if (iframe_status == '') {}

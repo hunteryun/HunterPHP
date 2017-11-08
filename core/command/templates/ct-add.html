@@ -40,38 +40,38 @@
 
               <?php elseif($field['html_type'] == 'image'): ?>
 
-              //图片上传
-              var <?php print $field['name']; ?>Upload = upload.render({
-                elem: '#<?php print $field['name']; ?>btn' //绑定元素
-                ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload' //上传接口
-                ,done: function(result){
-                  document.getElementById('<?php print $field['name']; ?>').value = result.filename;
-                }
-                ,error: function(){
-                  layer.msg('Upload failed!', {
-                      icon: 5
-                  });
-                }
-              });
+            //图片上传
+            var <?php print $field['name']; ?>Upload = upload.render({
+              elem: '#<?php print $field['name']; ?>btn' //绑定元素
+              ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload' //上传接口
+              ,done: function(result){
+                document.getElementById('<?php print $field['name']; ?>').value = result.filename;
+              }
+              ,error: function(){
+                layer.msg('上传失败!', {
+                    icon: 5
+                });
+              }
+            });
 
               <?php elseif($field['html_type'] == 'file'): ?>
 
-              //文件上传
-              var <?php print $field['name']; ?>Upload = upload.render({
-                elem: '#<?php print $field['name']; ?>btn' //绑定元素
-                ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload' //上传接口
-                ,accept: '<?php print $field['html_type_option']['file_accept']; ?>' //允许上传的文件类型
-                ,exts: '<?php print $field['html_type_option']['file_exts']; ?>' //允许上传的文件扩展名
-                ,size: <?php print $field['html_type_option']['file_size']; ?> //最大允许上传的文件大小
-                ,done: function(result){
-                  document.getElementById('<?php print $field['name']; ?>').value = result.filename;
-                }
-                ,error: function(){
-                  layer.msg('Upload failed!', {
-                      icon: 5
-                  });
-                }
-              });
+            //文件上传
+            var <?php print $field['name']; ?>Upload = upload.render({
+              elem: '#<?php print $field['name']; ?>btn' //绑定元素
+              ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload' //上传接口
+              ,accept: '<?php print $field['html_type_setting']['file_accept']; ?>' //允许上传的文件类型
+              ,exts: '<?php print $field['html_type_setting']['file_exts']; ?>' //允许上传的文件扩展名
+              ,size: <?php print $field['html_type_setting']['file_size']; ?> //最大允许上传的文件大小
+              ,done: function(result){
+                document.getElementById('<?php print $field['name']; ?>').value = result.filename;
+              }
+              ,error: function(){
+                layer.msg('上传失败!', {
+                    icon: 5
+                });
+              }
+            });
               <?php endif; ?>
             <?php endforeach; ?>
 

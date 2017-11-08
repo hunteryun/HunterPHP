@@ -94,7 +94,12 @@ class <?php print ucfirst($module); ?>Controller {
   '<?php print $item['value']; ?>' => '<?php print $item['lable']; ?>',
       <?php endforeach; ?>
 ),
-      '#attributes' => array('lay-skin' => 'switch', 'lay-text' => 'Yes|No', 'value' => 'yes'),
+  <?php if($field['html_type_setting']['skin'] == 'switch'): ?>
+    '#attributes' => array('lay-skin' => 'switch', 'lay-text' => 'Yes|No', 'value' => 'yes'),
+  <?php elseif($field['html_type_setting']['skin'] == 'primary'): ?>
+    '#attributes' => array('lay-skin' => 'primary', 'value' => 'yes'),
+  <?php else: ?>
+  <?php endif; ?>
     );
 <?php elseif($field['html_type'] == 'hidden'): ?>
     $form['<?php print $field['name']; ?>'] = array(
@@ -223,13 +228,13 @@ $form['<?php print $field['name']; ?>'] = array(
            <?php foreach($fields as $field): ?>
 '<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
            <?php endforeach; ?>
-           'uid' => $user->uid,
+'uid' => $user->uid,
            'updated' => time(),
          ))
          ->condition('<?php print substr($module, 0, 1 ); ?>id', $<?php print substr($module, 0, 1 ); ?>id)
          ->execute();
 
-       return true;
+       return hunter_form_submit($parms, '<?php print $module; ?>', true);
      }
      return false;
   }
@@ -280,12 +285,12 @@ $form['<?php print $field['name']; ?>'] = array(
           }
           $value->moveTo($url);
 
-          <?php if($field['html_type'] == 'textarea'): ?>
-          return new JsonResponse(array('code' => 0, 'msg' => t('Upload Success'), "data" => array('src' => base_path().$url)));
-          <?php else: ?>
-          return new JsonResponse(array('filename' => base_path().$url, 'ext' => $value->getClientMediaType()));
-          <?php endif; ?>
-        }
+  <?php if($field['html_type'] == 'textarea'): ?>
+  return new JsonResponse(array('code' => 0, 'msg' => t('Upload Success'), "data" => array('src' => base_path().$url)));
+  <?php else: ?>
+  return new JsonResponse(array('filename' => base_path().$url, 'ext' => $value->getClientMediaType()));
+  <?php endif; ?>
+}
       }
     }
 

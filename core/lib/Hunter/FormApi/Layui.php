@@ -84,7 +84,7 @@ class Layui extends Form {
         }else {
           $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload Image').'</button>';
         }
-        
+
         $this->form .= '</div></div>';
 
         return $this;
@@ -309,6 +309,8 @@ class Layui extends Form {
 
         if(!empty($field['#options'])){
           foreach ($field['#options'] as $v => $title) {
+            $field['#attributes']['value'] = $v;
+            $field['#attributes']['name'] = $name.'['.$v.']';
             $field['#attributes']['title'] = $title;
             if((is_array($field['#value']) && in_array($v, $field['#value'])) || $field['#value'] == $field['#attributes']['value']){
               $field['#attributes']['checked'] = 'checked';
