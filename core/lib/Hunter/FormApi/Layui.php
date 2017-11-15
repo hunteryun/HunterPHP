@@ -73,19 +73,47 @@ class Layui extends Form {
      */
     public function file($name, $field)
     {
-        $this->form .= '
-          <div class="layui-form-item">
-            <label class="layui-form-label">'.$field['#title'].'</label>
-            <div class="layui-input-block">
-              <input type="text" id="'.$name.'"'.hunter_attributes($field['#attributes']).'>';
+        if(isset($field['#multiple'])){
+          $this->form .= '
+            <div class="layui-form-item">
+              <label class="layui-form-label">'.$field['#title'].'</label>
+              <div class="layui-input-block">
+                <div class="layui-upload">
+                  <button type="button" class="layui-btn layui-btn-normal" id="'.$name.'List">选择多文件</button>
+                  <div class="layui-upload-list">
+                    <table class="layui-table">
+                      <thead>
+                        <tr><th>文件名</th>
+                        <th>预览</th>
+                        <th>大小</th>
+                        <th>状态</th>
+                        <th>描述</th>
+                        <th>操作</th>
+                      </tr></thead>
+                      <tbody id="demoList"></tbody>
+                    </table>
+                  </div>
+                  <button type="button" class="layui-btn" id="'.$name.'ListAction">开始上传</button>
+                </div>';
 
-        if($field['#type'] == 'file'){
-          $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload File').'</button>';
-        }else {
-          $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload Image').'</button>';
+          $this->form .= '</div></div>';
+        }else{
+          $this->form .= '
+            <div class="layui-form-item">
+              <label class="layui-form-label">'.$field['#title'].'</label>
+              <div class="layui-input-block">
+                <input type="text" id="'.$name.'"'.hunter_attributes($field['#attributes']).'>';
+
+          if(!isset($field['#disabled']) || (isset($field['#disabled']) && !$field['#disabled'])){
+            if($field['#type'] == 'file'){
+              $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload File').'</button>';
+            }else {
+              $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload Image').'</button>';
+            }
+          }
+
+          $this->form .= '</div></div>';
         }
-
-        $this->form .= '</div></div>';
 
         return $this;
     }
@@ -227,6 +255,32 @@ class Layui extends Form {
     }
 
     /**
+     * generate a image
+     *
+     * @param string $src
+     * @param string $alt
+     * @param string $width
+     * @param string $class
+     * @return $this
+     */
+    public function markup($name, $field)
+    {
+        if(isset($field['#title'])){
+          $this->form .= '
+          <div class="layui-form-item">
+              <label class="layui-form-label">'.$field['#title'].'</label>
+              <div class="layui-input-block">
+                  '.$field['#markup'].'
+              </div>
+          </div>';
+        }else {
+          $this->form .= $field['#markup'];
+        }
+
+        return $this;
+    }
+
+    /**
      * @return static
      */
     public static function create()
@@ -309,8 +363,10 @@ class Layui extends Form {
 
         if(!empty($field['#options'])){
           foreach ($field['#options'] as $v => $title) {
-            $field['#attributes']['value'] = $v;
-            $field['#attributes']['name'] = $name.'['.$v.']';
+            if(!isset($field['#attributes']['lay-skin'])){              
+              $field['#attributes']['value'] = $v;
+              $field['#attributes']['name'] = $name.'['.$v.']';
+            }
             $field['#attributes']['title'] = $title;
             if((is_array($field['#value']) && in_array($v, $field['#value'])) || $field['#value'] == $field['#attributes']['value']){
               $field['#attributes']['checked'] = 'checked';

@@ -314,34 +314,56 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
       {
       case 'textfield':
         $field['#attributes']['type'] = 'text';
+        if(isset($field['#disabled']) && $field['#disabled']){
+          $field['#attributes']['disabled'] = 'true';
+        }
         element_set_attributes($field, array('id', 'name', 'value', 'size', 'maxlength'));
         $form->input($name, $field);
         break;
       case 'radios':
         $field['#attributes']['type'] = 'radio';
+        if(isset($field['#disabled']) && $field['#disabled']){
+          $field['#attributes']['disabled'] = 'true';
+        }
         element_set_attributes($field, array('id', 'name'));
         $form->radio($name, $field);
         break;
       case 'checkboxes':
         $field['#attributes']['type'] = 'checkbox';
+        if(isset($field['#disabled']) && $field['#disabled']){
+          $field['#attributes']['disabled'] = 'true';
+        }
         element_set_attributes($field, array('id', 'name'));
         $form->checkbox($name, $field);
         break;
       case 'file':
+        if(isset($field['#disabled']) && $field['#disabled']){
+          $field['#attributes']['disabled'] = 'true';
+        }
         element_set_attributes($field, array('id', 'name', 'value', 'size'));
         $field['#attributes']['class'][] = 'layui-input layui-input-inline';
         $form->file($name, $field);
         break;
       case 'image':
+        if(isset($field['#disabled']) && $field['#disabled']){
+          $field['#attributes']['disabled'] = 'true';
+        }
         element_set_attributes($field, array('id', 'name', 'value', 'size'));
         $field['#attributes']['class'][] = 'layui-input layui-input-inline';
         $form->file($name, $field);
         break;
       case 'select':
+        if(isset($field['#disabled']) && $field['#disabled']){
+          $field['#attributes']['disabled'] = 'true';
+        }
         element_set_attributes($field, array('id', 'name', 'size'));
         $form->select($name, $field);
         break;
       case 'textarea':
+        if(isset($field['#disabled']) && $field['#disabled']){
+          $field['#attributes']['disabled'] = 'true';
+          unset($field['#attributes']['id']);
+        }
         element_set_attributes($field, array('id', 'name', 'cols', 'rows'));
         $field['#attributes']['class'][] = 'layui-textarea';
         $form->textarea($name, $field);
@@ -351,6 +373,9 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
         break;
       case 'img':
         $form->img($name, $field);
+        break;
+      case 'markup':
+        $form->markup($name, $field);
         break;
       case 'submit':
         $submit_field = $field;

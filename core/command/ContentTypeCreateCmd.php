@@ -318,6 +318,8 @@ class ContentTypeCreateCmd extends BaseCommand {
                   $html_type_option[$name][$i]['lable'] = hunter_convert_to_utf8($helper->ask($input, $output, $html_type_option_lable_question));
                   $i++;
                 }
+
+                $html_type_setting[$name] = array();
                 if($html_type == 'checkbox'){
                   //checkbox skin
                   $html_type_setting_skin_question = new ChoiceQuestion(
