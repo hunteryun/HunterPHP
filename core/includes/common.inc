@@ -412,6 +412,33 @@ function hunter_form_submit($parms, $module = NULl, $result = NULL) {
 }
 
 /**
+ * Get all talbes.
+ */
+function hunter_get_schema($table = NULL) {
+  $result = db_query("SHOW TABLES")->fetchAll();
+  $tables = array();
+  $schemas = array();
+  foreach($result as $row){
+    $tables[] = $row->Tables_in_dibiao;
+  }
+
+  if(!empty($tables)){
+    foreach ($tables as $module) {
+      $install_file = 'module/'.$module.'/'.$module.'.install';
+      if(file_exists($install_file)){
+        require_once $install_file;
+
+        $schema_fun = $module.'_schema';
+        if (function_exists($schema_fun)) {
+          $schemas[$module] = $schema_fun();
+        }
+      }
+    }
+  }
+  return $table ? $schemas[$table] : $schemas;
+}
+
+/**
  * Determines whether a given module exists.
  *
  * @param string $module

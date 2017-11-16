@@ -34,13 +34,29 @@ class <?php print ucfirst($module); ?>Controller {
   public function <?php print $module; ?>_add(ServerRequest $request) {
     if ($parms = $request->getParsedBody()) {
       $user = session()->get('admin');
+      <?php foreach($fields as $field): ?>
+      <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
+
+      $photos = array();
+      if(!empty($parms['up_photos_img'])){
+        foreach ($parms['up_photos_img'] as $key => $img) {
+          if(isset($parms['up_photos_des'][$key])){
+            $photos[] = array('image' => $img, 'description' => $parms['up_photos_des'][$key]);
+          }
+        }
+      }
+      <?php endif; ?>
+      <?php endforeach; ?>
 
       $<?php print substr($module, 0, 1 ); ?>id = db_insert('<?php print $module; ?>')
         ->fields(array(
-          <?php foreach($fields as $field): ?>
-'<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
-          <?php endforeach; ?>
-'uid' => $user->uid,
+        <?php foreach($fields as $field): ?>
+<?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
+  '<?php print $field['name']; ?>' => json_encode($photos),
+<?php else: ?>
+  '<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
+<?php endif; ?>
+<?php endforeach; ?>'uid' => $user->uid,
           'created' => time(),
           'updated' => time(),
         ))
@@ -72,6 +88,9 @@ class <?php print ucfirst($module); ?>Controller {
     $form['<?php print $field['name']; ?>'] = array(
       '#type' => '<?php print $field['html_type']; ?>',
       '#title' => '<?php print $field['lable']; ?>',
+<?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
+      '#multiple' => TRUE,
+<?php endif; ?>
       '#attributes' => array('id' => '<?php print $field['name']; ?>'),
     );
 <?php elseif($field['html_type'] == 'select'): ?>
@@ -114,7 +133,6 @@ class <?php print ucfirst($module); ?>Controller {
     );
 <?php endif; ?>
 <?php endforeach; ?>
-
     $form['save'] = array(
      '#type' => 'submit',
      '#value' => t('Save'),
@@ -132,6 +150,19 @@ class <?php print ucfirst($module); ?>Controller {
    */
   public function <?php print $module; ?>_edit($<?php print substr($module, 0, 1 ); ?>id) {
       $<?php print $module; ?> = get_<?php print $module; ?>_byid($<?php print substr($module, 0, 1 ); ?>id);
+<?php foreach($fields as $field): ?>
+<?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
+
+      if(!empty($<?php print $module; ?>)){
+        $temp = json_decode($<?php print $module; ?>-><?php print $field['name']; ?>);
+        $html = '<ul id="up_photos">';
+        foreach ($temp as $v) {
+          $html .= '<li><img src="'.$v->image.'" width="100"><p>'.$v->description.'</p></li>';
+        }
+        $html .= '</ul>';
+      }
+      <?php endif; ?>
+      <?php endforeach; ?>
 
     <?php foreach($fields as $field): ?>
   <?php if($field['html_type'] == 'textarea'): ?>
@@ -154,10 +185,20 @@ $form['<?php print $field['name']; ?>'] = array(
 ),
       );
   <?php elseif($field['html_type'] == 'image' || $field['html_type'] == 'file'): ?>
+    <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
+$form['up_photos'] = array(
+        '#type' => 'markup',
+        '#title' => '已上传图片',
+        '#markup' => $html,
+      );
+    <?php endif; ?>
 $form['<?php print $field['name']; ?>'] = array(
         '#type' => '<?php print $field['html_type']; ?>',
         '#title' => '<?php print $field['lable']; ?>',
-        '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
+        <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
+'#multiple' => TRUE,
+        <?php endif; ?>
+'#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
         '#attributes' => array('id' => '<?php print $field['name']; ?>'),
       );
   <?php elseif($field['html_type'] == 'select'): ?>
@@ -202,7 +243,6 @@ $form['<?php print $field['name']; ?>'] = array(
         '#type' => 'hidden',
         '#value' => $<?php print substr($module, 0, 1 ); ?>id,
       );
-
       $form['save'] = array(
        '#type' => 'submit',
        '#value' => t('Save'),
@@ -223,10 +263,27 @@ $form['<?php print $field['name']; ?>'] = array(
       $<?php print substr($module, 0, 1 ); ?>id = $parms['<?php print substr($module, 0, 1 ); ?>id'];
       $user = session()->get('admin');
 
+      <?php foreach($fields as $field): ?>
+      <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
+$photos = array();
+      if(!empty($parms['up_photos_img'])){
+        foreach ($parms['up_photos_img'] as $key => $img) {
+          if(isset($parms['up_photos_des'][$key])){
+            $photos[] = array('image' => $img, 'description' => $parms['up_photos_des'][$key]);
+          }
+        }
+      }
+      <?php endif; ?>
+      <?php endforeach; ?>
+
        db_update('<?php print $module; ?>')
          ->fields(array(
            <?php foreach($fields as $field): ?>
-'<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
+             <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
+'<?php print $field['name']; ?>' => json_encode($photos),
+             <?php else: ?>
+               '<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
+             <?php endif; ?>
            <?php endforeach; ?>
 'uid' => $user->uid,
            'updated' => time(),
@@ -285,12 +342,12 @@ $form['<?php print $field['name']; ?>'] = array(
           }
           $value->moveTo($url);
 
-  <?php if($field['html_type'] == 'textarea'): ?>
-  return new JsonResponse(array('code' => 0, 'msg' => t('Upload Success'), "data" => array('src' => base_path().$url)));
-  <?php else: ?>
-  return new JsonResponse(array('filename' => base_path().$url, 'ext' => $value->getClientMediaType()));
-  <?php endif; ?>
-}
+        <?php if($field['html_type'] == 'textarea' || ($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple')): ?>
+        return new JsonResponse(array('code' => 0, 'msg' => t('Upload Success'), "data" => array('src' => base_path().$url)));
+        <?php else: ?>
+        return new JsonResponse(array('filename' => base_path().$url, 'ext' => $value->getClientMediaType()));
+        <?php endif; ?>
+      }
       }
     }
 

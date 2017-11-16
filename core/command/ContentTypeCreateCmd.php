@@ -334,6 +334,15 @@ class ContentTypeCreateCmd extends BaseCommand {
                   $html_type_setting[$name]['custom_value'] = $helper->ask($input, $output, $html_type_setting_custom_value_question);
                 }
                 break;
+              case 'image':
+                //accept option
+                $image_type_question = new ChoiceQuestion(
+                   'Choose the image type [single]:',
+                   array('single', 'multiple'),
+                   0
+                );
+                $html_type_setting[$name]['image_type'] = $helper->ask($input, $output, $image_type_question);
+                break;
               case 'file':
                 //accept option
                 $file_accept_question = new ChoiceQuestion(
@@ -363,14 +372,16 @@ class ContentTypeCreateCmd extends BaseCommand {
                 $html_type_option[$name] = array();
                 $html_type_setting[$name] = array();
               }
-              unset($html_type_option[$name][count($html_type_option[$name])-1]);
+              if(isset($html_type_option[$name])){
+                unset($html_type_option[$name][count($html_type_option[$name])-1]);
+              }
               $fields[$name] = [
                   'name' => $name,
                   'lable' => $lable,
                   'type' => $type,
                   'type_setting' => $type_setting[$name],
                   'html_type' => $html_type,
-                  'html_type_option' => $html_type_option[$name],
+                  'html_type_option' => isset($html_type_option[$name]) ? $html_type_option[$name] : array(),
                   'html_type_setting' => $html_type_setting[$name],
               ];
            }

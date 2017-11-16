@@ -38,8 +38,8 @@
                  }
               });
 
-              <?php elseif($field['html_type'] == 'image'): ?>
-
+                <?php elseif($field['html_type'] == 'image'): ?>
+                <?php if($field['html_type_setting']['image_type'] == 'single'): ?>
             //图片上传
             var <?php print $field['name']; ?>Upload = upload.render({
               elem: '#<?php print $field['name']; ?>btn' //绑定元素
@@ -53,7 +53,66 @@
                 });
               }
             });
+          <?php else: ?>
+            //多文件列表示例
+            var demoListView = $('#demoList')
+            ,uploadListIns = upload.render({
+              elem: '#<?php print $field['name']; ?>List'
+              ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload'
+              ,accept: 'file'
+              ,multiple: true
+              ,auto: false
+              ,bindAction: '#<?php print $field['name']; ?>ListAction'
+              ,choose: function(obj){
+                var files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //读取本地文件
+                obj.preview(function(index, file, result){
+                  var tr = $(['<tr id="upload-'+ index +'">'
+                    ,'<td>'+ file.name +'</td>'
+                    ,'<td></td>'
+                    ,'<td>'+ (file.size/1014).toFixed(1) +'kb</td>'
+                    ,'<td>等待上传</td>'
+                    ,'<td></td>'
+                    ,'<td>'
+                      ,'<button class="layui-btn layui-btn-mini demo-reload layui-hide">重传</button>'
+                      ,'<button class="layui-btn layui-btn-mini layui-btn-danger demo-delete">删除</button>'
+                    ,'</td>'
+                  ,'</tr>'].join(''));
 
+                  //单个重传
+                  tr.find('.demo-reload').on('click', function(){
+                    obj.upload(index, file);
+                  });
+
+                  //删除
+                  tr.find('.demo-delete').on('click', function(){
+                    delete files[index]; //删除对应的文件
+                    tr.remove();
+                  });
+
+                  demoListView.append(tr);
+                });
+              }
+              ,done: function(res, index, upload){
+                if(res.code == 0){ //上传成功
+                  var tr = demoListView.find('tr#upload-'+ index)
+                  ,tds = tr.children();
+                  tds.eq(1).html('<img src="'+res.data.src+'">');
+                  tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
+                  tds.eq(4).html('<textarea name="up_photos_des['+ index +']" style="width:300px;height:60px"></textarea><input type="hidden" name="up_photos_img['+ index +']" value="'+res.data.src+'">');
+                  tds.eq(5).html(''); //清空操作
+                  return;
+                }
+                this.error(index, upload);
+              }
+              ,error: function(index, upload){
+                var tr = demoListView.find('tr#upload-'+ index)
+                ,tds = tr.children();
+                tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+              }
+            });
+          <?php endif; ?>
               <?php elseif($field['html_type'] == 'file'): ?>
 
             //文件上传

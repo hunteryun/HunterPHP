@@ -46,9 +46,19 @@
                     </td>
 <?php endif; ?>
 <?php if($field['html_type'] == 'image'): ?>
+  <?php if($field['html_type_setting']['image_type'] == 'single'): ?>
                     <td>
                       <img src="<?php print '<?php echo $r->'.$field['name'].'; ?>'; ?>" width="70">
                     </td>
+  <?php else: ?>
+                    <td>
+                      <?php print '<?php foreach (json_decode($r->'.$field['name'].') as $v): ?>'; ?>
+
+                      <img src="<?php print '<?php echo $v->image; ?>'; ?>" width="70">
+                      <?php print '<?php endforeach;?>'; ?>
+
+                    </td>
+  <?php endif; ?>
 <?php endif; ?>
 <?php endforeach; ?>
                     <td>
