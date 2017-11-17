@@ -3,6 +3,8 @@
 
 namespace Hunter\<?php print $module; ?>\Controller;
 
+use Zend\Diactoros\ServerRequest;
+
 /**
  * Class <?php print $class_name; ?>.
  *
@@ -16,7 +18,7 @@ class <?php print $class_name; ?>Controller {
    * @return string
    *   Return <?php print $route['method']; ?> string.
    */
-  public function <?php print $route['method']; ?>(<?php print implode(", ",$route['args']); ?>) {
+  public function <?php print $route['method']; ?>(ServerRequest $request<?php echo !empty($route['args']) ? ', ' : ''; ?><?php print implode(", ",$route['args']); ?>) {
   <?php if(!empty($route['args'])): ?>
   return 'Implement method: <?php print $route['method']; ?> with parameter(s): '.<?php print implode(". ",$route['args']); ?>;
   <?php else: ?>
