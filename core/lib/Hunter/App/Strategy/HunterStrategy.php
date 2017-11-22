@@ -60,6 +60,9 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
                 foreach ($permissions[$path] as $perm) {
                   $perm_name = 'hunter_permission_'.str_replace(" ", "_", $perm);
                   $callback_permissions = $this->permission_callback($perm_name, $route, $vars);
+                  if($callback_permissions !== TRUE){
+                    break;
+                  }
                 }
               }
 
