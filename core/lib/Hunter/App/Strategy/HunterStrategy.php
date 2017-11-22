@@ -53,19 +53,15 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
             }
 
             if(isset($permissions[$path])){
-              $perm_name = 'hunter_permission_'.str_replace(" ", "_", $permissions[$path]);
-              $callback = $route->getContainer()->get($perm_name);
-              $permission_callable = explode('::', $callback['_callback']);
-
-              if (is_array($permission_callable) && isset($permission_callable[0]) && is_string($permission_callable[0])) {
-                  $class = ($route->getContainer()->has($permission_callable[0]))
-                         ? $route->getContainer()->get($permission_callable[0])
-                         : new $permission_callable[0];
-
-                  $permission_callable = [$class, $permission_callable[1]];
+              if(is_string($permissions[$path])){
+                $perm_name = 'hunter_permission_'.str_replace(" ", "_", $permissions[$path]);
+                $callback_permissions = $this->permission_callback($perm_name, $route, $vars);
+              }elseif(is_array($permissions[$path])) {
+                foreach ($permissions[$path] as $perm) {
+                  $perm_name = 'hunter_permission_'.str_replace(" ", "_", $perm);
+                  $callback_permissions = $this->permission_callback($perm_name, $route, $vars);
+                }
               }
-
-              $callback_permissions = $route->getContainer()->call($permission_callable, $vars);
 
               if (method_exists($route->getContainer(), 'call')) {
                   if($callback_permissions === TRUE){
@@ -236,11 +232,31 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
     }
 
     /**
+     * get permission callback.
+     */
+    public function permission_callback($perm_name, $route, $vars) {
+      $callback = $route->getContainer()->get($perm_name);
+      $permission_callable = explode('::', $callback['_callback']);
+
+      if (is_array($permission_callable) && isset($permission_callable[0]) && is_string($permission_callable[0])) {
+          $class = ($route->getContainer()->has($permission_callable[0]))
+                 ? $route->getContainer()->get($permission_callable[0])
+                 : new $permission_callable[0];
+
+          $permission_callable = [$class, $permission_callable[1]];
+      }
+
+      $callback_permissions = $route->getContainer()->call($permission_callable, $vars);
+
+      return $callback_permissions;
+    }
+
+    /**
      * generate html
      */
     public function htmlMake($body, $file) {
       if(!is_dir(dirname($file))) {
-      	mkdir(dirname($file), 0777, true);
+        mkdir(dirname($file), 0777, true);
       }
 
       return file_put_contents($file.'.html', $body) !== false;
