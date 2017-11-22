@@ -87,9 +87,11 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
                       }
 
                       return $body;
+                  }elseif($callback_permissions instanceof RedirectResponse) {
+                    return $callback_permissions;
                   }else {
-                      $response->getBody()->write('Sorry, you do not have permission to access this page!');
-                      return $response;
+                    $response->getBody()->write('Sorry, you do not have permission to access this page!');
+                    return $response;
                   }
               }
             } else {
