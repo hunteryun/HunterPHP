@@ -266,9 +266,15 @@ class Layui extends Form {
     public function markup($name, $field)
     {
         if(isset($field['#title'])){
-          $this->form .= '
-          <div class="layui-form-item">
-              <label class="layui-form-label">'.$field['#title'].'</label>
+          if(isset($field['#hidden']) && $field['#hidden']){
+            $this->form .= '
+            <div class="layui-form-item" id="'.$name.'" style="display:none;">';
+          }else {
+            $this->form .= '
+            <div class="layui-form-item">';
+          }
+
+          $this->form .= '<label class="layui-form-label">'.$field['#title'].'</label>
               <div class="layui-input-block">
                   '.$field['#markup'].'
               </div>
@@ -363,7 +369,7 @@ class Layui extends Form {
 
         if(!empty($field['#options'])){
           foreach ($field['#options'] as $v => $title) {
-            if(!isset($field['#attributes']['lay-skin'])){              
+            if(!isset($field['#attributes']['lay-skin'])){
               $field['#attributes']['value'] = $v;
               $field['#attributes']['name'] = $name.'['.$v.']';
             }

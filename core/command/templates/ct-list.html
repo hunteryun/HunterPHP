@@ -66,8 +66,8 @@
 
                     </td>
                     <td class=" td-handle">
-                        <a href="javascript:;" onclick="<?php print $type; ?>Edit('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-normal layui-btn-mini">编辑</a>
-                        <a href="javascript:;" onclick="<?php print $type; ?>Del('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-danger layui-btn-mini ajax-delete">删除</a>
+                        <a href="javascript:;" onclick="<?php print $type; ?>Edit('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-normal layui-btn-xs">编辑</a>
+                        <a href="javascript:;" onclick="<?php print $type; ?>Del('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-danger layui-btn-xs ajax-delete">删除</a>
                     </td>
                 </tr>
               <?php print '<?php endforeach;?>';?>
