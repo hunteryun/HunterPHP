@@ -9,6 +9,7 @@
 use Hunter\Core\Database\Database;
 use Hunter\Core\CSRF\CSRF;
 use Hunter\Core\Utility\Timer;
+use Hunter\Core\Utility\StringConverter;
 use Hunter\Core\Password\Password;
 use Zend\Diactoros\ServerRequestFactory;
 use Zend\Diactoros\Response\RedirectResponse;
@@ -226,6 +227,15 @@ function hunter_convert_to_utf8($data) {
   }
 
   return $out;
+}
+
+/**
+ * 转换文件名.
+ */
+function hunter_rename($text) {
+  $string = new StringConverter();
+  $newname = $string->createMachineName($text);
+  return $newname;
 }
 
 /**
