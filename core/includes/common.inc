@@ -232,10 +232,15 @@ function hunter_convert_to_utf8($data) {
 /**
  * 转换文件名.
  */
-function hunter_rename($text) {
+function hunter_rename($text, $type = 'date', $format = 'YmdHis') {
   $string = new StringConverter();
-  $newname = $string->createMachineName($text);
-  return $newname;
+  $houzhui = substr(strrchr($text, '.'), 1);
+  $basename = basename($text,".".$houzhui);
+  $newname = $string->createMachineName($basename);
+  if($type == 'date'){
+    $newname .= '_'.date($format, time());
+  }
+  return $newname.".".$houzhui;
 }
 
 /**

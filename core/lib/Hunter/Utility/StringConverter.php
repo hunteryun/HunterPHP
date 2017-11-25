@@ -18,8 +18,8 @@ class StringConverter {
      * @param \Hunter\Core\Transliteration\TransliterationInterface $transliteration
      *   The transliteration helper.
      */
-    public function __construct(PhpTransliteration $transliteration) {
-      $this->transliteration = $transliteration;
+    public function __construct() {
+      $this->transliteration = new PhpTransliteration();
     }
 
     /**
