@@ -96,6 +96,10 @@ class Layui extends Form {
                   <button type="button" class="layui-btn" id="'.$name.'ListAction">开始上传</button>
                 </div>';
 
+          if(isset($field['#description'])){
+            $this->form .= '<span class="description">'.$field['#description'].'</span>';
+          }
+
           $this->form .= '</div></div>';
         }else{
           $this->form .= '
@@ -110,6 +114,10 @@ class Layui extends Form {
             }else {
               $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload Image').'</button>';
             }
+          }
+
+          if(isset($field['#description'])){
+            $this->form .= '<span class="description">'.$field['#description'].'</span>';
           }
 
           $this->form .= '</div></div>';
