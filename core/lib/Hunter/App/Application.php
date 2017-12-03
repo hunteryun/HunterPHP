@@ -423,6 +423,15 @@ class Application {
     /**
      * {@inheritdoc}
      */
+    public function addRoutePermission($path, $permissions) {
+        $this->routePermission[$path] = $permissions;
+        $this->container->add('routePermission', $this->routePermission);
+        return $this->routePermission;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getRoutesList() {
         return $this->routeList;
     }

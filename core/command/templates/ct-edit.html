@@ -45,10 +45,15 @@
             var <?php print $field['name']; ?>Upload = upload.render({
               elem: '#<?php print $field['name']; ?>btn' //绑定元素
               ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload' //上传接口
+              ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                layer.load(); //上传loading
+              }
               ,done: function(result){
+                layer.closeAll('loading'); //关闭loading
                 document.getElementById('<?php print $field['name']; ?>').value = result.filename;
               }
               ,error: function(){
+                layer.closeAll('loading'); //关闭loading
                 layer.msg('上传失败!', {
                     icon: 5
                 });
@@ -122,10 +127,15 @@
             ,accept: '<?php print $field['html_type_setting']['file_accept']; ?>' //允许上传的文件类型
             ,exts: '<?php print $field['html_type_setting']['file_exts']; ?>' //允许上传的文件扩展名
             ,size: <?php print $field['html_type_setting']['file_size']; ?> //最大允许上传的文件大小
+            ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+              layer.load(); //上传loading
+            }
             ,done: function(result){
+              layer.closeAll('loading'); //关闭loading
               document.getElementById('<?php print $field['name']; ?>').value = result.filename;
             }
             ,error: function(){
+              layer.closeAll('loading'); //关闭loading
               layer.msg('上传失败!', {
                   icon: 5
               });
