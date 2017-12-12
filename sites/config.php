@@ -7,7 +7,10 @@ $root_dir = '/';
 $hunter_debug = true;
 
 //配置: 静态缓存
-$hunter_static = true;
+$hunter_static = false;
+
+//配置: 默认缓存
+$default_caches = 'memcache';
 
 //配置: 缓存目录
 $cache_dir = HUNTER_ROOT . '/sites/files';
@@ -28,6 +31,12 @@ $databases = array(
         'password'  => 'root',
         'prefix'    => '', //表前缀
         'charset'   => 'utf8mb4',//低于MySQL5.5.3的写utf8
+    ),
+    'sqlite' => array(
+        'database' => 'sites/files/test.sqlite',
+        'prefix' => '',
+        'namespace' => 'Hunter\\Core\\Database\\sqlite',
+        'driver' => 'sqlite',
     ),
 );
 
