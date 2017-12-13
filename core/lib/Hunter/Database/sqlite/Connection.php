@@ -19,4 +19,13 @@ class Connection extends DatabaseConnection {
       $options = $this->options + $options;
       return new Schema($this, $options);
   }
+
+  /**
+   * SELECT
+   *
+   * @return Hunter\Core\Database\sqlite\Select
+   */
+  public function select($table, $alias = null, array $options = array()) {
+      return new Select($table, $alias, $this, $options);
+  }
 }

@@ -92,6 +92,7 @@ class Connection extends PDO {
         $this->transactionSupport = !isset($options['transactions']) || ($options['transactions'] !== false);
         if (isset($options['driver']) && $options['driver'] == 'sqlite') {
             $dsn = 'sqlite:' . $options['database'];
+            $this->statementClass = 'Hunter\\Core\\Database\\sqlite\\Statement';
         } elseif(isset($options['unix_socket'])) {
             $dsn = 'mysql:unix_socket=' . $options['unix_socket'];
         } else {
@@ -198,6 +199,9 @@ class Connection extends PDO {
                 $stmt = $query;
                 $stmt->execute(null, $options);
             } else {
+                if(isset($this->options['driver']) && $this->options['driver'] == 'sqlite'){
+                  $query = str_replace('ESCAPE \'\\\\\'', 'ESCAPE \'/\'', $query);
+                }
                 $this->expandArguments($query, $args);
                 $stmt = $this->prepareQuery($query);
                 $stmt->execute($args, $options);

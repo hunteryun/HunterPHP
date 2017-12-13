@@ -2,8 +2,7 @@
 
 namespace Hunter\Core\Database\sqlite;
 
-use PDO;
-use PDOStatement;
+use Hunter\Core\Database\Statement as DatabaseStatement;
 
 /**
  * SQLite implementation of \Drupal\Core\Database\Statement.
@@ -14,7 +13,7 @@ use PDOStatement;
  * user-space mock of PDOStatement that buffers all the data and doesn't
  * have those limitations.
  */
-class Statement extends PDOStatement {
+class Statement extends DatabaseStatement {
 
   /**
    * {@inheritdoc}
@@ -98,45 +97,6 @@ class Statement extends PDOStatement {
         // Rethrow the exception.
         throw $e;
       }
-    }
-
-    // In some weird cases, SQLite will prefix some column names by the name
-    // of the table. We post-process the data, by renaming the column names
-    // using the same convention as MySQL and PostgreSQL.
-    $rename_columns = [];
-    foreach ($this->columnNames as $k => $column) {
-      // In some SQLite versions, SELECT DISTINCT(field) will return "(field)"
-      // instead of "field".
-      if (preg_match("/^\((.*)\)$/", $column, $matches)) {
-        $rename_columns[$column] = $matches[1];
-        $this->columnNames[$k] = $matches[1];
-        $column = $matches[1];
-      }
-
-      // Remove "table." prefixes.
-      if (preg_match("/^.*\.(.*)$/", $column, $matches)) {
-        $rename_columns[$column] = $matches[1];
-        $this->columnNames[$k] = $matches[1];
-      }
-    }
-    if ($rename_columns) {
-      // DatabaseStatementPrefetch already extracted the first row,
-      // put it back into the result set.
-      if (isset($this->currentRow)) {
-        $this->data[0] = &$this->currentRow;
-      }
-
-      // Then rename all the columns across the result set.
-      foreach ($this->data as $k => $row) {
-        foreach ($rename_columns as $old_column => $new_column) {
-          $this->data[$k][$new_column] = $this->data[$k][$old_column];
-          unset($this->data[$k][$old_column]);
-        }
-      }
-
-      // Finally, extract the first row again.
-      $this->currentRow = $this->data[0];
-      unset($this->data[0]);
     }
 
     return $return;
