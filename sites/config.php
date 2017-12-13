@@ -70,13 +70,3 @@ $engines = array(
         'envArgs'     => array(),
     ),
 );
-
-//配置: memcache(d)缓存
-$caches = array(
-    'default' => array(
-        'prefix'  => '',
-        'servers' => array(
-            array('127.0.0.1', 11211, 0),
-        ),
-    ),
-);
