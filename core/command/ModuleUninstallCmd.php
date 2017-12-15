@@ -66,14 +66,17 @@ class ModuleUninstallCmd extends BaseCommand {
       }
 
       if(module_exists('variable')){
-        $conf = new Config('module/'.$input->getArgument('module').'/config/install');
-        $configdata = $conf->all();
-        if(!empty($configdata)){
-          foreach ($configdata as $key => $value) {
-            variable_del($input->getArgument('module').'.'.$key);
+        $install_dir = 'module/'.$input->getArgument('module').'/config/install';
+        if(is_dir($install_dir)){
+          $conf = new Config($install_dir);
+          $configdata = $conf->all();
+          if(!empty($configdata)){
+            foreach ($configdata as $key => $value) {
+              variable_del($input->getArgument('module').'.'.$key);
+            }
           }
+          $uninstalled = true;
         }
-        $uninstalled = true;
       }
 
       if($uninstalled){

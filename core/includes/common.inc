@@ -471,6 +471,18 @@ function module_exists($module) {
   return $app->getModuleHandle()->moduleExists($module);
 }
 
+/**
+ * 过滤javascript,css,iframes,object等不安全参数
+ */
+function filter_script($value) {
+  $value = htmlspecialchars_decode($value);
+	$value = preg_replace("/(javascript:)?on(click|load|key|mouse|error|abort|move|unload|change|dblclick|move|reset|resize|submit)/i","&111n\\2",$value);
+	$value = preg_replace("/(.*?)<\/script>/si","",$value);
+	$value = preg_replace("/(.*?)<\/iframe>/si","",$value);
+	$value = preg_replace ("//iesU", '', $value);
+	return $value;
+}
+
 if (!function_exists('e')) {
     /**
      * Escape HTML entities in a string.
