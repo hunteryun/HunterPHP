@@ -155,8 +155,12 @@ class Layui extends Form {
      */
     public function input($name, $field)
     {
-        $this->form .= '<div class="layui-form-item"><label class="layui-form-label">'.$field['#title'].'</label> <div class="layui-input-block"><input class="layui-input" '.hunter_attributes($field['#attributes']).'> </div></div>';
+        $this->form .= '<div class="layui-form-item"><label class="layui-form-label">'.$field['#title'].'</label> <div class="layui-input-block"><input class="layui-input" '.hunter_attributes($field['#attributes']).'>';
+        if(isset($field['#description'])){
+          $this->form .= '<span class="description">'.$field['#description'].'</span>';
+        }
 
+        $this->form .= '</div></div>';
         return $this;
     }
 
@@ -232,11 +236,15 @@ class Layui extends Form {
     public function textarea($name, $field)
     {
         if(isset($field['#default_value'])){
-          $this->form .= '<div class="layui-form-item layui-form-text"><label class="layui-form-label">'.$field['#title'].'</label><div class="layui-input-block"><textarea' . hunter_attributes($field['#attributes']) . '>'.$field['#default_value'].'</textarea></div></div>';
+          $this->form .= '<div class="layui-form-item layui-form-text"><label class="layui-form-label">'.$field['#title'].'</label><div class="layui-input-block"><textarea' . hunter_attributes($field['#attributes']) . '>'.$field['#default_value'].'</textarea>';
         }else {
-          $this->form .= '<div class="layui-form-item layui-form-text"><label class="layui-form-label">'.$field['#title'].'</label><div class="layui-input-block"><textarea' . hunter_attributes($field['#attributes']) . '></textarea></div></div>';
+          $this->form .= '<div class="layui-form-item layui-form-text"><label class="layui-form-label">'.$field['#title'].'</label><div class="layui-input-block"><textarea' . hunter_attributes($field['#attributes']) . '></textarea>';
         }
 
+        if(isset($field['#description'])){
+          $this->form .= '<span class="description">'.$field['#description'].'</span>';
+        }
+        $this->form .= '</div></div>';
         return $this;
     }
 
@@ -258,6 +266,21 @@ class Layui extends Form {
                 <img src="'.$field['#default_value'].'"'.hunter_attributes($field['#attributes']).'>
             </div>
         </div>';
+
+        return $this;
+    }
+
+    /**
+     * generate a fieldset
+     *
+     * @return $this
+     */
+    public function fieldset($name, $field)
+    {
+        $this->form .= '
+        <fieldset class="layui-elem-field layui-field-title'.hunter_attributes($field['#attributes']).'" style="margin-top: 20px;">
+          <legend>'.$field['#title'].'</legend>
+        </fieldset>';
 
         return $this;
     }

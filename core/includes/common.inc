@@ -367,6 +367,10 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
         $field['#attributes']['class'][] = 'layui-input layui-input-inline';
         $form->file($name, $field);
         break;
+      case 'fieldset':
+        element_set_attributes($field, array('id'));
+        $form->fieldset($name, $field);
+        break;
       case 'select':
         if(isset($field['#disabled']) && $field['#disabled']){
           $field['#attributes']['disabled'] = 'true';

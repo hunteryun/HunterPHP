@@ -9,6 +9,7 @@ use League\Container\ReflectionContainer;
 use League\Route\RouteCollection;
 use Hunter\Core\App\Strategy\HunterStrategy;
 use Symfony\Component\Console\Application as ConsoleApp;
+use Psr\Http\Message\ResponseInterface;
 use Hunter\Core\Discovery\YamlDiscovery;
 use Hunter\Core\App\ServiceProvider\HttpMessageServiceProvider;
 use Hunter\Core\App\ModuleHandler;
@@ -463,7 +464,11 @@ class Application {
 
         $response = $this->routers->dispatch($request, $response);
 
-        $this->container->get('Zend\Diactoros\Response\SapiEmitter')->emit($response);
+        if($response instanceof ResponseInterface){
+          $this->container->get('Zend\Diactoros\Response\SapiEmitter')->emit($response);
+        }else {
+          die(t('There have some error, please check!'));
+        }
     }
 
 }

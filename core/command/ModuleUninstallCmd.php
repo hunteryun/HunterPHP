@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
+use Noodlehaus\Config;
 
 /**
  * 卸载模块命令
@@ -62,6 +63,17 @@ class ModuleUninstallCmd extends BaseCommand {
             $uninstalled = true;
             $uninstall_fun();
           }
+      }
+
+      if(module_exists('variable')){
+        $conf = new Config('module/'.$input->getArgument('module').'/config/install');
+        $configdata = $conf->all();
+        if(!empty($configdata)){
+          foreach ($configdata as $key => $value) {
+            variable_del($input->getArgument('module').'.'.$key);
+          }
+        }
+        $uninstalled = true;
       }
 
       if($uninstalled){

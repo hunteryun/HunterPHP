@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
+use Noodlehaus\Config;
 
 /**
  * 安装模块命令
@@ -61,6 +62,17 @@ class ModuleInstallCmd extends BaseCommand {
           $installed = true;
           $install_fun();
         }
+      }
+
+      if(module_exists('variable')){
+        $conf = new Config('module/'.$input->getArgument('module').'/config/install');
+        $configdata = $conf->all();
+        if(!empty($configdata)){
+          foreach ($configdata as $key => $value) {
+            variable_set($input->getArgument('module').'.'.$key, $value);
+          }
+        }
+        $installed = true;
       }
 
       if($installed){

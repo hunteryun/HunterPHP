@@ -4,7 +4,7 @@ namespace Hunter\Core\Database\sqlite;
 
 use Hunter\Core\Database\Schema as DatabaseSchema;
 use Hunter\Core\Database\SchemaException;
-use Hunter\Core\Database\Statement;
+use Hunter\Core\Database\Statement as DatabaseStatement;
 
 /**
  * @ingroup schemaapi
@@ -38,7 +38,7 @@ class Schema extends DatabaseSchema {
       foreach ($schema as $name => $table) {
         $info = $this->createTable($name, $table);
       }
-      if($info instanceof Statement){
+      if($info instanceof DatabaseStatement){
         return TRUE;
       }else{
         return FALSE;
