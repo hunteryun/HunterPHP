@@ -45,12 +45,20 @@
             var <?php print $field['name']; ?>Upload = upload.render({
               elem: '#<?php print $field['name']; ?>btn' //绑定元素
               ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload' //上传接口
+              ,field: '<?php print $field['name']; ?>-file'
               ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
                 layer.load(); //上传loading
               }
               ,done: function(result){
                 layer.closeAll('loading'); //关闭loading
-                document.getElementById('<?php print $field['name']; ?>').value = result.filename;
+                if(result.code == 0){
+                  document.getElementById('<?php print $field['name']; ?>').value = result.data.full_path_new_name;
+                  document.getElementById('<?php print $field['name']; ?>-preview').src = result.data.full_path_new_name;
+                }else {
+                  layer.msg(result.msg, {
+                      icon: 5
+                  });
+                }
               }
               ,error: function(){
                 layer.closeAll('loading'); //关闭loading
@@ -65,6 +73,7 @@
             ,uploadListIns = upload.render({
               elem: '#<?php print $field['name']; ?>List'
               ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload'
+              ,field: '<?php print $field['name']; ?>-file'
               ,multiple: true
               ,auto: false
               ,bindAction: '#<?php print $field['name']; ?>ListAction'
@@ -132,7 +141,7 @@
             }
             ,done: function(result){
               layer.closeAll('loading'); //关闭loading
-              document.getElementById('<?php print $field['name']; ?>').value = result.filename;
+              document.getElementById('<?php print $field['name']; ?>').value = result.data.full_path_new_name;
             }
             ,error: function(){
               layer.closeAll('loading'); //关闭loading

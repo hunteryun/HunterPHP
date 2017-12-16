@@ -53,6 +53,8 @@ class <?php print ucfirst($module); ?>Controller {
         <?php foreach($fields as $field): ?>
 <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
   '<?php print $field['name']; ?>' => json_encode($photos),
+<?php elseif($field['html_type'] == 'textarea' || $field['html_type'] == 'text'): ?>
+  '<?php print $field['name']; ?>' => filter_script($parms['<?php print $field['name']; ?>']),
 <?php else: ?>
   '<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
 <?php endif; ?>
@@ -93,6 +95,14 @@ class <?php print ucfirst($module); ?>Controller {
 <?php endif; ?>
       '#attributes' => array('id' => '<?php print $field['name']; ?>'),
     );
+    <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'single'): ?>
+    $form['<?php print $field['name']; ?>_preview'] = array(
+      '#type' => 'markup',
+      '#title' => '预览',
+      '#hidden' => TRUE,
+      '#markup' => '<img src="" id="<?php print $field['name']; ?>-preview" width="200">',
+    );
+    <?php endif; ?>
 <?php elseif($field['html_type'] == 'select'): ?>
     $form['<?php print $field['name']; ?>'] = array(
       '#type' => 'select',
@@ -201,6 +211,16 @@ $form['<?php print $field['name']; ?>'] = array(
 '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
         '#attributes' => array('id' => '<?php print $field['name']; ?>'),
       );
+      <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'single'): ?>
+      if(!empty($<?php print $module; ?>-><?php print $field['name']; ?>)){
+        $form['<?php print $field['name']; ?>_preview'] = array(
+          '#type' => 'img',
+          '#title' => '预览',
+          '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?> ? $<?php print $module; ?>-><?php print $field['name']; ?> : '',
+          '#attributes' => array('id' => '<?php print $field['name']; ?>-preview', 'width' => '200'),
+        );
+      }
+      <?php endif; ?>
   <?php elseif($field['html_type'] == 'select'): ?>
 $form['<?php print $field['name']; ?>'] = array(
         '#type' => 'select',
@@ -281,6 +301,8 @@ $photos = array();
            <?php foreach($fields as $field): ?>
              <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
 '<?php print $field['name']; ?>' => json_encode($photos),
+        <?php elseif($field['html_type'] == 'textarea' || $field['html_type'] == 'text'): ?>
+          '<?php print $field['name']; ?>' => filter_script($parms['<?php print $field['name']; ?>']),
              <?php else: ?>
                '<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
              <?php endif; ?>
@@ -324,34 +346,18 @@ $photos = array();
    *   Return <?php print $module; ?>_<?php print $field['name']; ?>_upload string.
    */
   public function <?php print $module; ?>_<?php print $field['name']; ?>_upload(ServerRequest $request) {
+    $result = false;
     $uploadedFiles = $request->getUploadedFiles();
     if (!empty($uploadedFiles)) {
-      $files = array();
       foreach ($uploadedFiles as $key => $value) {
-
-<?php if($field['html_type'] != 'file'): ?>
-        if(empty(strstr($value->getClientMediaType(), 'image'))){
-          return new JsonResponse(array('filename' => false));
-        }
-<?php endif; ?>
-
         if ($value instanceof UploadedFileInterface) {
-          $url = 'sites/upload/<?php print $module; ?>/<?php print $field['name']; ?>/'. hunter_rename($value->getClientFilename());
-          if (!is_dir(dirname($url))){
-            mkdir(dirname($url), 0755, true);
+          if ($value instanceof UploadedFileInterface) {
+            $result = hunter_safe_upload('<?php print $module; ?>', $key, $value);
           }
-          $value->moveTo($url);
-
-        <?php if($field['html_type'] == 'textarea' || ($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple')): ?>
-        return new JsonResponse(array('code' => 0, 'msg' => t('Upload Success'), "data" => array('src' => base_path().$url)));
-        <?php else: ?>
-        return new JsonResponse(array('filename' => base_path().$url, 'ext' => $value->getClientMediaType()));
-        <?php endif; ?>
-      }
+        }
       }
     }
-
-    return new JsonResponse(array('filename' => false));
+    return new JsonResponse($result);
   }
 <?php endif; ?>
 <?php endforeach; ?>
