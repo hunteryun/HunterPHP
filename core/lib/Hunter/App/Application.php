@@ -205,11 +205,15 @@ class Application {
           foreach ($this->serviceYamls as $module => $services) {
             if(!empty($services['services'])){
               foreach ($services['services'] as $name => $service) {
-                if (class_exists($service['class'])) {
-                  if(isset($service['arguments'])){
-                    $container->share($service['class'])->withArguments($service['arguments']);
-                  }else{
-                    $container->share($service['class']);
+                if($name == 'middleware'){
+                  $container->add($service['name'], $service['class']);
+                }else {
+                  if (class_exists($service['class'])) {
+                    if(isset($service['arguments'])){
+                      $container->share($service['class'])->withArguments($service['arguments']);
+                    }else{
+                      $container->share($service['class']);
+                    }
                   }
                 }
               }
@@ -355,12 +359,16 @@ class Application {
 
             $this->routeNames[$route_info['path']] = $name;
 
-            if(isset($route_info['methods']) && isset($route_info['defaults']['_controller'])){
-              foreach ($route_info['methods'] as $method) {
-                $routers->map($method, $route_info['path'], $route_info['defaults']['_controller']);
+            $routers->map(['GET','POST'], $route_info['path'], $route_info['defaults']['_controller']);
+            if(isset($route_info['requirements']['_middleware']) && !empty($route_info['requirements']['_middleware'])){
+              if(is_array($route_info['requirements']['_middleware'])){
+                foreach ($route_info['requirements']['_middleware'] as $midd) {
+                  $middleware = $this->container->get($midd);dd($middleware);
+                  $routers->middleware($this->container->get($midd));
+                }
+              }else {
+                $routers->middleware($this->container->get($route_info['requirements']['_middleware']));
               }
-            }else{
-              $routers->map(['GET','POST'], $route_info['path'], $route_info['defaults']['_controller']);
             }
           }
         }

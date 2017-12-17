@@ -16,14 +16,11 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Zend\Diactoros\Response\RedirectResponse;
 
-
-class HunterStrategy extends ApplicationStrategy implements StrategyInterface
-{
+class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
     /**
      * {@inheritdoc}
      */
-    public function getCallable(Route $route, array $vars)
-    {
+    public function getCallable(Route $route, array $vars) {
         return function (ServerRequestInterface $request, ResponseInterface $response, callable $next) use ($route, $vars) {
             global $default_theme, $hunter_static;
             $generate_html = false;
@@ -130,8 +127,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
     /**
      * {@inheritdoc}
      */
-    public function getNotFoundDecorator(NotFoundException $exception)
-    {
+    public function getNotFoundDecorator(NotFoundException $exception) {
         return function (ServerRequestInterface $request, ResponseInterface $response) use ($exception) {
             $response->getBody()->write('Sorry, this page have a error : '.$exception->getMessage());
             return $response;
@@ -141,8 +137,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
     /**
      * {@inheritdoc}
      */
-    public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception)
-    {
+    public function getMethodNotAllowedDecorator(MethodNotAllowedException $exception) {
         return function (ServerRequestInterface $request, ResponseInterface $response) use ($exception) {
             $response->getBody()->write('Sorry, this page have a error : '.$exception->getMessage());
             return $response;
@@ -152,8 +147,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface
     /**
      * {@inheritdoc}
      */
-    public function getExceptionDecorator(Exception $exception)
-    {
+    public function getExceptionDecorator(Exception $exception) {
         global $hunter_debug;
         return function (ServerRequestInterface $request, ResponseInterface $response) use ($exception, $hunter_debug) {
           $msg = $exception->getMessage();
