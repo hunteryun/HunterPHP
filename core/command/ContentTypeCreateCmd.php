@@ -167,20 +167,6 @@ class ContentTypeCreateCmd extends BaseCommand {
          'fields' => $fields,
        );
 
-       foreach ($fields as $field) {
-         if($field['html_type'] == 'file' || $field['html_type'] == 'image' || $field['html_type'] == 'textarea'){
-           $ctlearguments['--routes'][] = array(
-             'title' => $type.' '.$field['name']. ' upload',
-             'name' => $type.'.'.$type.'_'.$field['name'].'_upload',
-             'method' => $type.'_'.$field['name'].'_upload',
-             'path' => '/admin/'.$type.'/'.$field['name'].'/upload',
-             'args' => array(),
-             'permission' => 'access admin page',
-             'nocache' => false
-           );
-         }
-       }
-
        $ctltypeInput = new ArrayInput($ctlearguments);
        $returnCode = $ctlcommand->run($ctltypeInput, $output);
 

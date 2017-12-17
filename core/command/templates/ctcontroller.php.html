@@ -336,30 +336,4 @@ $photos = array();
     return false;
   }
 
-  <?php foreach ($fields as $field): ?>
-    <?php if($field['html_type'] == 'file' || $field['html_type'] == 'image' || $field['html_type'] == 'textarea'): ?>
-
-  /**
-   * <?php print $module; ?>_<?php print $field['name']; ?>_upload.
-   *
-   * @return string
-   *   Return <?php print $module; ?>_<?php print $field['name']; ?>_upload string.
-   */
-  public function <?php print $module; ?>_<?php print $field['name']; ?>_upload(ServerRequest $request) {
-    $result = false;
-    $uploadedFiles = $request->getUploadedFiles();
-    if (!empty($uploadedFiles)) {
-      foreach ($uploadedFiles as $key => $value) {
-        if ($value instanceof UploadedFileInterface) {
-          if ($value instanceof UploadedFileInterface) {
-            $result = hunter_safe_upload('<?php print $module; ?>', $key, $value);
-          }
-        }
-      }
-    }
-    return new JsonResponse($result);
-  }
-<?php endif; ?>
-<?php endforeach; ?>
-
 }

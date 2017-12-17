@@ -43,8 +43,8 @@
             //图片上传
             var <?php print $field['name']; ?>Upload = upload.render({
               elem: '#<?php print $field['name']; ?>btn' //绑定元素
-              ,url: '/admin/<?php print $type; ?>/<?php print $field['name']; ?>/upload' //上传接口
-              ,field: '<?php print $field['name']; ?>-file'
+              ,url: '/admin/safe/upload' //上传接口
+              ,field: '<?php print $type; ?>-<?php print $field['name']; ?>-file'
               ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
                 layer.load(); //上传loading
               }
