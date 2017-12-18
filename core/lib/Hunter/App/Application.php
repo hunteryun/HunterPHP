@@ -28,7 +28,6 @@ class Application {
     protected $container;
     protected $moduleList;
     protected $permissionList;
-    protected $middlewareList;
     protected $routers = array();
     protected $routeList;
     protected $routePermission = array();
@@ -206,16 +205,11 @@ class Application {
           foreach ($this->serviceYamls as $module => $services) {
             if(!empty($services['services'])){
               foreach ($services['services'] as $name => $service) {
-                if(isset($service['middleware'])){
-                  $container->add($name, $service['middleware']);
-                  $this->middlewareList[$name] = $service['middleware'];
-                }else {
-                  if (class_exists($service['class'])) {
-                    if(isset($service['arguments'])){
-                      $container->share($service['class'])->withArguments($service['arguments']);
-                    }else{
-                      $container->share($service['class']);
-                    }
+                if (class_exists($service['class'])) {
+                  if(isset($service['arguments'])){
+                    $container->share($service['class'])->withArguments($service['arguments']);
+                  }else{
+                    $container->share($service['class']);
                   }
                 }
               }
@@ -327,9 +321,7 @@ class Application {
       if(!empty($this->permissionList)){
         foreach ($this->permissionList as $name => $info) {
           if(isset($info['_callback'])){
-            list($class, $method) = explode('::', $info['_callback'], 2);
-            $this->container->add($class);
-            $this->container->add('hunter_permission_'.str_replace(" ", "_", $name), array('_callback' => $info['_callback']));
+            $this->container->add($name, $info['_callback']);
           }
         }
       }
@@ -361,15 +353,15 @@ class Application {
 
             $this->routeNames[$route_info['path']] = $name;
 
-            $routers->map(['GET','POST'], $route_info['path'], $route_info['defaults']['_controller']);
-            if(isset($route_info['requirements']['_middleware']) && !empty($route_info['requirements']['_middleware'])){
-              if(is_array($route_info['requirements']['_middleware'])){
-                foreach ($route_info['requirements']['_middleware'] as $midd) {
-                  $middleware = $this->container->get($midd);
-                  $routers->middleware($this->container->get($midd));
+            $route = $routers->map(['GET','POST'], $route_info['path'], $route_info['defaults']['_controller']);
+            if(isset($route_info['requirements']['_permission']) && !empty($route_info['requirements']['_permission'])){
+              if(is_array($route_info['requirements']['_permission'])){
+                foreach ($route_info['requirements']['_permission'] as $midd) {
+                  $middleware = [$this->container->get($midd), 'handle'];
+                  $route->middleware($middleware);
                 }
               }else {
-                $routers->middleware($this->container->get($route_info['requirements']['_middleware']));
+                $route->middleware([$this->container->get($route_info['requirements']['_permission']), 'handle']);
               }
             }
           }
@@ -422,13 +414,6 @@ class Application {
      */
     public function getPermissionsList() {
         return $this->permissionList;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMiddlewareList() {
-        return $this->middlewareList;
     }
 
     /**

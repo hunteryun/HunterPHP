@@ -41,86 +41,31 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
               }
             }
 
-            $permissions = $route->getContainer()->get('routePermission');
             $routeTitles = $route->getContainer()->get('routeTitles');
-            $callback_permissions = FALSE;
 
             if(isset($routeTitles[$path])){
               theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
             }
 
-            if(isset($permissions[$path])){
-              if(is_string($permissions[$path])){
-                $perm_name = 'hunter_permission_'.str_replace(" ", "_", $permissions[$path]);
-                $callback_permissions = $this->permission_callback($perm_name, $route, $vars);
-              }elseif(is_array($permissions[$path])) {
-                foreach ($permissions[$path] as $perm) {
-                  $perm_name = 'hunter_permission_'.str_replace(" ", "_", $perm);
-                  $callback_permissions = $this->permission_callback($perm_name, $route, $vars);
-                  if($callback_permissions !== TRUE){
-                    break;
-                  }
-                }
-              }
+            $body = $route->getContainer()->call($route->getCallable(), $vars);
 
-              if (method_exists($route->getContainer(), 'call')) {
-                  if($callback_permissions === TRUE){
-                      $body = $route->getContainer()->call($route->getCallable(), $vars);
-
-                      if($generate_html){
-                        $this->htmlMake($body, $generate_file);
-                      }
-
-                      if(is_array($body) || (is_object($body) && get_class($body) == 'stdClass')){
-                        $response->getBody()->write(json_encode($body));
-                        return $response->withAddedHeader('content-type', 'application/json');
-                      }
-
-                      if(is_string($body) || is_bool($body)){
-                          if ($response->getBody()->isWritable()) {
-                              $response->getBody()->write($body);
-                          }
-                          return $response;
-                      }
-
-                      return $body;
-                  }elseif($callback_permissions instanceof RedirectResponse) {
-                    return $callback_permissions;
-                  }else {
-                    $response->getBody()->write('Sorry, you do not have permission to access this page!');
-                    return $response;
-                  }
-              }
-            } else {
-                $body = $route->getContainer()->call($route->getCallable(), $vars);
-
-                if($generate_html){
-                  $this->htmlMake($body, $generate_file);
-                }
-
-                if(is_array($body) || (is_object($body) && get_class($body) == 'stdClass')){
-                  $response->getBody()->write(json_encode($body));
-                  return $response->withAddedHeader('content-type', 'application/json');
-                }
-
-                if(is_string($body) || is_bool($body)){
-                    if ($response->getBody()->isWritable()) {
-                        $response->getBody()->write($body);
-                    }
-                    return $response;
-                }
-
-                return $body;
+            if($generate_html){
+              $this->htmlMake($body, $generate_file);
             }
 
-            throw new RuntimeException(
-                sprintf(
-                    'To use the parameter strategy, the container must implement the (::call) method. (%s) does not.',
-                    get_class($route->getContainer())
-                )
-            );
+            if(is_array($body) || (is_object($body) && get_class($body) == 'stdClass')){
+              $response->getBody()->write(json_encode($body));
+              return $response->withAddedHeader('content-type', 'application/json');
+            }
 
-            return $next($request, $response);
+            if(is_string($body) || is_bool($body)){
+                if ($response->getBody()->isWritable()) {
+                    $response->getBody()->write($body);
+                }
+                return $response;
+            }
+
+            return $body;
         };
     }
 
@@ -228,26 +173,6 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
           break;
         }
       }
-    }
-
-    /**
-     * get permission callback.
-     */
-    public function permission_callback($perm_name, $route, $vars) {
-      $callback = $route->getContainer()->get($perm_name);
-      $permission_callable = explode('::', $callback['_callback']);
-
-      if (is_array($permission_callable) && isset($permission_callable[0]) && is_string($permission_callable[0])) {
-          $class = ($route->getContainer()->has($permission_callable[0]))
-                 ? $route->getContainer()->get($permission_callable[0])
-                 : new $permission_callable[0];
-
-          $permission_callable = [$class, $permission_callable[1]];
-      }
-
-      $callback_permissions = $route->getContainer()->call($permission_callable, $vars);
-
-      return $callback_permissions;
     }
 
     /**
