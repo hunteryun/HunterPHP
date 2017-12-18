@@ -53,8 +53,6 @@ class <?php print ucfirst($module); ?>Controller {
         <?php foreach($fields as $field): ?>
 <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
   '<?php print $field['name']; ?>' => json_encode($photos),
-<?php elseif($field['html_type'] == 'textarea' || $field['html_type'] == 'text'): ?>
-  '<?php print $field['name']; ?>' => filter_script($parms['<?php print $field['name']; ?>']),
 <?php else: ?>
   '<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
 <?php endif; ?>
@@ -301,8 +299,6 @@ $photos = array();
            <?php foreach($fields as $field): ?>
              <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
 '<?php print $field['name']; ?>' => json_encode($photos),
-        <?php elseif($field['html_type'] == 'textarea' || $field['html_type'] == 'text'): ?>
-          '<?php print $field['name']; ?>' => filter_script($parms['<?php print $field['name']; ?>']),
              <?php else: ?>
                '<?php print $field['name']; ?>' => $parms['<?php print $field['name']; ?>'],
              <?php endif; ?>

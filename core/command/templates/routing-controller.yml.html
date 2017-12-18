@@ -7,9 +7,18 @@
   defaults:
     _controller: '\Hunter\<?php print $module; ?>\Controller\<?php print $class_name; ?>Controller::<?php print $route['method']; ?>'
     _title: '<?php print $route['title']; ?>'
-  <?php if($route['permission']): ?>
+  <?php if($route['permission'] || !empty($route['middleware'])): ?>
 requirements:
+<?php if($route['permission']): ?>
     _permission: '<?php print $route['permission']; ?>'
+<?php endif; ?>
+<?php if(!empty($route['middleware'])): ?>
+<?php if(count($route['middleware']) == 1): ?>
+    _middleware: '<?php print $route['middleware']; ?>'
+<?php else: ?>
+    _middleware: [<?php print implode(', ', $route['middleware']); ?>]
+<?php endif; ?>
+<?php endif; ?>
   <?php endif; ?>
 <?php if($route['nocache']): ?>
 options:

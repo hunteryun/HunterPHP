@@ -28,6 +28,7 @@ class Application {
     protected $container;
     protected $moduleList;
     protected $permissionList;
+    protected $middlewareList;
     protected $routers = array();
     protected $routeList;
     protected $routePermission = array();
@@ -205,8 +206,9 @@ class Application {
           foreach ($this->serviceYamls as $module => $services) {
             if(!empty($services['services'])){
               foreach ($services['services'] as $name => $service) {
-                if($name == 'middleware'){
-                  $container->add($service['name'], $service['class']);
+                if(isset($service['middleware'])){
+                  $container->add($name, $service['middleware']);
+                  $this->middlewareList[$name] = $service['middleware'];
                 }else {
                   if (class_exists($service['class'])) {
                     if(isset($service['arguments'])){
@@ -363,7 +365,7 @@ class Application {
             if(isset($route_info['requirements']['_middleware']) && !empty($route_info['requirements']['_middleware'])){
               if(is_array($route_info['requirements']['_middleware'])){
                 foreach ($route_info['requirements']['_middleware'] as $midd) {
-                  $middleware = $this->container->get($midd);dd($middleware);
+                  $middleware = $this->container->get($midd);
                   $routers->middleware($this->container->get($midd));
                 }
               }else {
@@ -420,6 +422,13 @@ class Application {
      */
     public function getPermissionsList() {
         return $this->permissionList;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMiddlewareList() {
+        return $this->middlewareList;
     }
 
     /**

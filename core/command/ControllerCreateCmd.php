@@ -28,6 +28,11 @@ class ControllerCreateCmd extends BaseCommand {
    protected $permissionList;
 
    /**
+    * @var middlewareList
+    */
+   protected $middlewareList;
+
+   /**
     * @var routeList
     */
    protected $routeList;
@@ -51,6 +56,7 @@ class ControllerCreateCmd extends BaseCommand {
        $this->moduleList = $application->boot()->getModulesList();
        $this->routeList = $application->boot()->getRoutesList();
        $this->permissionList = $application->boot()->getPermissionsList();
+       $this->middlewareList = $application->boot()->getMiddlewareList();
        $this->stringConverter = new StringConverter();
 
        parent::__construct();
@@ -224,6 +230,22 @@ class ControllerCreateCmd extends BaseCommand {
                 $permission = $helper->ask($input, $output, $permission_question);
               }
 
+              //middleware
+              $en_middleware_question = new ConfirmationQuestion('Enable middleware (y/n) [No]? ', FALSE);
+              $en_middleware = $helper->ask($input, $output, $en_middleware_question);
+
+              $middleware = false;
+              if($en_middleware){
+                $middleware_choices = array_keys($this->middlewareList);
+                $middleware_question = new ChoiceQuestion(
+                   'Select the middleware name,support multi select ['.$middleware_choices[0].']:',
+                   $middleware_choices,
+                   0
+                );
+                $middleware_question->setMultiselect(true);
+                $middleware = $helper->ask($input, $output, $middleware_question);
+              }
+
               //nocache
               $nocache_question = new ConfirmationQuestion('Enable cache (y/n) [No]? ', FALSE);
               $nocache = $helper->ask($input, $output, $nocache_question);
@@ -235,6 +257,7 @@ class ControllerCreateCmd extends BaseCommand {
                   'path' => $path,
                   'args' => $this->getArgumentsFromRoute($path),
                   'permission' => $permission,
+                  'middleware' => $middleware,
                   'nocache' => $nocache
               ];
            }
