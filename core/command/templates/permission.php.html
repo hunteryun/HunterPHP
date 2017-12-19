@@ -1,0 +1,23 @@
+<?php print "<?php"; ?>
+
+
+namespace Hunter\<?php print $module; ?>;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+/**
+ * Provides <?php print $module; ?> module permission auth.
+ */
+class <?php print $callback_name; ?>Permission {
+
+  /**
+   * Returns bool value of <?php print $module; ?> permission.
+   *
+   * @return bool
+   */
+  public function handle(ServerRequestInterface $request, ResponseInterface $response, callable $next) {
+    return $next($request, $response);
+  }
+
+}

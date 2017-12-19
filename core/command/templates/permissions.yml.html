@@ -1,0 +1,9 @@
+<?php if($append): ?>
+
+<?php endif; ?>
+<?php foreach($permissions as $perm): ?>
+<?php print $perm['name']; ?>:
+  title: '<?php print $perm['title']; ?>'
+  _callback: 'Hunter\<?php print $module; ?>\<?php print $perm['callback_name']; ?>Permission'
+
+<?php endforeach; ?>

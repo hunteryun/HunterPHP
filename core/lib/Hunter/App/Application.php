@@ -356,7 +356,7 @@ class Application {
             $route = $routers->map(['GET','POST'], $route_info['path'], $route_info['defaults']['_controller']);
             if(isset($route_info['requirements']['_permission']) && !empty($route_info['requirements']['_permission'])){
               if(is_array($route_info['requirements']['_permission'])){
-                foreach ($route_info['requirements']['_permission'] as $midd) {
+                foreach (array_reverse($route_info['requirements']['_permission']) as $midd) {
                   $middleware = [$this->container->get($midd), 'handle'];
                   $route->middleware($middleware);
                 }

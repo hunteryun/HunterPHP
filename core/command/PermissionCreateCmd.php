@@ -12,10 +12,10 @@ use Hunter\Core\App\Application;
 use Hunter\Core\Utility\StringConverter;
 
 /**
- * 创建Controller命令
+ * 创建Permission命令
  * php hunter ctl:create
  */
-class ControllerCreateCmd extends BaseCommand {
+class PermissionCreateCmd extends BaseCommand {
 
    /**
     * @var moduleList
@@ -61,35 +61,19 @@ class ControllerCreateCmd extends BaseCommand {
     */
    protected function configure() {
        $this
-           ->setName('ctl:create')
+           ->setName('perm:create')
            ->setDescription('commands.controller.create.description')
            ->addOption(
                 'module',
                 '',
                 InputOption::VALUE_REQUIRED,
-                'commands.create.controller.options.module'
+                'commands.create.permission.options.module'
             )
             ->addOption(
-                'class',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'commands.create.controller.options.class'
-            )
-            ->addOption(
-                'routes',
+                'permissions',
                 '',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'commands.create.controller.options.routes'
-            )
-            ->addArgument(
-                'isContentType',
-                InputArgument::OPTIONAL,
-                'Is this a new content type?'
-            )
-            ->addArgument(
-                'fields',
-                InputArgument::OPTIONAL,
-                'content type fields'
+                'commands.create.permission.options.routes'
             );
    }
 
@@ -98,10 +82,7 @@ class ControllerCreateCmd extends BaseCommand {
     */
    protected function execute(InputInterface $input, OutputInterface $output) {
        $module = $input->getOption('module');
-       $class = $input->getOption('class');
-       $routes = $input->getOption('routes');
-       $isContentType = $input->getArgument('isContentType');
-       $fields = $input->getArgument('fields');
+       $permissions = $input->getOption('permissions');
 
        if(isset($this->moduleList[$module])){
          $module_path = HUNTER_ROOT .'/'. dirname($this->moduleList[$module]['pathname']);
@@ -109,42 +90,41 @@ class ControllerCreateCmd extends BaseCommand {
          $module_path = HUNTER_ROOT .'/module/'.strtolower($module);
        }
 
-       $routes = $this->inlineValueAsArray($routes);
-       $input->setOption('routes', $routes);
+       $permissions = $this->inlineValueAsArray($permissions);
+       $input->setOption('permissions', $permissions);
 
        $parameters = [
-         'class_name' => $class,
          'module' => $module,
-         'routes' => $routes,
+         'permissions' => $permissions,
          'append' => $this->append,
-         'fields' => $fields,
        ];
 
-       if($isContentType){
-         $ctltemplate = 'ctcontroller.php.html';
-       }else {
-         $ctltemplate = 'controller.php.html';
-       }
-
-       if(!$this->append || !file_exists($module_path.'/src/Controller/'.$class.'Controller.php')){
-         $writed = $this->renderFile(
-             $ctltemplate,
-             $module_path.'/src/Controller/'.$class.'Controller.php',
-             $parameters
-         );
-       }
-
        $writed = $this->renderFile(
-           'routing-controller.yml.html',
-           $module_path.'/'.$module.'.routing.yml',
+           'permissions.yml.html',
+           $module_path.'/'.$module.'.permissions.yml',
            $parameters,
            FILE_APPEND
        );
 
+       foreach ($permissions as $key => $perm) {
+         if(!$this->append || !file_exists($module_path.'/src/'.$perm['callback_name'].'Permission.php')){
+           $parms = [
+             'module' => $module,
+             'callback_name' => $perm['callback_name'],
+           ];
+
+           $writed = $this->renderFile(
+               'permission.php.html',
+               $module_path.'/src/'.$perm['callback_name'].'Permission.php',
+               $parms
+           );
+         }
+       }
+
        if($writed){
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' Controller create successful!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$module.' Permission create successful!');
        }else{
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$class.' Controller create failed!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$module.' Permission create failed!');
        }
    }
 
@@ -172,75 +152,38 @@ class ControllerCreateCmd extends BaseCommand {
            $input->setOption('module', $module);
        }
 
-       // --class option
-       $class = $input->getOption('class');
-       if (!$class) {
-           $question = new Question('Enter the Controller class name [Default]:', 'Default');
-           $class = $helper->ask($input, $output, $question);
-           $input->setOption('class', $class);
-       }
-
-       // --routes option
-       $routes = $input->getOption('routes');
-       if (!$routes) {
-           if(isset($this->routeList[$module]) && !empty($this->routeList[$module])){
+       // --permissions option
+       $permissions = $input->getOption('permissions');
+       if (!$permissions) {
+           if(isset($this->permissionList[$module]) && !empty($this->permissionList[$module])){
              $this->append = true;
            }
 
            while (true) {
-              //route method title
-              $title_question = new Question('Enter the Controller method title (leave empty and press enter when done) []:', '');
+              //permission title
+              $title_question = new Question('Enter the permission title (leave empty and press enter when done) []:', '');
               $title = $helper->ask($input, $output, $title_question);
 
               if ($title === '') {
                   break;
               }
 
-              //route method
-              $method_question = new Question('Enter the action method name [hello]:', 'hello');
-              $method = $helper->ask($input, $output, $method_question);
+              //permission name
+              $name_question = new Question('Enter the permission name ['.strtolower($title).']:', strtolower($title));
+              $name = $helper->ask($input, $output, $name_question);
 
-              //route path
-              $path_question = new Question('Enter the route path [/'.$module.'/hello/{name}]:', '/'.$module.'/hello/{name}');
-              $path = $helper->ask($input, $output, $path_question);
+              //permission callback name
+              $callback_name_question = new Question('Enter the callback name ['.ucwords($module).']:', ucwords($module));
+              $callback_name = $helper->ask($input, $output, $callback_name_question);
 
-              //route name
-              $classMachineName = $this->stringConverter->createMachineName($class);
-              $routeName = $module . '.' . str_replace("controller", "", $classMachineName) . '_' . $method;
-
-              //permission
-              $en_permission_question = new ConfirmationQuestion('Enable permission (y/n) [No]? ', FALSE);
-              $en_permission = $helper->ask($input, $output, $en_permission_question);
-
-              $permission = false;
-              if($en_permission){
-                $permission_choices = array_keys($this->permissionList);
-                $default_permission_vaule = array_search('access admin page', $permission_choices);
-                $permission_question = new ChoiceQuestion(
-                   'Select the permission name []:',
-                   $permission_choices,
-                   $default_permission_vaule
-                );
-                $permission = $helper->ask($input, $output, $permission_question);
-              }
-
-              //nocache
-              $nocache_question = new ConfirmationQuestion('Enable cache (y/n) [No]? ', FALSE);
-              $nocache = $helper->ask($input, $output, $nocache_question);
-
-              $routes[] = [
-                  'title' => hunter_convert_to_utf8($title),
-                  'name' => $routeName,
-                  'method' => $method,
-                  'path' => $path,
-                  'args' => $this->getArgumentsFromRoute($path),
-                  'permission' => $permission,
-                  'middleware' => $middleware,
-                  'nocache' => $nocache
+              $permissions[] = [
+                  'title' => $title,
+                  'name' => $name,
+                  'callback_name' => $callback_name
               ];
            }
 
-           $input->setOption('routes', $routes);
+           $input->setOption('permissions', $permissions);
        }
    }
 
