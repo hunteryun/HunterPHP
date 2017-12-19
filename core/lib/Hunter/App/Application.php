@@ -419,6 +419,13 @@ class Application {
     /**
      * {@inheritdoc}
      */
+    public function getServicesList() {
+        return $this->serviceYamls;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getRoutes() {
         return $this->routers;
     }

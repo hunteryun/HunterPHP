@@ -6,14 +6,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
 
 /**
- * 创建Permission命令
- * php hunter perm:create
+ * 创建Service命令
+ * php hunter service:create
  */
-class PermissionCreateCmd extends BaseCommand {
+class ServiceCreateCmd extends BaseCommand {
 
    /**
     * @var moduleList
@@ -21,9 +22,9 @@ class PermissionCreateCmd extends BaseCommand {
    protected $moduleList;
 
    /**
-    * @var permissionList
+    * @var serviceList
     */
-   protected $permissionList;
+   protected $serviceList;
 
    /**
     * @var bool
@@ -37,7 +38,7 @@ class PermissionCreateCmd extends BaseCommand {
    public function __construct() {
        $application = new Application();
        $this->moduleList = $application->boot()->getModulesList();
-       $this->permissionList = $application->boot()->getPermissionsList();
+       $this->serviceList = $application->boot()->getServicesList();
 
        parent::__construct();
    }
@@ -47,19 +48,19 @@ class PermissionCreateCmd extends BaseCommand {
     */
    protected function configure() {
        $this
-           ->setName('perm:create')
-           ->setDescription('commands.permission.create.description')
+           ->setName('service:create')
+           ->setDescription('commands.service.create.description')
            ->addOption(
                 'module',
                 '',
                 InputOption::VALUE_REQUIRED,
-                'commands.create.permission.options.module'
+                'commands.create.service.options.module'
             )
             ->addOption(
-                'permissions',
+                'services',
                 '',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'commands.create.permission.options.permissions'
+                'commands.create.service.options.services'
             );
    }
 
@@ -68,7 +69,7 @@ class PermissionCreateCmd extends BaseCommand {
     */
    protected function execute(InputInterface $input, OutputInterface $output) {
        $module = $input->getOption('module');
-       $permissions = $input->getOption('permissions');
+       $services = $input->getOption('services');
 
        if(isset($this->moduleList[$module])){
          $module_path = HUNTER_ROOT .'/'. dirname($this->moduleList[$module]['pathname']);
@@ -76,41 +77,41 @@ class PermissionCreateCmd extends BaseCommand {
          $module_path = HUNTER_ROOT .'/module/'.strtolower($module);
        }
 
-       $permissions = $this->inlineValueAsArray($permissions);
-       $input->setOption('permissions', $permissions);
+       $services = $this->inlineValueAsArray($services);
+       $input->setOption('services', $services);
 
        $parameters = [
          'module' => $module,
-         'permissions' => $permissions,
+         'services' => $services,
          'append' => $this->append,
        ];
 
        $writed = $this->renderFile(
-           'permissions.yml.html',
-           $module_path.'/'.$module.'.permissions.yml',
+           'services.yml.html',
+           $module_path.'/'.$module.'.services.yml',
            $parameters,
            FILE_APPEND
        );
 
-       foreach ($permissions as $key => $perm) {
-         if(!$this->append || !file_exists($module_path.'/src/'.$perm['callback_name'].'Permission.php')){
+       foreach ($services as $key => $perm) {
+         if(!$this->append || !file_exists($module_path.'/src/Plugin/'.$perm['class'].'.php')){
            $parms = [
              'module' => $module,
-             'callback_name' => $perm['callback_name'],
+             'class' => $perm['class'],
            ];
 
            $writed = $this->renderFile(
-               'permission.php.html',
-               $module_path.'/src/'.$perm['callback_name'].'Permission.php',
+               'services.php.html',
+               $module_path.'/src/Plugin/'.$perm['class'].'.php',
                $parms
            );
          }
        }
 
        if($writed){
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$module.' Permission create successful!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$module.' Service create successful!');
        }else{
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$module.' Permission create failed!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$module.' Service create failed!');
        }
    }
 
@@ -138,38 +139,44 @@ class PermissionCreateCmd extends BaseCommand {
            $input->setOption('module', $module);
        }
 
-       // --permissions option
-       $permissions = $input->getOption('permissions');
-       if (!$permissions) {
-           if(isset($this->permissionList[$module]) && !empty($this->permissionList[$module])){
+       // --services option
+       $services = $input->getOption('services');
+       if (!$services) {
+           if(isset($this->serviceList[$module]) && !empty($this->serviceList[$module])){
              $this->append = true;
            }
 
            while (true) {
-              //permission title
-              $title_question = new Question('Enter the permission title (leave empty and press enter when done) []:', '');
-              $title = $helper->ask($input, $output, $title_question);
+              //service name
+              $name_question = new Question('Enter the service name (leave empty and press enter when done) []:', '');
+              $name = $helper->ask($input, $output, $name_question);
 
-              if ($title === '') {
+              if ($name === '') {
                   break;
               }
 
-              //permission name
-              $name_question = new Question('Enter the permission name ['.strtolower($title).']:', strtolower($title));
-              $name = $helper->ask($input, $output, $name_question);
+              //service class
+              $class_question = new Question('Enter the class name ['.ucwords($module).'Plugin]:', ucwords($module).'Plugin');
+              $class = $helper->ask($input, $output, $class_question);
 
-              //permission callback name
-              $callback_name_question = new Question('Enter the callback name ['.ucwords($module).']:', ucwords($module));
-              $callback_name = $helper->ask($input, $output, $callback_name_question);
+              //service arguments
+              $en_argument_question = new ConfirmationQuestion('Enable argument (y/n) [No]? ', FALSE);
+              $en_argument = $helper->ask($input, $output, $en_argument_question);
 
-              $permissions[] = [
-                  'title' => $title,
-                  'name' => $name,
-                  'callback_name' => $callback_name
+              $arguments = false;
+              if($en_argument){
+                $arguments_question = new Question('Enter the service arguments []:', false);
+                $arguments = $helper->ask($input, $output, $arguments_question);
+              }
+
+              $services[] = [
+                  'name' => strtolower($name),
+                  'class' => $class,
+                  'arguments' => $arguments,
               ];
            }
 
-           $input->setOption('permissions', $permissions);
+           $input->setOption('services', $services);
        }
    }
 

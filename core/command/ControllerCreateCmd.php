@@ -38,7 +38,7 @@ class ControllerCreateCmd extends BaseCommand {
    protected $stringConverter;
 
    /**
-    * @var StringConverter
+    * @var bool
     */
    protected $append = false;
 

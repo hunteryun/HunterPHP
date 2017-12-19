@@ -1,0 +1,17 @@
+<?php print "<?php"; ?>
+
+
+namespace Hunter\<?php print $module; ?>\Plugin;
+
+class <?php print $class; ?> {
+
+  protected $name;
+
+  /**
+   * Provides <?php print $module; ?> module plgin.
+   */
+  public function __construct($name) {
+    $this->name = $name;
+  }
+
+}

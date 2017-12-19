@@ -1,0 +1,13 @@
+<?php if($append): ?>
+
+<?php endif; ?>
+services:
+<?php foreach($services as $service): ?>
+  <?php print $module; ?>.<?php print $service['name']; ?>:
+    class: 'Hunter\<?php print $module; ?>\Plugin\<?php print $service['class']; ?>'
+<?php if($service['arguments']): ?>
+    arguments:
+      - '<?php print $service['arguments']; ?>'
+<?php endif; ?>
+
+<?php endforeach; ?>
