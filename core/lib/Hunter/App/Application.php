@@ -433,9 +433,19 @@ class Application {
     /**
      * {@inheritdoc}
      */
-    public function addRoutePermission($path, $permissions) {
+    public function addRoutePermission($route, $path, $permissions) {
         $this->routePermission[$path] = $permissions;
         $this->container->add('routePermission', $this->routePermission);
+
+        if(is_array($permissions)){
+          foreach (array_reverse($permissions) as $midd) {
+            $middleware = [$this->container->get($midd), 'handle'];
+            $route->middleware($middleware);
+          }
+        }else {
+          $route->middleware([$this->container->get($permissions), 'handle']);
+        }
+
         return $this->routePermission;
     }
 
