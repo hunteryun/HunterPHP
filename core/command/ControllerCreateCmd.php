@@ -235,7 +235,6 @@ class ControllerCreateCmd extends BaseCommand {
                   'path' => $path,
                   'args' => $this->getArgumentsFromRoute($path),
                   'permission' => $permission,
-                  'middleware' => $middleware,
                   'nocache' => $nocache
               ];
            }
