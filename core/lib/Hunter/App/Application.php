@@ -339,30 +339,32 @@ class Application {
 
         foreach ($this->routeList as $module_routers) {
           foreach ($module_routers as $name => $route_info) {
-            if($route_info['path'] == request_uri()){
-              if(isset($route_info['requirements']['_permission'])){
-                $this->routePermission[$route_info['path']] = $route_info['requirements']['_permission'];
-              }
+            if($curpath = preg_replace("/\{.*\}/", "([^/]+)", $route_info['path'])){
+              if(preg_match("~^(?|".$curpath.")$~", request_uri(), $matches)){
+                if(isset($route_info['requirements']['_permission'])){
+                  $this->routePermission[$route_info['path']] = $route_info['requirements']['_permission'];
+                }
 
-              if(isset($route_info['options'])){
-                $this->routeOptions[$route_info['path']] = $route_info['options'];
-              }
+                if(isset($route_info['options'])){
+                  $this->routeOptions[$route_info['path']] = $route_info['options'];
+                }
 
-              if(isset($route_info['defaults']['_title'])){
-                $this->routeTitles[$route_info['path']] = $route_info['defaults']['_title'];
-              }
+                if(isset($route_info['defaults']['_title'])){
+                  $this->routeTitles[$route_info['path']] = $route_info['defaults']['_title'];
+                }
 
-              $this->routeNames[$route_info['path']] = $name;
+                $this->routeNames[$route_info['path']] = $name;
 
-              $route = $routers->map(['GET','POST'], $route_info['path'], $route_info['defaults']['_controller']);
-              if(isset($route_info['requirements']['_permission']) && !empty($route_info['requirements']['_permission'])){
-                if(is_array($route_info['requirements']['_permission'])){
-                  foreach (array_reverse($route_info['requirements']['_permission']) as $midd) {
-                    $middleware = [$this->container->get($midd), 'handle'];
-                    $route->middleware($middleware);
+                $route = $routers->map(['GET','POST'], $route_info['path'], $route_info['defaults']['_controller']);
+                if(isset($route_info['requirements']['_permission']) && !empty($route_info['requirements']['_permission'])){
+                  if(is_array($route_info['requirements']['_permission'])){
+                    foreach (array_reverse($route_info['requirements']['_permission']) as $midd) {
+                      $middleware = [$this->container->get($midd), 'handle'];
+                      $route->middleware($middleware);
+                    }
+                  }else {
+                    $route->middleware([$this->container->get($route_info['requirements']['_permission']), 'handle']);
                   }
-                }else {
-                  $route->middleware([$this->container->get($route_info['requirements']['_permission']), 'handle']);
                 }
               }
             }
