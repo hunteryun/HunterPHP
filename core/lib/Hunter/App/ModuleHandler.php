@@ -607,7 +607,11 @@ class ModuleHandler implements ModuleHandlerInterface {
    */
   public function getName($module) {
     if(isset($this->moduleList[$module])){
-      $info = Yaml::decode(file_get_contents($this->moduleList[$module]->getPathname()));
+      if(is_cli()){
+        $info = Yaml::decode(file_get_contents(base_path().$this->moduleList[$module]->getPathname()));
+      }else {
+        $info = Yaml::decode(file_get_contents($this->moduleList[$module]->getPathname()));
+      }
     }
     return isset($info['name']) ? $info['name'] : $module;
   }
