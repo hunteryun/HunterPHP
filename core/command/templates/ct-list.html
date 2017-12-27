@@ -32,45 +32,46 @@
                 </tr>
             </thead>
             <tbody>
-              <?php print '<?php foreach ($'.$type.'s as $r): ?>'; ?>
+              <?php print '@foreach($'.$type.'s as $r)'; ?>
 
                   <tr>
                     <td>
-                        <?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>
+                        <?php print '{{ $r->'.substr($type, 0, 1 ).'id }}'; ?>
+
                     </td>
 <?php foreach ($fields as $field): ?>
 <?php if($field['html_type'] == 'text'): ?>
                     <td>
-                      <?php print '<?php echo $r->'.$field['name'].'; ?>'; ?>
+                      <?php print '{{ $r->'.$field['name'].' }}'; ?>
 
                     </td>
 <?php endif; ?>
 <?php if($field['html_type'] == 'image'): ?>
   <?php if($field['html_type_setting']['image_type'] == 'single'): ?>
                     <td>
-                      <img src="<?php print '<?php echo $r->'.$field['name'].'; ?>'; ?>" width="70">
+                      <img src="<?php print '{{ $r->'.$field['name'].' }}'; ?>" width="70">
                     </td>
   <?php else: ?>
                     <td>
-                      <?php print '<?php foreach (json_decode($r->'.$field['name'].') as $v): ?>'; ?>
+                      <?php print '@foreach(json_decode($r->'.$field['name'].') as $v)'; ?>
 
-                      <img src="<?php print '<?php echo $v->image; ?>'; ?>" width="70">
-                      <?php print '<?php endforeach;?>'; ?>
+                      <img src="<?php print '{{ $v->image }}'; ?>" width="70">
+                      <?php print '@endforeach'; ?>
 
                     </td>
   <?php endif; ?>
 <?php endif; ?>
 <?php endforeach; ?>
                     <td>
-                        <?php print '<?php echo date("Y-m-d H:i:s", $r->created); ?>'; ?>
+                        <?php print '{{ date("Y-m-d H:i:s", $r->created) }}'; ?>
 
                     </td>
                     <td class=" td-handle">
-                        <a href="javascript:;" onclick="<?php print $type; ?>Edit('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-normal layui-btn-xs">编辑</a>
-                        <a href="javascript:;" onclick="<?php print $type; ?>Del('<?php print '<?php echo $r->'.substr($type, 0, 1 ); ?>id; ?>');" class="layui-btn layui-btn-danger layui-btn-xs ajax-delete">删除</a>
+                        <a href="javascript:;" onclick="<?php print $type; ?>Edit('<?php print '{{ $r->'.substr($type, 0, 1 ); ?>id }}');" class="layui-btn layui-btn-normal layui-btn-xs">编辑</a>
+                        <a href="javascript:;" onclick="<?php print $type; ?>Del('<?php print '{{ $r->'.substr($type, 0, 1 ); ?>id }}');" class="layui-btn layui-btn-danger layui-btn-xs ajax-delete">删除</a>
                     </td>
                 </tr>
-              <?php print '<?php endforeach;?>';?>
+              <?php print '@endforeach'; ?>
 
             </tbody>
         </table>
