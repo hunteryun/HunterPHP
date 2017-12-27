@@ -35,7 +35,7 @@ function session() {
  *   session()->deleteMulti($keys);
  *
  * 作废配置中的所有元素
- *   session()->flush();
+ *   session()->clear();
  *
  * 是否有这个元素
  *   session()->hasKey($key);

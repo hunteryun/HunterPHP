@@ -397,6 +397,10 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
       case 'img':
         $form->img($name, $field);
         break;
+      case 'captcha':
+        element_set_attributes($field, array('id'));
+        $form->captcha($name, $field);
+        break;
       case 'markup':
         $form->markup($name, $field);
         break;
