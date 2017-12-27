@@ -3,6 +3,7 @@
 namespace Hunter\Core\FormApi;
 
 use Hunter\Core\FormApi\Form;
+use Gregwar\Captcha\CaptchaBuilder;
 
 class Layui extends Form {
     /**
@@ -251,10 +252,6 @@ class Layui extends Form {
     /**
      * generate a image
      *
-     * @param string $src
-     * @param string $alt
-     * @param string $width
-     * @param string $class
      * @return $this
      */
     public function img($name, $field)
@@ -265,6 +262,28 @@ class Layui extends Form {
             <div class="layui-input-block">
                 <img src="'.$field['#default_value'].'"'.hunter_attributes($field['#attributes']).'>
             </div>
+        </div>';
+
+        return $this;
+    }
+
+    /**
+     * generate a captcha
+     *
+     * @return $this
+     */
+    public function captcha($name, $field)
+    {
+        $builder = new CaptchaBuilder;
+        $builder->build($width = 100, $height = 38);
+        session()->set('_captcha', $builder->getPhrase());
+        $this->form .= '
+        <div class="layui-form-item">
+            <label class="layui-form-label">'.$field['#title'].'</label>
+            <div class="layui-input-inline">
+              <input type="text" name="_captcha" id="'.$name.'" class="layui-input">
+            </div>
+            <div class="captcha"><img src="'.$builder->inline().'"'.hunter_attributes($field['#attributes']).'></div>
         </div>';
 
         return $this;
@@ -468,6 +487,7 @@ class Layui extends Form {
          $this->form .= '<input type="hidden" name="form_id" value="'.$form_id.'">';
        }
 
+       $this->form .= csrf_field();
        $this->form .= '</form>';
 
        return $this->form;

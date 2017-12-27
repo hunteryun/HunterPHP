@@ -21,6 +21,12 @@ $default_theme = 'hunter';
 //配置: 默认语言
 $default_language = 'zh';
 
+//配置: 启用图片自动压缩
+$auto_image_compress = array(
+  'enable' => true,
+  'quality' => 60,
+);
+
 //配置: 数据库
 $databases = array(
     'default' => array(
