@@ -11,6 +11,8 @@
         "overclokk/cookie": "^1.0",
         "fzaninotto/faker": "^1.6",
         "creitive/breadcrumbs": "^3.1",
+      	"voku/anti-xss": "^2.0",
+      	"gregwar/captcha": "1.*",
         "monolog/monolog": "^1.22"
     },
     "extra": {

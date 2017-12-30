@@ -15,6 +15,7 @@ use Zend\Diactoros\ServerRequestFactory;
 use Zend\Diactoros\Response\RedirectResponse;
 use Hunter\Core\FormApi\Layui;
 use Hunter\Core\FormApi\NoHtml;
+use voku\helper\AntiXSS;
 
 //file scan
 function file_scan($dir, $regx, $options = array(), $depth = 1) {
@@ -58,9 +59,14 @@ function file_include($dir, $regx, $options = array()) {
 }
 
 // Redirect URL path.
-function redirect($path) {
+function redirect($path, $status = 302, $headers = []) {
   $request = ServerRequestFactory::fromGlobals();
-  return new RedirectResponse($path);
+  if(substr($path,0,1) == '/'){
+    $path = base_path().substr($path,1);
+  }else {
+    $path = base_path().$path;
+  }
+  return new RedirectResponse($path, $status, $headers);
 }
 
 /**
@@ -326,7 +332,7 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
       }
 
       if(!isset($field['#value'])){
-        $field['#value'] = isset($field['#default_value']) ? $field['#default_value'] : '';
+        $field['#value'] = isset($field['#default_value']) ? e($field['#default_value']) : '';
       }
 
       switch ($field['#type'])
@@ -488,6 +494,18 @@ if (!function_exists('e')) {
      */
     function e($value) {
         return htmlentities($value, ENT_QUOTES, 'UTF-8', false);
+    }
+}
+
+if (!function_exists('clean')) {
+    /**
+     * filter the string.
+     *
+     * @return string
+     */
+    function clean($string) {
+      $antiXss = new AntiXSS();
+      return $antiXss->xss_clean($string);
     }
 }
 

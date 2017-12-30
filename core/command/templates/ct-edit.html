@@ -3,31 +3,33 @@
 <head>
     <meta charset="utf-8">
     <title>编辑<?php print $name; ?></title>
+    <base href="{{ base_path() }}">
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-    <link rel="stylesheet" href="/theme/admin/assets/layui/css/layui.css">
-    <link rel="stylesheet" href="/theme/admin/assets/css/style.css">
-    <script src="/theme/admin/assets/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="theme/admin/assets/layui/css/layui.css">
+    <link rel="stylesheet" href="theme/admin/assets/css/style.css">
+    <script src="theme/admin/assets/js/jquery.min.js"></script>
 </head>
 
 <body>
     <div class="pd-20 <?php print $type; ?>-edit">
       {!! hunter_form_render('layui', $form, '<?php print $type; ?>', $<?php print $type; ?>) !!}
     </div>
-    <script src="/theme/admin/assets/layui/layui.js"></script>
+    <script src="theme/admin/assets/layui/layui.js"></script>
     <script>
         layui.use(['form', 'layedit', 'layer', 'upload'], function() {
             var form = layui.form;
             var layedit = layui.layedit;
             var upload = layui.upload;
             var layer = layui.layer;
+            var base_path = "{{ base_path() }}";
           <?php foreach ($fields as $field): ?>
             <?php if($field['html_type'] == 'textarea'): ?>
 
             var <?php print $field['name']; ?>_index = layedit.build('<?php print $field['name']; ?>',{
               uploadImage: {
-            		url:'/admin/safe/upload'
+            		url:"admin/safe/upload"
             		,type: 'post'
               }
             }); //建立编辑器
@@ -44,7 +46,7 @@
             //图片上传
             var <?php print $field['name']; ?>Upload = upload.render({
               elem: '#<?php print $field['name']; ?>btn' //绑定元素
-              ,url: '/admin/safe/upload' //上传接口
+              ,url:"admin/safe/upload" //上传接口
               ,field: '<?php print $type; ?>-<?php print $field['name']; ?>-file'
               ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
                 layer.load(); //上传loading
@@ -53,7 +55,7 @@
                 layer.closeAll('loading'); //关闭loading
                 if(result.code == 0){
                   document.getElementById('<?php print $field['name']; ?>').value = result.data.full_path_new_name;
-                  document.getElementById('<?php print $field['name']; ?>-preview').src = result.data.full_path_new_name;
+                  document.getElementById('<?php print $field['name']; ?>-preview').src = base_path+result.data.full_path_new_name;
                 }else {
                   layer.msg(result.msg, {
                       icon: 5
@@ -72,7 +74,7 @@
             var demoListView = $('#demoList')
             ,uploadListIns = upload.render({
               elem: '#<?php print $field['name']; ?>List'
-              ,url: '/admin/safe/upload'
+              ,url:"admin/safe/upload"
               ,field: '<?php print $field['name']; ?>-file'
               ,multiple: true
               ,auto: false
@@ -111,7 +113,7 @@
                 if(res.code == 0){ //上传成功
                   var tr = demoListView.find('tr#upload-'+ index)
                   ,tds = tr.children();
-                  tds.eq(1).html('<img src="'+res.data.src+'">');
+                  tds.eq(1).html('<img src="'+base_path+res.data.src+'">');
                   tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
                   tds.eq(4).html('<textarea name="up_photos_des['+ index +']" style="width:300px;height:60px"></textarea><input type="hidden" name="up_photos_img['+ index +']" value="'+res.data.src+'">');
                   tds.eq(5).html(''); //清空操作
@@ -132,7 +134,7 @@
           //文件上传
           var <?php print $field['name']; ?>Upload = upload.render({
             elem: '#<?php print $field['name']; ?>btn' //绑定元素
-            ,url: '/admin/safe/upload' //上传接口
+            ,url:"admin/safe/upload" //上传接口
             ,accept: '<?php print $field['html_type_setting']['file_accept']; ?>' //允许上传的文件类型
             ,exts: '<?php print $field['html_type_setting']['file_exts']; ?>' //允许上传的文件扩展名
             ,size: <?php print $field['html_type_setting']['file_size']; ?> //最大允许上传的文件大小
@@ -157,7 +159,7 @@
             form.on('submit(<?php print $type; ?>Update)', function(data) {
                 $.ajax({
                     type: "POST",
-                    url: "/admin/<?php print $type; ?>/update", //后台程序地址
+                    url: "admin/<?php print $type; ?>/update", //后台程序地址
                     data: data.field, //需要post的数据
                     success: function(msg) { //后台程序返回的标签，比如我喜欢使用1和0 表示成功或者失败
                         var index = parent.layer.getFrameIndex(window.name);
