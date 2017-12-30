@@ -48,6 +48,7 @@
               elem: '#<?php print $field['name']; ?>btn' //绑定元素
               ,url:"admin/safe/upload" //上传接口
               ,field: '<?php print $type; ?>-<?php print $field['name']; ?>-file'
+              ,data: {accept: 'images', exts: 'jpg|png|gif|bmp|jpeg'}
               ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
                 layer.load(); //上传loading
               }
@@ -79,6 +80,7 @@
               ,multiple: true
               ,auto: false
               ,bindAction: '#<?php print $field['name']; ?>ListAction'
+              ,data: {accept: 'images', exts: 'jpg|png|gif|bmp|jpeg'}
               ,choose: function(obj){
                 var files = obj.pushFile(); //将每次选择的文件追加到文件队列
                 //读取本地文件
@@ -138,6 +140,7 @@
             ,accept: '<?php print $field['html_type_setting']['file_accept']; ?>' //允许上传的文件类型
             ,exts: '<?php print $field['html_type_setting']['file_exts']; ?>' //允许上传的文件扩展名
             ,size: <?php print $field['html_type_setting']['file_size']; ?> //最大允许上传的文件大小
+            ,data: {accept: '<?php print $field['html_type_setting']['file_accept']; ?>', exts: '<?php print $field['html_type_setting']['file_exts']; ?>'}
             ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
               layer.load(); //上传loading
             }
