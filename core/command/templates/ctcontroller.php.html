@@ -19,10 +19,14 @@ class <?php print ucfirst($module); ?>Controller {
    * @return string
    *   Return <?php print $module; ?>_list string.
    */
-  public function <?php print $module; ?>_list() {
-    $<?php print $module; ?>_list = get_all_<?php print $module; ?>();
+  public function <?php print $module; ?>_list(ServerRequest $request) {
+    $parms = $request->getQueryParams();
+    if(!isset($parms['page'])){
+      $parms['page'] = 1;
+    }
+    $<?php print $module; ?>_result = get_all_<?php print $module; ?>($parms);
 
-    return view('/admin/<?php print $module; ?>-list.html', array('<?php print $module; ?>s' => $<?php print $module; ?>_list));
+    return view('/admin/<?php print $module; ?>-list.html', array('<?php print $module; ?>s' => $<?php print $module; ?>_result['list'], 'pager' => $<?php print $module; ?>_result['pager']));
   }
 
   /**

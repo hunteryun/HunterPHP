@@ -17,13 +17,17 @@ function get_<?php print $module; ?>_byid($<?php print substr($module, 0, 1 ); ?
 /**
  * get all <?php print $module; ?>.
  */
-function get_all_<?php print $module; ?>() {
-    $<?php print $module; ?>s = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
+function get_all_<?php print $module; ?>($parms) {
+    $data = array();
+    $query = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
       ->fields('<?php print substr($module, 0, 1 ); ?>')
-      ->execute()
-      ->fetchAll();
+      ->extend('Pager')->size(20)->page($parms['page'])
+      ->orderBy('<?php print substr($module, 0, 1 ); ?>.created', 'DESC');
 
-    return $<?php print $module; ?>s;
+    $data['pager'] = $query->fetchPager();
+    $data['list'] = $query->execute()->fetchAll();
+
+    return $data;
 }
 
 <?php endif; ?>
