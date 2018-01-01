@@ -69,6 +69,27 @@ class FakerContentCmd extends BaseCommand {
                   case 'randomTwo':
                     $fields[$name] = $faker->randomElement([0, 1]);
                     break;
+                  case 'numberBetween-1':
+                    $fields[$name] = $faker->numberBetween(0, 10);
+                    break;
+                  case 'numberBetween-2':
+                    $fields[$name] = $faker->numberBetween(10, 100);
+                    break;
+                  case 'numberBetween-2-50':
+                    $fields[$name] = $faker->numberBetween(10, 50);
+                    break;
+                  case 'numberBetween-3':
+                    $fields[$name] = $faker->numberBetween(100, 1000);
+                    break;
+                  case 'numberBetween-4':
+                    $fields[$name] = $faker->numberBetween(1000, 10000);
+                    break;
+                  case 'numberBetween-5':
+                    $fields[$name] = $faker->numberBetween(10000, 100000);
+                    break;
+                  case 'numberBetween-6':
+                    $fields[$name] = $faker->numberBetween(100000, 1000000);
+                    break;
                   default:
                     $fields[$name] = $faker->$type;
                   }
