@@ -245,6 +245,16 @@ function db_schema($target = 'default') {
  * 获取表数据.
  */
 function db_get_tables($target = 'default') {
+  global $databases;
+  if (isset($databases[$target]['driver']) && $databases[$target]['driver'] == 'sqlite') {
+    $result = db_query("SELECT name FROM sqlite_master
+    WHERE type IN ('table','view') AND name NOT LIKE 'sqlite_%'
+    UNION ALL
+    SELECT name FROM sqlite_temp_master
+    WHERE type IN ('table','view')
+    ORDER BY 1")->fetchCol();
+    return $result;
+  }
   return array_keys(db_schema($target)->getSchema());
 }
 
@@ -252,5 +262,16 @@ function db_get_tables($target = 'default') {
  * 获取字段数据.
  */
 function db_get_fields($table, $target = 'default') {
+  global $databases;
+  if (isset($databases[$target]['driver']) && $databases[$target]['driver'] == 'sqlite') {
+    $result = array();
+    $tableinfo = db_query("PRAGMA table_info($table)")->fetchAll();
+    if(!empty($tableinfo)){
+      foreach ($tableinfo as $tb) {
+        $result[] = $tb->name;
+      }
+    }
+    return $result;
+  }
   return array_keys(db_schema($target)->fieldLists($table));
 }

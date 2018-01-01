@@ -8,8 +8,8 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
-use Hunter\Core\Utility\StringConverter;
 use Faker\Factory;
+use Hunter\Core\Serialization\Yaml;
 
 /**
  * 创建假数据命令
@@ -17,111 +17,178 @@ use Faker\Factory;
  */
 class FakerContentCmd extends BaseCommand {
 
-   /**
+    /** @var Validator  */
+    protected $moduleList;
+
+    /**
+     * FakerCommand constructor.
+     * @param Site $site
+     */
+    public function __construct() {
+        $application = new Application();
+        $this->moduleList = $application->boot()->getModulesList();
+        parent::__construct();
+    }
+
+    /**
     * {@inheritdoc}
     */
-   protected function configure() {
+    protected function configure() {
        $this
          ->setName('faker')
          ->setDescription('commands.faker.description')
-         ->addOption('table', '', InputOption::VALUE_REQUIRED, 'commands.faker.options.number')
-         ->addOption('fields', '', InputOption::VALUE_REQUIRED, 'commands.faker.options.number')
+         ->addOption('locale', '', InputOption::VALUE_OPTIONAL, 'commands.faker.options.locale')
+         ->addOption('confs', '', InputOption::VALUE_REQUIRED, 'commands.faker.options.confs')
          ->addOption('number', '', InputOption::VALUE_REQUIRED, 'commands.faker.options.number');
-   }
+    }
 
-   /**
+    /**
     * {@inheritdoc}
     */
-   protected function execute(InputInterface $input, OutputInterface $output) {
-      $faker = Factory::create('zh_CN');
-      $fields = array();
+    protected function execute(InputInterface $input, OutputInterface $output) {
+      $locale = $input->getOption('locale');
+      $confs = $input->getOption('confs');
+      $number = $input->getOption('number');
 
-      for($i = 0; $i < (int) $input->getOption('number'); $i++) {
-          if(!empty($input->getOption('fields'))){
-            foreach ($input->getOption('fields') as $field) {
-              switch ($field['type'])
-              {
-              case 'password':
-                $fields[$field['name']] = 'password';
-                break;
-              case 'imageUrl':
-                $fields[$field['name']] = $faker->imageUrl(100, 100, 'cats');
-                break;
-              case 'randomTwo':
-                $fields[$field['name']] = $faker->randomElement([0, 1]);
-                break;
-              default:
-                $fields[$field['name']] = $faker->$field['type'];
+      $faker = Factory::create($locale);
+
+      foreach ($confs as $table => $fs) {
+        $fields = array();
+        for($i = 0; $i < (int) $input->getOption('number'); $i++) {
+            if(!empty($fs)){
+              foreach ($fs as $name => $type) {
+                if(strpos($type,'faker-') !== false){
+                  switch ($type=str_replace('faker-','',$type))
+                  {
+                  case 'password':
+                    $fields[$name] = 'password';
+                    break;
+                  case 'imageUrl':
+                    $fields[$name] = $faker->imageUrl(100, 100, 'cats');
+                    break;
+                  case 'randomTwo':
+                    $fields[$name] = $faker->randomElement([0, 1]);
+                    break;
+                  default:
+                    $fields[$name] = $faker->$type;
+                  }
+                }else {
+                  if(is_string($type)){
+                    switch ($type)
+                    {
+                    case 'timenow':
+                      $fields[$name] = time();
+                      break;
+                    default:
+                      $fields[$name] = $type;
+                    }
+                  }else {
+                    $fields[$name] = $type;
+                  }
+                }
               }
             }
-          }
-          $result = db_insert($input->getOption('table'))
-              ->fields($fields)
-              ->execute();
+            $result = db_insert($table)->fields($fields)->execute();
+        }
       }
 
       if($result){
-        $output->writeln('['.date("Y-m-d H:i:s").'] '. $input->getOption('table') .' have '. $input->getOption('number').' content create successful!');
+        $output->writeln('['.date("Y-m-d H:i:s").'] There have '. $input->getOption('number').' content create successful!');
       }else{
-        $output->writeln('['.date("Y-m-d H:i:s").'] '. $input->getOption('table') .' have '. $input->getOption('number').' content create failed!');
+        $output->writeln('['.date("Y-m-d H:i:s").'] There have '. $input->getOption('number').' content create failed!');
       }
-   }
+    }
 
-   /**
+    /**
     * {@inheritdoc}
     */
-   protected function interact(InputInterface $input, OutputInterface $output) {
+    protected function interact(InputInterface $input, OutputInterface $output) {
        $helper = $this->getHelper('question');
 
-       // --table option
-       $table = $input->getOption('table');
-       if (!$table) {
-           $choices = db_get_tables();
-           $default_name = current($choices);
-           if (null !== $default_name) {
-              $values = array_flip($choices);
-              $default = $values[$default_name];
+       $faker_type_question = new ChoiceQuestion(
+          'Choose the faker type [select]:',
+          array('select', 'config'),
+          0
+       );
+       $faker_type = $helper->ask($input, $output, $faker_type_question);
+
+       if($faker_type == 'select'){
+         $locale_question = new ChoiceQuestion(
+            'Choose the locale language [zh_CN]:',
+            array('zh_CN', 'en-GB'),
+            0
+         );
+         $locale = $helper->ask($input, $output, $locale_question);
+         $input->setOption('locale', $locale);
+
+         // --table option
+         $choices = db_get_tables();
+         $default_name = current($choices);
+         if (null !== $default_name) {
+            $values = array_flip($choices);
+            $default = $values[$default_name];
+         }
+         $question = new ChoiceQuestion(
+            'Select the table name ['.$default_name.']:',
+            $choices,
+            $default
+         );
+         $table = $helper->ask($input, $output, $question);
+
+         // --fields option
+         $confs = $input->getOption('confs');
+         if (!$confs) {
+             while (true) {
+                $field_choices = db_get_fields($table);
+                $field_choices[count($field_choices)] = 'DONE';
+                $question = new ChoiceQuestion(
+                  'Select the field name (leave empty and press enter when done) []:',
+                  $field_choices,
+                  'DONE'
+                );
+                $field_name = $helper->ask($input, $output, $question);
+
+                if ($field_name === 'DONE') {
+                    break;
+                }
+
+                $field_type_choices = array('name', 'imageUrl', 'address', 'text', 'word', 'randomTwo', 'email', 'password', 'ipv4', 'uuid', 'hexcolor', 'ean6', 'languageCode', 'boolean', 'phoneNumber', 'unixTime');
+                $question = new ChoiceQuestion(
+                  'Select the field type []:',
+                  $field_type_choices,
+                  0
+                );
+                $field_type = $helper->ask($input, $output, $question);
+
+                $confs[$table][$field_name] = $field_type;
+             }
+             $input->setOption('confs', $confs);
+         }
+       }else {
+         // --module option
+         $choices = array_keys($this->moduleList);
+         $default_name = current($choices);
+         if (null !== $default_name) {
+            $values = array_flip($choices);
+            $default = $values[$default_name];
+         }
+         $question = new ChoiceQuestion(
+            'Select the modue name ['.$default_name.']:',
+            $choices,
+            $default
+         );
+         $module = $helper->ask($input, $output, $question);
+
+         $faker_config = 'module/'.$module.'/config/'.$module.'.faker.yml';
+         if(file_exists($faker_config)){
+           $conf = Yaml::decode(file_get_contents($faker_config));
+           if(isset($conf['locale'])){
+             $input->setOption('locale', $conf['locale']);
            }
-           $question = new ChoiceQuestion(
-              'Select the table name ['.$default_name.']:',
-              $choices,
-              $default
-           );
-           $table = $helper->ask($input, $output, $question);
-           $input->setOption('table', $table);
-       }
-
-       // --fields option
-       $fields = $input->getOption('fields');
-       if (!$fields) {
-           while (true) {
-              $field_choices = db_get_fields($table);
-              $field_choices[count($field_choices)] = 'DONE';
-              $question = new ChoiceQuestion(
-                'Select the field name (leave empty and press enter when done) []:',
-                $field_choices,
-                'DONE'
-              );
-              $field_name = $helper->ask($input, $output, $question);
-
-              if ($field_name === 'DONE') {
-                  break;
-              }
-
-              $field_type_choices = array('name', 'imageUrl', 'address', 'text', 'word', 'randomTwo', 'email', 'password', 'ipv4', 'uuid', 'hexcolor', 'ean6', 'languageCode', 'boolean', 'phoneNumber', 'unixTime');
-              $question = new ChoiceQuestion(
-                'Select the field type []:',
-                $field_type_choices
-              );
-              $field_type = $helper->ask($input, $output, $question);
-
-              $fields[] = [
-                  'name' => $field_name,
-                  'type' => $field_type,
-              ];
+           if(isset($conf['faker']) && !empty($conf['faker'])){
+             $input->setOption('confs', $conf['faker']);
            }
-
-           $input->setOption('fields', $fields);
+         }
        }
 
       // --number option
@@ -131,6 +198,6 @@ class FakerContentCmd extends BaseCommand {
           $number = $helper->ask($input, $output, $question);
           $input->setOption('number', $number);
       }
-   }
+    }
 
 }
