@@ -5,6 +5,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
 use Hunter\Core\Utility\StringConverter;
@@ -90,10 +91,27 @@ class ModuleCreateCmd extends BaseCommand {
                 InputOption::VALUE_OPTIONAL,
                 'commands.create.module.options.dependencies'
             )
+            ->addOption(
+                'create-faker',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'commands.create.module.options.create-faker'
+            )
+            ->addOption(
+                'create-composer',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'commands.create.module.options.create-composer'
+            )
             ->addArgument(
                 'isContentType',
                 InputArgument::OPTIONAL,
                 'Is this a new content type?'
+            )
+            ->addArgument(
+                'fields',
+                InputArgument::OPTIONAL,
+                'content type fields'
             );
    }
 
@@ -109,7 +127,10 @@ class ModuleCreateCmd extends BaseCommand {
        $package = $input->getOption('package');
        $moduleFile = $input->getOption('module-file');
        $dependencies = $input->getOption('dependencies') == '' ? '' : explode(',', $input->getOption('dependencies'));
+       $create_faker = $input->getOption('create-faker');
+       $create_composer = $input->getOption('create-composer');
        $isContentType = $input->getArgument('isContentType');
+       $fields = $input->getArgument('fields');
 
        $dir .= '/'.$machineName;
        if (file_exists($dir)) {
@@ -149,6 +170,7 @@ class ModuleCreateCmd extends BaseCommand {
          'package' => $package,
          'dependencies' => $dependencies,
          'isContentType' => $isContentType,
+         'fields' => $fields
        );
 
        $writed = $this->renderFile(
@@ -161,6 +183,22 @@ class ModuleCreateCmd extends BaseCommand {
             $writed = $this->renderFile(
                '/module.html',
                $dir . '/' . $machineName . '.module',
+               $parameters
+            );
+       }
+
+       if ($create_faker) {
+            $writed = $this->renderFile(
+               '/faker.yml.html',
+               $dir . '/config/'.$machineName.'.faker.yml',
+               $parameters
+            );
+       }
+
+       if ($create_composer) {
+            $writed = $this->renderFile(
+               '/composer.json.html',
+               $dir . '/composer.json',
                $parameters
             );
        }
@@ -242,6 +280,16 @@ class ModuleCreateCmd extends BaseCommand {
            $dependencies = $helper->ask($input, $output, $question);
            $input->setOption('dependencies', $dependencies);
        }
+
+       //create-faker option
+       $create_faker_question = new ConfirmationQuestion('Create faker config (y/n) [No]? ', FALSE);
+       $create_faker = $helper->ask($input, $output, $create_faker_question);
+       $input->setOption('create-faker', $create_faker);
+
+       //create-composer option
+       $create_composer_question = new ConfirmationQuestion('Create composer.json (y/n) [No]? ', FALSE);
+       $create_composer = $helper->ask($input, $output, $create_composer_question);
+       $input->setOption('create-composer', $create_composer);
    }
 
    /**

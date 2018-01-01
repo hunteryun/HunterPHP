@@ -104,7 +104,10 @@ class ContentTypeCreateCmd extends BaseCommand {
          '--package' => 'Custom',
          '--module-file' => 'yes',
          '--dependencies' => '',
+         '--create-faker' => TRUE,
+         '--create-composer' => FALSE,
          'isContentType' => TRUE,
+         'fields' => $fields,
        );
 
        $moduletypeInput = new ArrayInput($modulearguments);

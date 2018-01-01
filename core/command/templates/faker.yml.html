@@ -1,0 +1,12 @@
+locale: en_US
+faker:
+  <?php print $machine_name; ?>:
+<?php if(!empty($fields)): ?>
+<?php foreach ($fields as $field): ?>
+    <?php print $field['name']; ?>: faker-name
+<?php endforeach; ?>
+<?php endif; ?>
+    uid: 1
+    status: 1
+    created: timenow
+    updated: timenow
