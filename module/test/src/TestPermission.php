@@ -2,18 +2,22 @@
 
 namespace Hunter\test;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
 /**
- * Provides test module permission auth.
+ * Provides admin module permission auth.
  */
 class TestPermission {
 
   /**
-   * Returns bool value of test permission.
+   * Returns bool value of admin permission.
    *
    * @return bool
    */
-  public function auth() {
-    return true;
+  public function handle(ServerRequestInterface $request, ResponseInterface $response, callable $next) {
+    //code...if ture
+    return $next($request, $response);
   }
 
 }
