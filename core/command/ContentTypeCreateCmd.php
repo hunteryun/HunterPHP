@@ -87,7 +87,8 @@ class ContentTypeCreateCmd extends BaseCommand {
     * {@inheritdoc}
     */
    protected function execute(InputInterface $input, OutputInterface $output) {
-       $type = $input->getOption('type');
+       $type_name = $input->getOption('type');
+       $type = $this->stringConverter->createMachineName($input->getOption('type'));
        $name = $input->getOption('name');
        $description = $input->getOption('description');
        $fields = $input->getOption('fields');
@@ -96,8 +97,8 @@ class ContentTypeCreateCmd extends BaseCommand {
 
        $modulearguments = array(
          'command' => 'module:create',
-         '--module' => $type,
-         '--machine-name' => $this->stringConverter->createMachineName($type),
+         '--module' => $type_name,
+         '--machine-name' => $type,
          '--module-path' => '/module',
          '--description' => $description,
          '--core' => '1.x',

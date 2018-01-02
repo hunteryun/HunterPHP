@@ -4,25 +4,25 @@
 /**
  * get <?php print $module; ?> by id
  */
-function get_<?php print $module; ?>_byid($<?php print substr($module, 0, 1 ); ?>id) {
-    $<?php print $module; ?> = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
-      ->fields('<?php print substr($module, 0, 1 ); ?>')
-      ->condition('<?php print substr($module, 0, 1 ); ?>.<?php print substr($module, 0, 1 ); ?>id', $<?php print substr($module, 0, 1 ); ?>id)
+function get_<?php print $machine_name; ?>_byid($<?php print substr($machine_name, 0, 1 ); ?>id) {
+    $<?php print $machine_name; ?> = db_select('<?php print $machine_name; ?>', '<?php print substr($machine_name, 0, 1 ); ?>')
+      ->fields('<?php print substr($machine_name, 0, 1 ); ?>')
+      ->condition('<?php print substr($machine_name, 0, 1 ); ?>.<?php print substr($machine_name, 0, 1 ); ?>id', $<?php print substr($machine_name, 0, 1 ); ?>id)
       ->execute()
       ->fetchObject();
 
-    return $<?php print $module; ?>;
+    return $<?php print $machine_name; ?>;
 }
 
 /**
  * get all <?php print $module; ?>.
  */
-function get_all_<?php print $module; ?>($parms) {
+function get_all_<?php print $machine_name; ?>($parms) {
     $data = array();
-    $query = db_select('<?php print $module; ?>', '<?php print substr($module, 0, 1 ); ?>')
-      ->fields('<?php print substr($module, 0, 1 ); ?>')
+    $query = db_select('<?php print $machine_name; ?>', '<?php print substr($machine_name, 0, 1 ); ?>')
+      ->fields('<?php print substr($machine_name, 0, 1 ); ?>')
       ->extend('Pager')->size(20)->page($parms['page'])
-      ->orderBy('<?php print substr($module, 0, 1 ); ?>.created', 'DESC');
+      ->orderBy('<?php print substr($machine_name, 0, 1 ); ?>.created', 'DESC');
 
     $data['pager'] = $query->fetchPager();
     $data['list'] = $query->execute()->fetchAll();
