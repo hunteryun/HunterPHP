@@ -12,8 +12,6 @@ use League\Route\Strategy\ApplicationStrategy;
 use RuntimeException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use Zend\Diactoros\Response\RedirectResponse;
 
 class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
@@ -102,10 +100,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
             exit;
           }
 
-          $log = new Logger('['.$_SERVER['HTTP_HOST'].']');
-          $log->pushHandler(new StreamHandler('sites/logs/error.log', Logger::WARNING));
-
-          $log->error($msg);
+          logger()->error($msg);
 
           header('HTTP/1.1 500 Internal Server Error');
           header("status: 500 Internal Server Error");

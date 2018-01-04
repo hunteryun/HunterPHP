@@ -46,17 +46,6 @@ $databases = array(
     ),
 );
 
-//配置: Log 日志路径
-$loggers = array(
-    'default' => array(
-        'class' => 'Hunter\Core\Logger\FileLogger', //如果记文件日志用FileLogger
-        'level' => 'warn',
-        'file'  => HUNTER_ROOT . '/sites/logs', //这里指定log目录
-        'prefix' => 'hunter',
-        'debug' => true,
-    ),
-);
-
 //配置: 模板引擎
 $engines = array(
     'default' => array(

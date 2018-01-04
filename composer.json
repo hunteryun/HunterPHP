@@ -13,7 +13,7 @@
         "creitive/breadcrumbs": "^3.1",
       	"voku/anti-xss": "^2.0",
       	"gregwar/captcha": "1.*",
-        "monolog/monolog": "^1.22"
+        "katzgrau/klogger": "^1.2"
     },
     "extra": {
         "merge-plugin": {
