@@ -27,6 +27,14 @@ $auto_image_compress = array(
   'quality' => 60,
 );
 
+//配置: session
+$sessions = array(
+    'prefix' => '',
+    'expire' => 0,
+    'class'  => 'Hunter\Core\Session\PhpSession',
+    'path'   => '', //phpsess存储路径
+);
+
 //配置: 数据库
 $databases = array(
     'default' => array(
