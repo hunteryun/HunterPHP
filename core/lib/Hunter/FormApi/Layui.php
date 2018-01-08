@@ -23,8 +23,7 @@ class Layui extends Form {
      * @param string $charset
      * @return $this
      */
-    public function start($action, $id = null, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8')
-    {
+    public function start($action, $id = null, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8') {
         switch ($enctype)
         {
             case true:
@@ -39,41 +38,16 @@ class Layui extends Form {
     }
 
     /**
-     * create a div to hide inputs
-     *
-     * @return $this
-     */
-    public function startHide()
-    {
-        $this->form .= '<div class="hidden">';
-
-        return $this;
-    }
-
-    /**
-     * close the hide div
-     *
-     * @return $this
-     */
-    public function endHide()
-    {
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
      * generate a file input
      *
      * @param $name
-     * @param $class
-     * @param $text
-     * @param null $ico
+     * @param $field
      * @return $this
      */
-    public function file($name, $field)
-    {
+    public function file($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         if(isset($field['#multiple'])){
           $this->form .= '
             <div class="layui-form-item">
@@ -124,6 +98,10 @@ class Layui extends Form {
           $this->form .= '</div></div>';
         }
 
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
+
         return $this;
     }
 
@@ -134,8 +112,7 @@ class Layui extends Form {
      * @param $value
      * @return $this
      */
-    public function hidden($name, $value)
-    {
+    public function hidden($name, $value) {
         $this->form .= '<input type="hidden" name="'.$name.'" value="'.$value.'" />';
 
         return $this;
@@ -145,82 +122,23 @@ class Layui extends Form {
      * generate a new input
      *
      * @param string $type
-     * @param string $name
-     * @param string $placeholder
-     * @param string $value
-     * @param string $icon
-     * @param bool $required
-     * @param bool $autofocus
-     * @param string $autoComplete
+     * @param array $field
      * @return $this
      */
-    public function input($name, $field)
-    {
+    public function input($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         $this->form .= '<div class="layui-form-item"><label class="layui-form-label">'.$field['#title'].'</label> <div class="layui-input-block"><input class="layui-input" '.hunter_attributes($field['#attributes']).'>';
         if(isset($field['#description'])){
           $this->form .= '<span class="description">'.$field['#description'].'</span>';
         }
 
         $this->form .= '</div></div>';
-        return $this;
-    }
 
-    /**
-     * the framework csrf field
-     *
-     * @param string
-     * @return $this
-     */
-    public function csrf($csrf)
-    {
-        $this->form .= $csrf;
-
-        return $this;
-    }
-
-    /**
-     * generate a new button
-     *
-     * @param string $text
-     * @param string $class
-     * @param string $type
-     * @param string $icon
-     * @return $this
-     */
-    public function button($text, $class, $type = Form::BUTTON, $icon = null)
-    {
-        switch ($type)
-        {
-            case Form::BUTTON:
-                $this->form .='<button class="'.$class.'" type="button"> <i class="'.$icon.'"></i>' .$text.'</button>';
-                break;
-            case Form::RESET:
-                $this->form .='<button class="'.$class.'" type="reset"> <i class="'.$icon.'"></i>' .$text.'</button>';
-                break;
-            case Form::SUBMIT:
-                $this->form .='<button class="'.$class.'" type="submit"> <i class="'.$icon.'"></i>' .$text.'</button>';
-                break;
-            default :
-                $this->form .='<button class="'.$class.'" type="button"> <i class="'.$icon.'"></i>' .$text.'</button>';
-            break;
-
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
         }
-
-        return $this;
-    }
-
-    /**
-     * generate a reset button
-     *
-     * @param $text
-     * @param $class
-     * @param null $icon
-     * @return mixed
-     */
-    public function reset($text, $class, $icon = null)
-    {
-        $this->form .= '<button class="'.$class.'" type="reset"> <i class="'.$icon.'"> </i> ' .$text.'</button>';
-
         return $this;
     }
 
@@ -228,14 +146,13 @@ class Layui extends Form {
      * generate a textarea
      *
      * @param string $name
-     * @param string $placeholder
-     * @param integer $cols
-     * @param integer $row
-     * @param bool $autofocus
+     * @param array field
      * @return $this
      */
-    public function textarea($name, $field)
-    {
+    public function textarea($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         if(isset($field['#default_value'])){
           $this->form .= '<div class="layui-form-item layui-form-text"><label class="layui-form-label">'.$field['#title'].'</label><div class="layui-input-block"><textarea' . hunter_attributes($field['#attributes']) . '>'.$field['#default_value'].'</textarea>';
         }else {
@@ -246,6 +163,10 @@ class Layui extends Form {
           $this->form .= '<span class="description">'.$field['#description'].'</span>';
         }
         $this->form .= '</div></div>';
+
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
         return $this;
     }
 
@@ -254,8 +175,10 @@ class Layui extends Form {
      *
      * @return $this
      */
-    public function img($name, $field)
-    {
+    public function img($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         $this->form .= '
         <div class="layui-form-item">
             <label class="layui-form-label">'.$field['#title'].'</label>
@@ -264,6 +187,9 @@ class Layui extends Form {
             </div>
         </div>';
 
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
         return $this;
     }
 
@@ -272,8 +198,10 @@ class Layui extends Form {
      *
      * @return $this
      */
-    public function captcha($name, $field)
-    {
+    public function captcha($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         $builder = new CaptchaBuilder;
         $builder->build($width = 100, $height = 38);
         session()->set('_captcha', $builder->getPhrase());
@@ -286,6 +214,9 @@ class Layui extends Form {
             <div class="captcha"><img src="'.$builder->inline().'"'.hunter_attributes($field['#attributes']).'></div>
         </div>';
 
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
         return $this;
     }
 
@@ -294,13 +225,18 @@ class Layui extends Form {
      *
      * @return $this
      */
-    public function fieldset($name, $field)
-    {
+    public function fieldset($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         $this->form .= '
         <fieldset class="layui-elem-field layui-field-title'.hunter_attributes($field['#attributes']).'" style="margin-top: 20px;">
           <legend>'.$field['#title'].'</legend>
         </fieldset>';
 
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
         return $this;
     }
 
@@ -308,13 +244,13 @@ class Layui extends Form {
      * generate a image
      *
      * @param string $src
-     * @param string $alt
-     * @param string $width
-     * @param string $class
+     * @param array $field
      * @return $this
      */
-    public function markup($name, $field)
-    {
+    public function markup($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         if(isset($field['#title'])){
           if(isset($field['#hidden']) && $field['#hidden']){
             $this->form .= '
@@ -333,6 +269,9 @@ class Layui extends Form {
           $this->form .= $field['#markup'];
         }
 
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
         return $this;
     }
 
@@ -352,26 +291,15 @@ class Layui extends Form {
      * @param null $icon
      * @return $this
      */
-    public function submit($name, $field)
-    {
+    public function submit($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         $this->form .= '<div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn" '.hunter_attributes($field['#attributes']).'> '.$field['#value'].'</button></div></div>';
 
-        return $this;
-    }
-
-    /**
-     * generate a form link
-     *
-     * @param $url
-     * @param $class
-     * @param null $icon
-     * @param string $text
-     * @return $this
-     */
-    public function link($url, $class, $text, $icon = null)
-    {
-        $this->form .= '<a href="'.$url.'" class="'.$class.'"> <i class="'. $icon .'"></i>  '.$text .'</a>';
-
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
         return $this;
     }
 
@@ -383,8 +311,10 @@ class Layui extends Form {
      * @param string $icon
      * @return $this
      */
-    public function select($name, $field)
-    {
+    public function select($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         $this->form .= '<div class="layui-form-item"> <label class="layui-form-label">'.$field['#title'].'</label> <div class="layui-input-block"><select'.hunter_attributes($field['#attributes']).'>';
 
         foreach ($field['#options'] as $v => $title)
@@ -398,6 +328,9 @@ class Layui extends Form {
 
         $this->form .= '  </select></div></div>';
 
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
         return $this;
     }
 
@@ -405,13 +338,13 @@ class Layui extends Form {
      * create a checkbox
      *
      * @param string $name
-     * @param string $text
-     * @param string $class
-     * @param bool $checked
+     * @param string $field
      * @return $this
      */
-    public function checkbox($name, $field)
-    {
+    public function checkbox($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         $this->form .= '
         <div class="layui-form-item" pane="">
             <label class="layui-form-label">'.$field['#title'].'</label>
@@ -437,6 +370,9 @@ class Layui extends Form {
         $this->form .= '</div>
         </div>';
 
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
         return $this;
     }
 
@@ -444,13 +380,13 @@ class Layui extends Form {
      * create a radio input
      *
      * @param string $name
-     * @param string $text
-     * @param string $class
-     * @param bool $checked
+     * @param string $field
      * @return $this
      */
-    public function radio($name, $field)
-    {
+    public function radio($name, $field) {
+        if(isset($field['#prefix'])){
+          $this->form .= $field['#prefix'];
+        }
         $this->form .= '
         <div class="layui-form-item">
             <label class="layui-form-label">'.$field['#title'].'</label>
@@ -473,6 +409,9 @@ class Layui extends Form {
         $this->form .= '</div>
         </div>';
 
+        if(isset($field['#suffix'])){
+          $this->form .= $field['#suffix'];
+        }
         return $this;
     }
 
@@ -481,8 +420,7 @@ class Layui extends Form {
      *
      * @return string
      */
-    public function end($form_id)
-    {
+    public function end($form_id) {
        if(!empty($form_id)){
          $this->form .= '<input type="hidden" name="form_id" value="'.$form_id.'">';
        }
@@ -493,169 +431,4 @@ class Layui extends Form {
        return $this->form;
     }
 
-    /**
-     * generate two inline input
-     *
-     * @param $typeOne
-     * @param $nameOne
-     * @param $placeholderOne
-     * @param $valueOne
-     * @param $iconOne
-     * @param $typeTwo
-     * @param $nameTwo
-     * @param $placeholderTwo
-     * @param $valueTwo
-     * @param $iconTwo
-     * @return $this
-     */
-    public function twoInlineInput($typeOne, $nameOne, $placeholderOne, $valueOne, $iconOne, $typeTwo, $nameTwo, $placeholderTwo, $valueTwo, $iconTwo)
-    {
-        $this->form .= '<div class="row">';
-
-            $this->form .= '<div class="col-md-6">';
-                $this->input($typeOne,$nameOne,$placeholderOne,$valueOne,$iconOne);
-            $this->form .= '</div>';
-
-            $this->form .= '<div class="col-md-6">';
-                $this->input($typeTwo,$nameTwo,$placeholderTwo,$valueTwo,$iconTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate two inline select
-     *
-     * @param $nameOne
-     * @param array $optionsOne
-     * @param $iconOne
-     * @param $nameTwo
-     * @param array $optionsTwo
-     * @param $iconTwo
-     * @return $this
-     */
-    public function twoInlineSelect($nameOne, array $optionsOne, $iconOne, $nameTwo, array $optionsTwo, $iconTwo)
-    {
-        $this->form .= '<div class="row">';
-
-            $this->form .= '<div class="col-md-6">';
-                $this->select($nameOne,$optionsOne,$iconOne);
-            $this->form .= '</div>';
-
-            $this->form .= '<div class="col-md-6">';
-                $this->select($nameTwo,$optionsTwo,$iconTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * select with redirect
-     *
-     * @param $name
-     * @param array $options
-     * @param $icon
-     * @return $this
-     */
-    public function redirectSelect($name, array $options, $icon)
-    {
-        $this->form .= '<div class="layui-form-item"> <span class="input-group-addon"><i class="'.$icon.'"></i></span> <select class="form-control"  name="'.$name.'" id="'.$name.'" size="1"  onChange="location = this.options[this.selectedIndex].value">';
-
-        foreach ($options as $k=>  $value)
-        {
-            $this->form .= ' <option value="'.$k.'" class="form-control"> '.$value.'</option>';
-        }
-
-        $this->form .= '  </select></div>';
-
-        return $this;
-    }
-
-    /**
-     * two select with redirect
-     *
-     * @param $nameOne
-     * @param array $optionsOne
-     * @param $iconOne
-     * @param $nameTwo
-     * @param array $optionsTwo
-     * @param $iconTwo
-     * @return $this
-     */
-    public function twoRedirectSelect($nameOne, array $optionsOne, $iconOne, $nameTwo, array $optionsTwo, $iconTwo)
-    {
-
-        $this->form .= '<div class="row">';
-
-            $this->form .= '<div class="col-md-6">';
-                $this->redirectSelect($nameOne,$optionsOne,$iconOne);
-            $this->form .= '</div>';
-
-            $this->form .= '<div class="col-md-6">';
-                $this->redirectSelect($nameTwo,$optionsTwo,$iconTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-
-    }
-
-    /**
-     * generate one select and one input
-     *
-     * @param $selectName
-     * @param array $options
-     * @param $selectIcon
-     * @param $type
-     * @param $name
-     * @param $placeholder
-     * @param null $value
-     * @param null $icon
-     * @return $this
-     */
-    public function OneSelectAndOneInput($selectName, array $options, $selectIcon, $type, $name, $placeholder, $value = null, $icon = null)
-    {
-        $this->form .= '<div class="row">';
-            $this->form .= '<div class="col-md-6">';
-                $this->select($selectName,$options,$selectIcon);
-            $this->form .= '</div>';
-            $this->form .= '<div class="col-md-6">';
-                $this->input($type,$name,$placeholder,$value,$icon);
-            $this->form .= '</div>';
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate one input and one select
-     *
-     * @param $type
-     * @param $name
-     * @param $placeholder
-     * @param null $value
-     * @param null $icon
-     * @param $selectName
-     * @param array $options
-     * @param $selectIcon
-     * @return $this
-     */
-    public function OneInputAndOneSelect($type, $name, $label, $placeholder, $value = null, $icon = null, $selectName, array $options, $selectIcon)
-    {
-        $this->form .= '<div class="row">';
-            $this->form .= '<div class="col-md-6">';
-                $this->input($type,$name,$placeholder,$value,$icon);
-            $this->form .= '</div>';
-            $this->form .= '<div class="col-md-6">';
-                 $this->select($selectName,$options,$selectIcon);
-            $this->form .= '</div>';
-        $this->form .= '</div>';
-
-        return $this;
-    }
 }

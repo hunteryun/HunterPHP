@@ -42,11 +42,9 @@ class <?php print ucfirst($module); ?>Controller {
       <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
 
       $photos = array();
-      if(!empty($parms['up_photos_img'])){
-        foreach ($parms['up_photos_img'] as $key => $img) {
-          if(isset($parms['up_photos_des'][$key])){
-            $photos[] = array('image' => $img, 'description' => $parms['up_photos_des'][$key]);
-          }
+      if(isset($parms['up_photos']) || !empty($parms['up_photos'])){
+        foreach ($parms['up_photos'] as $img) {
+          $photos[] = array('image' => $img['img'], 'description' => $img['des']);
         }
       }
       <?php endif; ?>
@@ -170,11 +168,16 @@ class <?php print ucfirst($module); ?>Controller {
       if(!empty($<?php print $module; ?>)){
         $temp = json_decode($<?php print $module; ?>-><?php print $field['name']; ?>);
         $html = '<ul id="up_photos">';
-        foreach ($temp as $v) {
-          $html .= '<li><img src="'.$v->image.'" width="100"><p>'.$v->description.'</p></li>';
+        foreach ($temp as $key => $v) {
+          $html .= '<li class="drag-handle" data-image="'.$v->image.'"><img src="'.$v->image.'" width="100"><p>'.$v->description.'</p><i class="js-remove">✖</i>
+          <input type="hidden" name="up_photos['.$key.'][img]" value="'.$v->image.'">
+          <input type="hidden" name="up_photos['.$key.'][des]" value="'.$v->description.'">
+          </li>';
         }
-        $html .= '</ul>';
+        $html .= '</ul>
+        <div id="addmore">添加更多</div>';
       }
+
       <?php endif; ?>
       <?php endforeach; ?>
 
@@ -211,6 +214,8 @@ $form['<?php print $field['name']; ?>'] = array(
         '#title' => '<?php print $field['lable']; ?>',
         <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
 '#multiple' => TRUE,
+'#prefix' => '<div id="show-upload-images" style="display:none">',
+'#suffix' => '</div>',
         <?php endif; ?>
 '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
         '#attributes' => array('id' => '<?php print $field['name']; ?>'),
@@ -290,11 +295,9 @@ $form['<?php print $field['name']; ?>'] = array(
       <?php foreach($fields as $field): ?>
       <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
 $photos = array();
-      if(!empty($parms['up_photos_img'])){
-        foreach ($parms['up_photos_img'] as $key => $img) {
-          if(isset($parms['up_photos_des'][$key])){
-            $photos[] = array('image' => $img, 'description' => $parms['up_photos_des'][$key]);
-          }
+      if(isset($parms['up_photos']) || !empty($parms['up_photos'])){
+        foreach ($parms['up_photos'] as $img) {
+          $photos[] = array('image' => $img['img'], 'description' => $img['des']);
         }
       }
       <?php endif; ?>

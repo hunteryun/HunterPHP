@@ -117,7 +117,7 @@
                   ,tds = tr.children();
                   tds.eq(1).html('<img src="'+res.data.full_path_new_name+'">');
                   tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
-                  tds.eq(4).html('<textarea name="up_photos_des['+ index +']" style="width:300px;height:60px"></textarea><input type="hidden" name="up_photos_img['+ index +']" value="'+res.data.full_path_new_name+'">');
+                  tds.eq(4).html('<textarea name="up_photos['+ index +'][des]" style="width:300px;height:60px"></textarea><input type="hidden" name="up_photos['+ index +'][img]" value="'+res.data.full_path_new_name+'">');
                   tds.eq(5).html(''); //清空操作
                   return;
                 }
@@ -126,8 +126,8 @@
               ,error: function(index, upload){
                 var tr = demoListView.find('tr#upload-'+ index)
                 ,tds = tr.children();
-                tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
-                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                tds.eq(3).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(4).find('.demo-reload').removeClass('layui-hide'); //显示重传
               }
             });
           <?php endif; ?>

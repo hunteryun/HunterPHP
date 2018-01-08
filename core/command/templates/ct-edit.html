@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="theme/admin/assets/layui/css/layui.css">
     <link rel="stylesheet" href="theme/admin/assets/css/style.css">
     <script src="theme/admin/assets/js/jquery.min.js"></script>
+    <script src="theme/admin/assets/js/sortable.min.js"></script>
 </head>
 
 <body>
@@ -117,7 +118,7 @@
                   ,tds = tr.children();
                   tds.eq(1).html('<img src="'+res.data.src+'">');
                   tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
-                  tds.eq(4).html('<textarea name="up_photos_des['+ index +']" style="width:300px;height:60px"></textarea><input type="hidden" name="up_photos_img['+ index +']" value="'+res.data.src+'">');
+                  tds.eq(4).html('<textarea name="up_photos['+ index +'][des]" style="width:300px;height:60px"></textarea><input type="hidden" name="up_photos['+ index +'][img]" value="'+res.data.src+'">');
                   tds.eq(5).html(''); //清空操作
                   return;
                 }
@@ -126,8 +127,8 @@
               ,error: function(index, upload){
                 var tr = demoListView.find('tr#upload-'+ index)
                 ,tds = tr.children();
-                tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
-                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                tds.eq(3).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(4).find('.demo-reload').removeClass('layui-hide'); //显示重传
               }
             });
             <?php endif; ?>
@@ -181,6 +182,25 @@
                 });
                 return false;
             });
+        });
+
+        Sortable.create(up_photos, {
+          group: "<?php print $type; ?>_up_photos",
+          handle: '.drag-handle',
+          animation: 150,
+          dataIdAttr: 'data-image',
+          filter: '.js-remove',
+      		onFilter: function (evt) {
+      			evt.item.parentNode.removeChild(evt.item);
+      		}
+        });
+
+        $('#addmore').click(function(){//点击a标签
+            if($('#show-upload-images').is(':hidden')){//如果当前隐藏
+              $('#show-upload-images').show();//那么就显示div
+            }else{//否则
+              $('#show-upload-images').hide();//就隐藏div
+            }
         });
     </script>
 </body>

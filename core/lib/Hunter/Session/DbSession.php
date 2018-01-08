@@ -8,6 +8,8 @@
 
 namespace Hunter\Core\Session;
 
+use SessionHandlerInterface;
+
 /**
  * session数据库接管
 
@@ -42,7 +44,7 @@ class DbSession extends PhpSession implements SessionHandlerInterface {
     }
 
     //{@implements}
-    public function open() {
+    public function open($savePath, $sessionName) {
         return true;
     }
 
