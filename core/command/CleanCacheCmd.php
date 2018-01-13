@@ -10,7 +10,7 @@ use Symfony\Component\Console\Command\Command as BaseCommand;
  */
 class CleanCacheCmd extends BaseCommand {
     protected function configure() {
-        $this->setName('cc');
+        $this->setName('cc')->setDescription('commands.clean.cache.description');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {

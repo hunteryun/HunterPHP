@@ -397,6 +397,15 @@ class Application {
           $cmdapp->add(new $command());
         }
 
+        foreach ($this->moduleHandler->getImplementations('command') as $module) {
+          $module_hook_command = $this->moduleHandler->invoke($module, 'command');
+          $module_command_file = 'module/'.$module.'/src/Command/'.$module_hook_command['file'].'.php';
+          if(file_exists($module_command_file)){
+            require_once $module_command_file;
+            $cmdapp->add(new $module_hook_command['file']());
+          }
+        }
+
         $cmdapp->run();
     }
 
