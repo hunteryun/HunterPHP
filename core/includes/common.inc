@@ -332,7 +332,7 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
       }
 
       if(!isset($field['#value'])){
-        $field['#value'] = isset($field['#default_value']) ? e($field['#default_value']) : '';
+        $field['#value'] = isset($field['#default_value']) ? clean($field['#default_value']) : '';
       }
 
       switch ($field['#type'])
@@ -503,9 +503,9 @@ if (!function_exists('clean')) {
      *
      * @return string
      */
-    function clean($string) {
+    function clean($value) {
       $antiXss = new AntiXSS();
-      return $antiXss->xss_clean($string);
+      return $antiXss->xss_clean($value);
     }
 }
 
