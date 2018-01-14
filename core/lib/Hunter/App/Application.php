@@ -26,6 +26,7 @@ class Application {
     protected $root;
     protected $classLoader;
     protected $container;
+    protected $commands;
     protected $moduleList;
     protected $permissionList;
     protected $routers = array();
@@ -223,6 +224,15 @@ class Application {
                 }
               }
             }
+
+            if(!empty($services['commands'])){
+              foreach ($services['commands'] as $name => $command) {
+                if (class_exists($command['class'])) {
+                  $this->commands[$name] = $command['class'];
+                }
+              }
+              $container->add('commands', $this->commands);
+            }
           }
         }
 
@@ -397,12 +407,9 @@ class Application {
           $cmdapp->add(new $command());
         }
 
-        foreach ($this->moduleHandler->getImplementations('command') as $module) {
-          $module_hook_command = $this->moduleHandler->invoke($module, 'command');
-          $module_command_file = 'module/'.$module.'/src/Command/'.$module_hook_command['file'].'.php';
-          if(file_exists($module_command_file)){
-            require_once $module_command_file;
-            $cmdapp->add(new $module_hook_command['file']());
+        if(!empty($this->commands)){
+          foreach ($this->commands as $name => $command) {
+            $cmdapp->add(new $command());
           }
         }
 
@@ -468,6 +475,13 @@ class Application {
      */
     public function getRoutesList() {
         return $this->routeList;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCommandsList() {
+        return $this->commands;
     }
 
     /**
