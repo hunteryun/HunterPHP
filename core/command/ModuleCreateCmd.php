@@ -109,6 +109,11 @@ class ModuleCreateCmd extends BaseCommand {
                 'Is this a new content type?'
             )
             ->addArgument(
+                'supportEntity',
+                InputArgument::OPTIONAL,
+                'Is this suppport entity?'
+            )
+            ->addArgument(
                 'fields',
                 InputArgument::OPTIONAL,
                 'content type fields'
@@ -130,6 +135,7 @@ class ModuleCreateCmd extends BaseCommand {
        $create_faker = $input->getOption('create-faker');
        $create_composer = $input->getOption('create-composer');
        $isContentType = $input->getArgument('isContentType');
+       $supportEntity = $input->getArgument('supportEntity');
        $fields = $input->getArgument('fields');
 
        $dir .= '/'.$machineName;
@@ -170,6 +176,7 @@ class ModuleCreateCmd extends BaseCommand {
          'package' => $package,
          'dependencies' => $dependencies,
          'isContentType' => $isContentType,
+         'supportEntity' => $supportEntity,
          'fields' => $fields
        );
 

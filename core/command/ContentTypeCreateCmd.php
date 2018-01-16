@@ -5,8 +5,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Hunter\Core\App\Application;
 use Hunter\Core\Utility\StringConverter;
@@ -76,6 +77,12 @@ class ContentTypeCreateCmd extends BaseCommand {
                  'commands.create.content-type.options.description'
              )
              ->addOption(
+                  'entity_support',
+                  '',
+                  InputOption::VALUE_REQUIRED,
+                  'commands.create.content-type.options.entity_support'
+              )
+             ->addOption(
                  'fields',
                  '',
                  InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
@@ -91,6 +98,7 @@ class ContentTypeCreateCmd extends BaseCommand {
        $type = $this->stringConverter->createMachineName($input->getOption('type'));
        $name = $input->getOption('name');
        $description = $input->getOption('description');
+       $entity_support = (bool) $input->getOption('entity_support');
        $fields = $input->getOption('fields');
 
        $modulecommand = $this->getApplication()->find('module:create');
@@ -108,6 +116,7 @@ class ContentTypeCreateCmd extends BaseCommand {
          '--create-faker' => TRUE,
          '--create-composer' => FALSE,
          'isContentType' => TRUE,
+         'supportEntity' => $entity_support,
          'fields' => $fields,
        );
 
@@ -224,6 +233,14 @@ class ContentTypeCreateCmd extends BaseCommand {
            $question = new Question('Enter type description [My custom content type]:', 'My custom content type');
            $description = hunter_convert_to_utf8($helper->ask($input, $output, $question));
            $input->setOption('description', $description);
+       }
+
+       // --support entity option
+       $entity_support = $input->getOption('entity_support');
+       if (!$entity_support) {
+           $entity_support_question = new ConfirmationQuestion('Enable support Entity (y/n) [No]? ', FALSE);
+           $entity_support = $helper->ask($input, $output, $entity_support_question);
+           $input->setOption('entity_support', $entity_support);
        }
 
        // --fields option

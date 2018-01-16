@@ -1,6 +1,20 @@
 <?php print "<?php"; ?>
 
 <?php if($isContentType): ?>
+
+<?php if($supportEntity): ?>
+/**
+ * Implements hook_entity_info().
+ */
+function <?php print $machine_name; ?>_entity_info() {
+  return array(
+    'name' => '<?php print $machine_name; ?>',
+    'primaryKey' => '<?php print substr($machine_name, 0, 1 ); ?>id',
+    'baseTable'  => '<?php print $machine_name; ?>',
+  );
+}
+<?php endif; ?>
+
 /**
  * get <?php print $module; ?> by id
  */
