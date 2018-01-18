@@ -484,6 +484,7 @@ function hunter_download($filename, $conent) {
     header('Content-type: application/octet-stream');
 
     readfile($filename);
+    exit;
 }
 
 /**
