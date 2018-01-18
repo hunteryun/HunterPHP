@@ -472,6 +472,21 @@ function hunter_get_schema($table = NULL) {
 }
 
 /**
+ * Download the dump file
+ */
+function hunter_download($filename, $conent) {
+    if (!is_dir(dirname($filename))){
+      mkdir(dirname($filename), 0755, true);
+    }
+    // Save content in file
+    file_put_contents($filename, $conent);
+    header('Content-disposition: attachment; filename="'.basename($filename).'"');
+    header('Content-type: application/octet-stream');
+
+    readfile($filename);
+}
+
+/**
  * Determines whether a given module exists.
  *
  * @param string $module
