@@ -7,6 +7,8 @@
         "symfony/yaml": "~3.0",
         "symfony/console": "^3.1",
         "hassankhan/config": "^0.11.2",
+        "schnittstabil/csrf-tokenservice": "^3.1",
+        "lootils/uuid": "^1.0",
         "overclokk/cookie": "^1.0",
         "fzaninotto/faker": "^1.6",
         "creitive/breadcrumbs": "^3.1",

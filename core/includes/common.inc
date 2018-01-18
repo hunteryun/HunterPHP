@@ -542,7 +542,8 @@ if (! function_exists('csrf_field')) {
      * Generate a CSRF token form field.
      */
     function csrf_field() {
-        return CSRF::getHiddenInputString();
+      $csrf = new CSRF();
+      return $csrf->getHiddenInputString();
     }
 }
 
@@ -553,13 +554,8 @@ if (! function_exists('csrf_token')) {
      * @return string
      */
     function csrf_token() {
-        $csrf_token = session()->get(CSRF::TOKEN_NAME);
-
-        if (!empty($csrf_token)) {
-            return $csrf_token;
-        }
-
-        return CSRF::getToken();
+      $csrf = new CSRF();
+      return $csrf->getToken();
     }
 }
 
