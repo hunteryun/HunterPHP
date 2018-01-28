@@ -10,7 +10,7 @@ $hunter_debug = true;
 $hunter_static = false;
 
 //配置: 默认缓存
-$default_caches = 'memcache';
+$default_cache = 'file';
 
 //配置: 缓存目录
 $cache_dir = HUNTER_ROOT . '/sites/files';
