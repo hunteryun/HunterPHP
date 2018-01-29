@@ -1,0 +1,32 @@
+views:
+  <?php print $machine_name; ?>:
+    fields:
+<?php if(!empty($fields)): ?>
+      <?php print substr($machine_name, 0, 1 ); ?>id:
+        name: '<?php print $module; ?> ID'
+        sort_type: 'date'
+        filter_type: 'number'
+<?php foreach ($fields as $field): ?>
+      <?php print $field['name']; ?>:
+        name: '<?php print $field['lable']; ?>'
+<?php if($field['html_type'] == 'text' && $field['type'] == 'int'): ?>
+        filter_type: 'number'
+<?php elseif($field['html_type'] == 'text'): ?>
+        filter_type: 'string'
+<?php elseif($field['html_type'] == 'radio'): ?>
+        filter_type: 'yes-no'
+<?php endif; ?>
+<?php endforeach; ?>
+<?php endif; ?>
+      uid:
+        name: '作者ID'
+        sort_type: 'date'
+        filter_type: 'number'
+      created:
+        name: '创建时间'
+        sort_type: 'date'
+        filter_type: 'number'
+      updated:
+        name: '更新时间'
+        sort_type: 'date'
+        filter_type: 'number'

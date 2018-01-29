@@ -96,10 +96,18 @@ class ContentTypeCreateCmd extends BaseCommand {
    protected function execute(InputInterface $input, OutputInterface $output) {
        $type_name = $input->getOption('type');
        $type = $this->stringConverter->createMachineName($input->getOption('type'));
-       $name = $input->getOption('name');
-       $description = $input->getOption('description');
-       $entity_support = (bool) $input->getOption('entity_support');
-       $fields = $input->getOption('fields');
+       $ct_cache = cache()->get('ct_cmd_'.$type);
+       if(!empty($ct_cache)){
+         $name = $ct_cache['name'];
+         $description = $ct_cache['description'];
+         $entity_support = (bool) $ct_cache['entity_support'];
+         $fields = $ct_cache['fields'];
+       }else {
+         $name = $input->getOption('name');
+         $description = $input->getOption('description');
+         $entity_support = (bool) $input->getOption('entity_support');
+         $fields = $input->getOption('fields');
+       }
 
        $modulecommand = $this->getApplication()->find('module:create');
 
@@ -114,6 +122,7 @@ class ContentTypeCreateCmd extends BaseCommand {
          '--module-file' => 'yes',
          '--dependencies' => '',
          '--create-faker' => TRUE,
+         '--create-views' => TRUE,
          '--create-composer' => FALSE,
          'isContentType' => TRUE,
          'supportEntity' => $entity_support,
@@ -219,6 +228,10 @@ class ContentTypeCreateCmd extends BaseCommand {
            $input->setOption('type', $type);
        }
 
+       if($cache = cache()->get('ct_cmd_'.$this->stringConverter->createMachineName($type))){
+         return $cache;
+       }
+
        // --name option
        $name = $input->getOption('name');
        if (!$name) {
@@ -249,9 +262,9 @@ class ContentTypeCreateCmd extends BaseCommand {
            while (true) {
               //name
               $field_name_question = new Question('Enter the field name (leave empty and press enter when done) []:', '');
-              $name = str_replace(' ','_',strtolower($helper->ask($input, $output, $field_name_question)));
+              $field_name = str_replace(' ','_',strtolower($helper->ask($input, $output, $field_name_question)));
 
-              if ($name === '') {
+              if ($field_name === '') {
                   break;
               }
 
@@ -265,20 +278,20 @@ class ContentTypeCreateCmd extends BaseCommand {
                  array('varchar', 'int', 'blob', 'text'),
                  0
               );
-              $type = $helper->ask($input, $output, $type_question);
+              $field_type = $helper->ask($input, $output, $type_question);
 
-              switch ($type)
+              switch ($field_type)
               {
               case 'int':
                 $type_setting_default_question = new Question('Enter the int default value [0]:', 0);
-                $type_setting[$name]['default'] = $helper->ask($input, $output, $type_setting_default_question);
+                $type_setting[$field_name]['default'] = $helper->ask($input, $output, $type_setting_default_question);
                 $type_setting_notnull_question = new Question('Not null value [TRUE]:', TRUE);
-                $type_setting[$name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
-                $type_setting[$name]['length'] = '60';
+                $type_setting[$field_name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
+                $type_setting[$field_name]['length'] = '60';
                 break;
               case 'blob':
                 $type_setting_notnull_question = new Question('Not null value [TRUE]:', TRUE);
-                $type_setting[$name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
+                $type_setting[$field_name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
                 break;
               case 'text':
                 $type_setting_size_question = new ChoiceQuestion(
@@ -286,15 +299,15 @@ class ContentTypeCreateCmd extends BaseCommand {
                    array('big', 'normal'),
                    0
                 );
-                $type_setting[$name]['size'] = $helper->ask($input, $output, $type_setting_size_question);
+                $type_setting[$field_name]['size'] = $helper->ask($input, $output, $type_setting_size_question);
                 break;
               default:
                 $type_setting_length_question = new Question('Enter the varchar length [255]:', '255');
-                $type_setting[$name]['length'] = $helper->ask($input, $output, $type_setting_length_question);
+                $type_setting[$field_name]['length'] = $helper->ask($input, $output, $type_setting_length_question);
                 $type_setting_default_question = new Question('Enter the int default value []:', '');
-                $type_setting[$name]['default'] = $helper->ask($input, $output, $type_setting_default_question);
+                $type_setting[$field_name]['default'] = $helper->ask($input, $output, $type_setting_default_question);
                 $type_setting_notnull_question = new Question('Not null value [TRUE]:', TRUE);
-                $type_setting[$name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
+                $type_setting[$field_name]['notnull'] = $helper->ask($input, $output, $type_setting_notnull_question);
               }
 
               //html_type
@@ -314,19 +327,19 @@ class ContentTypeCreateCmd extends BaseCommand {
                 while (true) {
                   //option
                   $html_type_option_value_question = new Question('Enter the options value (leave empty and press enter when done) []:', '');
-                  $html_type_option[$name][$i]['value'] = str_replace(' ','_',strtolower($helper->ask($input, $output, $html_type_option_value_question)));
+                  $html_type_option[$field_name][$i]['value'] = str_replace(' ','_',strtolower($helper->ask($input, $output, $html_type_option_value_question)));
 
-                  if ($html_type_option[$name][$i]['value'] === '') {
+                  if ($html_type_option[$field_name][$i]['value'] === '') {
                       break;
                   }
 
                   //html type option lable
                   $html_type_option_lable_question = new Question('Enter the options lable []:', '');
-                  $html_type_option[$name][$i]['lable'] = hunter_convert_to_utf8($helper->ask($input, $output, $html_type_option_lable_question));
+                  $html_type_option[$field_name][$i]['lable'] = hunter_convert_to_utf8($helper->ask($input, $output, $html_type_option_lable_question));
                   $i++;
                 }
 
-                $html_type_setting[$name] = array();
+                $html_type_setting[$field_name] = array();
                 if($html_type == 'checkbox'){
                   //checkbox skin
                   $html_type_setting_skin_question = new ChoiceQuestion(
@@ -334,11 +347,11 @@ class ContentTypeCreateCmd extends BaseCommand {
                      array('default', 'primary', 'switch'),
                      0
                   );
-                  $html_type_setting[$name]['skin'] = $helper->ask($input, $output, $html_type_setting_skin_question);
+                  $html_type_setting[$field_name]['skin'] = $helper->ask($input, $output, $html_type_setting_skin_question);
 
                   //checkbox custom value
                   $html_type_setting_custom_value_question = new Question('Enter the checkbox custom value [yes]:', 'yes');
-                  $html_type_setting[$name]['custom_value'] = $helper->ask($input, $output, $html_type_setting_custom_value_question);
+                  $html_type_setting[$field_name]['custom_value'] = $helper->ask($input, $output, $html_type_setting_custom_value_question);
                 }
                 break;
               case 'image':
@@ -348,7 +361,7 @@ class ContentTypeCreateCmd extends BaseCommand {
                    array('single', 'multiple'),
                    0
                 );
-                $html_type_setting[$name]['image_type'] = $helper->ask($input, $output, $image_type_question);
+                $html_type_setting[$field_name]['image_type'] = $helper->ask($input, $output, $image_type_question);
                 break;
               case 'file':
                 //accept option
@@ -357,11 +370,11 @@ class ContentTypeCreateCmd extends BaseCommand {
                    array('file', 'video', 'audio'),
                    0
                 );
-                $html_type_setting[$name]['file_accept'] = $helper->ask($input, $output, $file_accept_question);
+                $html_type_setting[$field_name]['file_accept'] = $helper->ask($input, $output, $file_accept_question);
 
-                if($html_type_setting[$name]['file_accept'] == 'video') {
+                if($html_type_setting[$field_name]['file_accept'] == 'video') {
                   $default_exts = 'rm|rmvb|wmv|avi|mp4|3gp|mkv';
-                }elseif ($html_type_setting[$name]['file_accept'] == 'audio') {
+                }elseif ($html_type_setting[$field_name]['file_accept'] == 'audio') {
                   $default_exts = 'wav|mp3|ogg|wma|aac';
                 }else {
                   $default_exts = 'doc|pdf|txt|xls|zip|rar|7z';
@@ -369,32 +382,42 @@ class ContentTypeCreateCmd extends BaseCommand {
 
                 //file exts
                 $file_exts_question = new Question('Enter the allowed extensions ['.$default_exts.']:', $default_exts);
-                $html_type_setting[$name]['file_exts'] = $helper->ask($input, $output, $file_exts_question);
+                $html_type_setting[$field_name]['file_exts'] = $helper->ask($input, $output, $file_exts_question);
 
                 //file size
                 $file_size_question = new Question('Enter the file size, default no limited [KB]:', 0);
-                $html_type_setting[$name]['file_size'] = $helper->ask($input, $output, $file_size_question);
+                $html_type_setting[$field_name]['file_size'] = $helper->ask($input, $output, $file_size_question);
                 break;
               default:
-                $html_type_option[$name] = array();
-                $html_type_setting[$name] = array();
+                $html_type_option[$field_name] = array();
+                $html_type_setting[$field_name] = array();
               }
-              if(isset($html_type_option[$name])){
-                unset($html_type_option[$name][count($html_type_option[$name])-1]);
+              if(isset($html_type_option[$field_name])){
+                unset($html_type_option[$field_name][count($html_type_option[$field_name])-1]);
               }
-              $fields[$name] = [
-                  'name' => $name,
+              $fields[$field_name] = [
+                  'name' => $field_name,
                   'lable' => $lable,
-                  'type' => $type,
-                  'type_setting' => $type_setting[$name],
+                  'type' => $field_type,
+                  'type_setting' => $type_setting[$field_name],
                   'html_type' => $html_type,
-                  'html_type_option' => isset($html_type_option[$name]) ? $html_type_option[$name] : array(),
-                  'html_type_setting' => $html_type_setting[$name],
+                  'html_type_option' => isset($html_type_option[$field_name]) ? $html_type_option[$field_name] : array(),
+                  'html_type_setting' => $html_type_setting[$field_name],
               ];
            }
 
            $input->setOption('fields', $fields);
        }
+
+       $ct_cache = array(
+         'type' => $type,
+         'name' => $name,
+         'description' => $description,
+         'entity_support' => $entity_support,
+         'fields' => $fields
+       );
+
+       cache()->set('ct_cmd_'.$this->stringConverter->createMachineName($type), $ct_cache);
    }
 
    /**

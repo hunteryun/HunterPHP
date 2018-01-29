@@ -98,6 +98,12 @@ class ModuleCreateCmd extends BaseCommand {
                 'commands.create.module.options.create-faker'
             )
             ->addOption(
+                'create-views',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'commands.create.module.options.create-views'
+            )
+            ->addOption(
                 'create-composer',
                 '',
                 InputOption::VALUE_OPTIONAL,
@@ -133,6 +139,7 @@ class ModuleCreateCmd extends BaseCommand {
        $moduleFile = $input->getOption('module-file');
        $dependencies = $input->getOption('dependencies') == '' ? '' : explode(',', $input->getOption('dependencies'));
        $create_faker = $input->getOption('create-faker');
+       $create_views = $input->getOption('create-views');
        $create_composer = $input->getOption('create-composer');
        $isContentType = $input->getArgument('isContentType');
        $supportEntity = $input->getArgument('supportEntity');
@@ -198,6 +205,14 @@ class ModuleCreateCmd extends BaseCommand {
             $writed = $this->renderFile(
                '/faker.yml.html',
                $dir . '/config/'.$machineName.'.faker.yml',
+               $parameters
+            );
+       }
+
+       if ($create_views) {
+            $writed = $this->renderFile(
+               '/views.yml.html',
+               $dir . '/config/'.$machineName.'.views.yml',
                $parameters
             );
        }
@@ -292,6 +307,11 @@ class ModuleCreateCmd extends BaseCommand {
        $create_faker_question = new ConfirmationQuestion('Create faker config (y/n) [No]? ', FALSE);
        $create_faker = $helper->ask($input, $output, $create_faker_question);
        $input->setOption('create-faker', $create_faker);
+
+       //create-views option
+       $create_views_question = new ConfirmationQuestion('Create views table config (y/n) [No]? ', FALSE);
+       $create_views = $helper->ask($input, $output, $create_views_question);
+       $input->setOption('create-views', $create_views);
 
        //create-composer option
        $create_composer_question = new ConfirmationQuestion('Create composer.json (y/n) [No]? ', FALSE);
