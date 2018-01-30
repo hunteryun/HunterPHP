@@ -236,7 +236,7 @@ class ContentTypeCreateCmd extends BaseCommand {
        $module_name = $input->getOption('module_name');
        if (!$module_name) {
            $question = new Question('Enter the new module name:', '');
-           $module_name = $helper->ask($input, $output, $question);
+           $module_name = hunter_convert_to_utf8($helper->ask($input, $output, $question));
            $input->setOption('module_name', $module_name);
        }
 
