@@ -66,6 +66,21 @@ class FakerContentCmd extends BaseCommand {
                   case 'imageUrl':
                     $fields[$name] = $faker->imageUrl(100, 100, 'cats');
                     break;
+                  case 'manyImageUrl':
+                    $fields[$name] = json_encode(
+                      array(
+                        array(
+                          'image' => $faker->imageUrl(100, 100, 'cats')
+                        ),
+                        array(
+                          'image' => $faker->imageUrl(100, 100, 'cats')
+                        ),
+                        array(
+                          'image' => $faker->imageUrl(100, 100, 'cats')
+                        )
+                      )
+                    );
+                    break;
                   case 'randomTwo':
                     $fields[$name] = $faker->randomElement([0, 1]);
                     break;

@@ -87,6 +87,12 @@ class ContentTypeCreateCmd extends BaseCommand {
                  '',
                  InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                  'commands.create.content-type.options.fields'
+             )
+             ->addOption(
+                 'use_last',
+                 FALSE,
+                 InputOption::VALUE_OPTIONAL,
+                 'commands.create.content-type.options.use_last'
              );
    }
 
@@ -229,7 +235,17 @@ class ContentTypeCreateCmd extends BaseCommand {
        }
 
        if($cache = cache()->get('ct_cmd_'.$this->stringConverter->createMachineName($type))){
-         return $cache;
+         // --use last config option
+         $use_last = $input->getOption('use_last');
+         if (!$use_last) {
+             $use_last_question = new ConfirmationQuestion('Use last config from cache (y/n) [No]? ', FALSE);
+             $use_last = $helper->ask($input, $output, $use_last_question);
+             $input->setOption('use_last', $use_last);
+         }
+
+         if($use_last){
+           return $cache;
+         }
        }
 
        // --name option
