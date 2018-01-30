@@ -59,16 +59,22 @@ class ContentTypeCreateCmd extends BaseCommand {
            ->setName('ct:create')
            ->setDescription('commands.content-type.create.description')
            ->addOption(
-                'type',
+                'module_name',
                 '',
                 InputOption::VALUE_REQUIRED,
-                'commands.create.content-type.options.type'
+                'commands.create.content-type.options.module_name'
             )
             ->addOption(
-                'name',
+                'machine_name',
                 '',
                 InputOption::VALUE_OPTIONAL,
-                'commands.create.content-type.options.name'
+                'commands.create.content-type.options.machine_name'
+            )
+            ->addOption(
+                'lable_name',
+                '',
+                InputOption::VALUE_OPTIONAL,
+                'commands.create.content-type.options.lable_name'
             )
             ->addOption(
                  'description',
@@ -100,16 +106,16 @@ class ContentTypeCreateCmd extends BaseCommand {
     * {@inheritdoc}
     */
    protected function execute(InputInterface $input, OutputInterface $output) {
-       $type_name = $input->getOption('type');
-       $type = $this->stringConverter->createMachineName($input->getOption('type'));
-       $ct_cache = cache()->get('ct_cmd_'.$type);
+       $module_name = hunter_convert_to_utf8($input->getOption('module_name'));
+       $machine_name = $input->getOption('machine_name');
+       $ct_cache = cache()->get('ct_cmd_'.$machine_name);
        if(!empty($ct_cache)){
-         $name = $ct_cache['name'];
+         $lable_name = $ct_cache['lable_name'];
          $description = $ct_cache['description'];
          $entity_support = (bool) $ct_cache['entity_support'];
          $fields = $ct_cache['fields'];
        }else {
-         $name = $input->getOption('name');
+         $lable_name = $input->getOption('lable_name');
          $description = $input->getOption('description');
          $entity_support = (bool) $input->getOption('entity_support');
          $fields = $input->getOption('fields');
@@ -119,8 +125,8 @@ class ContentTypeCreateCmd extends BaseCommand {
 
        $modulearguments = array(
          'command' => 'module:create',
-         '--module' => $type_name,
-         '--machine-name' => $type,
+         '--module' => $input->getOption('module_name'),
+         '--machine-name' => $machine_name,
          '--module-path' => '/module',
          '--description' => $description,
          '--core' => '1.x',
@@ -142,51 +148,51 @@ class ContentTypeCreateCmd extends BaseCommand {
 
        $ctlearguments = array(
          'command' => 'ctl:create',
-         '--module' => $type,
-         '--class' => ucfirst($type),
+         '--module' => $machine_name,
+         '--class' => ucfirst($machine_name),
          '--routes' => array(
            array(
-             'title' => $type.' list',
-             'name' => $type.'.'.$type.'_list',
-             'method' => $type.'_list',
-             'path' => '/admin/'.$type.'/list',
+             'title' => $machine_name.' list',
+             'name' => $machine_name.'.'.$machine_name.'_list',
+             'method' => $machine_name.'_list',
+             'path' => '/admin/'.$machine_name.'/list',
              'args' => array(),
              'permission' => 'access admin page',
              'nocache' => false
            ),
            array(
-             'title' => $type.' add',
-             'name' => $type.'.'.$type.'_add',
-             'method' => $type.'_add',
-             'path' => '/admin/'.$type.'/add',
+             'title' => $machine_name.' add',
+             'name' => $machine_name.'.'.$machine_name.'_add',
+             'method' => $machine_name.'_add',
+             'path' => '/admin/'.$machine_name.'/add',
              'args' => array(),
              'permission' => 'access admin page',
              'nocache' => false
            ),
            array(
-             'title' => $type.' edit',
-             'name' => $type.'.'.$type.'_edit',
-             'method' => $type.'_edit',
-             'path' => '/admin/'.$type.'/edit/{'.substr($type, 0, 1 ).'id}',
-             'args' => array('$'.substr($type, 0, 1 ).'id'),
+             'title' => $machine_name.' edit',
+             'name' => $machine_name.'.'.$machine_name.'_edit',
+             'method' => $machine_name.'_edit',
+             'path' => '/admin/'.$machine_name.'/edit/{'.substr($machine_name, 0, 1 ).'id}',
+             'args' => array('$'.substr($machine_name, 0, 1 ).'id'),
              'permission' => 'access admin page',
              'nocache' => false
            ),
            array(
-             'title' => $type.' update',
-             'name' => $type.'.'.$type.'_update',
-             'method' => $type.'_update',
-             'path' => '/admin/'.$type.'/update',
+             'title' => $machine_name.' update',
+             'name' => $machine_name.'.'.$machine_name.'_update',
+             'method' => $machine_name.'_update',
+             'path' => '/admin/'.$machine_name.'/update',
              'args' => array(),
              'permission' => 'access admin page',
              'nocache' => false
            ),
            array(
-             'title' => $type.' del',
-             'name' => $type.'.'.$type.'_del',
-             'method' => $type.'_del',
-             'path' => '/admin/'.$type.'/del/{'.substr($type, 0, 1 ).'id}',
-             'args' => array('$'.substr($type, 0, 1 ).'id'),
+             'title' => $machine_name.' del',
+             'name' => $machine_name.'.'.$machine_name.'_del',
+             'method' => $machine_name.'_del',
+             'path' => '/admin/'.$machine_name.'/del/{'.substr($machine_name, 0, 1 ).'id}',
+             'args' => array('$'.substr($machine_name, 0, 1 ).'id'),
              'permission' => 'access admin page',
              'nocache' => false
            )
@@ -198,25 +204,25 @@ class ContentTypeCreateCmd extends BaseCommand {
        $ctltypeInput = new ArrayInput($ctlearguments);
        $returnCode = $ctlcommand->run($ctltypeInput, $output);
 
-       $writed = $this->renderFile('ct-list.html', HUNTER_ROOT .'/theme/admin/'.$type.'-list.html', array('type' => $type, 'name' => $name, 'fields' => $fields));
-       $writed = $this->renderFile('ct-add.html', HUNTER_ROOT .'/theme/admin/'.$type.'-add.html', array('type' => $type, 'name' => $name, 'fields' => $fields));
-       $writed = $this->renderFile('ct-edit.html', HUNTER_ROOT .'/theme/admin/'.$type.'-edit.html', array('type' => $type, 'name' => $name, 'fields' => $fields));
-       $writed = $this->renderFile('ct-install.html', HUNTER_ROOT .'/module/'.$type.'/'.$type.'.install', array('type' => $type, 'name' => $name, 'fields' => $fields));
+       $writed = $this->renderFile('ct-list.html', HUNTER_ROOT .'/theme/admin/'.$machine_name.'-list.html', array('type' => $machine_name, 'name' => $lable_name, 'fields' => $fields));
+       $writed = $this->renderFile('ct-add.html', HUNTER_ROOT .'/theme/admin/'.$machine_name.'-add.html', array('type' => $machine_name, 'name' => $lable_name, 'fields' => $fields));
+       $writed = $this->renderFile('ct-edit.html', HUNTER_ROOT .'/theme/admin/'.$machine_name.'-edit.html', array('type' => $machine_name, 'name' => $lable_name, 'fields' => $fields));
+       $writed = $this->renderFile('ct-install.html', HUNTER_ROOT .'/module/'.$machine_name.'/'.$machine_name.'.install', array('type' => $machine_name, 'name' => $lable_name, 'fields' => $fields));
 
        $module_install_command = $this->getApplication()->find('module:install');
 
        $module_install_arguments = array(
          'command' => 'module:install',
-         'module' => $type,
+         'module' => $machine_name,
        );
 
        $module_install_typeInput = new ArrayInput($module_install_arguments);
        $returnCode = $module_install_command->run($module_install_typeInput, $output);
 
        if($writed){
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$type.' content type create successful!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$machine_name.' content type create successful!');
        }else{
-         $output->writeln('['.date("Y-m-d H:i:s").'] '.$type.' content type create failed!');
+         $output->writeln('['.date("Y-m-d H:i:s").'] '.$machine_name.' content type create failed!');
        }
    }
 
@@ -226,15 +232,23 @@ class ContentTypeCreateCmd extends BaseCommand {
    protected function interact(InputInterface $input, OutputInterface $output) {
        $helper = $this->getHelper('question');
 
-       // --type option
-       $type = $input->getOption('type');
-       if (!$type) {
-           $question = new Question('Enter the new type name:', '');
-           $type = $helper->ask($input, $output, $question);
-           $input->setOption('type', $type);
+       // --module_name option
+       $module_name = $input->getOption('module_name');
+       if (!$module_name) {
+           $question = new Question('Enter the new module name:', '');
+           $module_name = $helper->ask($input, $output, $question);
+           $input->setOption('module_name', $module_name);
        }
 
-       if($cache = cache()->get('ct_cmd_'.$this->stringConverter->createMachineName($type))){
+       // --machine_name option
+       $machine_name = $input->getOption('machine_name');
+       if (!$machine_name) {
+           $question = new Question('Enter the machine name ['.$this->stringConverter->createMachineName($module_name).']:', $this->stringConverter->createMachineName($module_name));
+           $machine_name = $helper->ask($input, $output, $question);
+           $input->setOption('machine_name', $machine_name);
+       }
+
+       if($cache = cache()->get('ct_cmd_'.$machine_name)){
          // --use last config option
          $use_last = $input->getOption('use_last');
          if (!$use_last) {
@@ -248,12 +262,12 @@ class ContentTypeCreateCmd extends BaseCommand {
          }
        }
 
-       // --name option
-       $name = $input->getOption('name');
-       if (!$name) {
-           $question = new Question('Enter the name:', '');
-           $name = hunter_convert_to_utf8($helper->ask($input, $output, $question));
-           $input->setOption('name', $name);
+       // --lable_name option
+       $lable_name = $input->getOption('lable_name');
+       if (!$lable_name) {
+           $question = new Question('Enter the lable name:', '');
+           $lable_name = hunter_convert_to_utf8($helper->ask($input, $output, $question));
+           $input->setOption('lable_name', $lable_name);
        }
 
        // --description option
@@ -426,14 +440,15 @@ class ContentTypeCreateCmd extends BaseCommand {
        }
 
        $ct_cache = array(
-         'type' => $type,
-         'name' => $name,
+         'module_name' => $module_name,
+         'machine_name' => $machine_name,
+         'lable_name' => $lable_name,
          'description' => $description,
          'entity_support' => $entity_support,
          'fields' => $fields
        );
 
-       cache()->set('ct_cmd_'.$this->stringConverter->createMachineName($type), $ct_cache);
+       cache()->set('ct_cmd_'.$machine_name, $ct_cache);
    }
 
    /**
