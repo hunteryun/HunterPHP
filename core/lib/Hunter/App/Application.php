@@ -350,7 +350,7 @@ class Application {
 
         foreach ($this->routeList as $module_routers) {
           foreach ($module_routers as $name => $route_info) {
-            if($curpath = preg_replace("/\{.*\}/", "([^/]+)", $route_info['path'])){
+            if($curpath = preg_replace("/\{[^\/]*\}/", "([^/]+)", $route_info['path'])){
               if(isset($route_info['requirements']['_permission'])){
                 $this->routePermission[$route_info['path']] = $route_info['requirements']['_permission'];
               }
