@@ -1,5 +1,11 @@
 views:
-  <?php print $machine_name; ?>:
+  <?php print $machine_name; ?>:  
+    relationship:
+      user:
+        left:
+          field: 'uid'
+        right:
+          field: 'uid'
     fields:
 <?php if(!empty($fields)): ?>
       <?php print substr($machine_name, 0, 1 ); ?>id:
