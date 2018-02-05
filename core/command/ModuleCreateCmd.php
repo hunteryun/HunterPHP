@@ -120,6 +120,11 @@ class ModuleCreateCmd extends BaseCommand {
                 'Is this suppport entity?'
             )
             ->addArgument(
+                'supportToken',
+                InputArgument::OPTIONAL,
+                'Is this suppport token?'
+            )
+            ->addArgument(
                 'fields',
                 InputArgument::OPTIONAL,
                 'content type fields'
@@ -143,6 +148,7 @@ class ModuleCreateCmd extends BaseCommand {
        $create_composer = $input->getOption('create-composer');
        $isContentType = $input->getArgument('isContentType');
        $supportEntity = $input->getArgument('supportEntity');
+       $supportToken = $input->getArgument('supportToken');
        $fields = $input->getArgument('fields');
 
        $dir .= '/'.$machineName;
@@ -184,6 +190,7 @@ class ModuleCreateCmd extends BaseCommand {
          'dependencies' => $dependencies,
          'isContentType' => $isContentType,
          'supportEntity' => $supportEntity,
+         'supportToken' => $supportToken,
          'fields' => $fields
        );
 

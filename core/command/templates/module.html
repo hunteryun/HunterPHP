@@ -15,6 +15,45 @@ function <?php print $machine_name; ?>_entity_info() {
 }
 <?php endif; ?>
 
+<?php if($supportToken): ?>
+/**
+ * Implements hook_tokens().
+ */
+function <?php print $machine_name; ?>_tokens($type, $tokens, array $data = [], array $options = []) {
+  $replacements = array();
+  if ($type == '<?php print $machine_name; ?>') {
+    $<?php print $machine_name; ?> = reset($data);
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case '<?php print substr($machine_name, 0, 1 ); ?>id':
+          $replacements[$original] = $<?php print $machine_name; ?>-><?php print substr($machine_name, 0, 1 ); ?>id;
+          break;
+
+<?php foreach ($fields as $field): ?>
+        case '<?php print $field['name']; ?>':
+          $replacements[$original] = $<?php print $machine_name; ?>-><?php print $field['name']; ?>;
+          break;
+<?php endforeach; ?>
+
+        case 'uid':
+          $replacements[$original] = $<?php print $machine_name; ?>->uid;
+          break;
+
+        case 'created':
+          $replacements[$original] = date("Y-m-d H:i:s", $<?php print $machine_name; ?>->created);
+          break;
+
+        case 'updated':
+          $replacements[$original] = date("Y-m-d H:i:s", $<?php print $machine_name; ?>->updated);
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
+<?php endif; ?>
+
 /**
  * get <?php print $module; ?> by id
  */

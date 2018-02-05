@@ -83,11 +83,17 @@ class ContentTypeCreateCmd extends BaseCommand {
                  'commands.create.content-type.options.description'
              )
              ->addOption(
-                  'entity_support',
-                  '',
-                  InputOption::VALUE_REQUIRED,
-                  'commands.create.content-type.options.entity_support'
+                'entity_support',
+                '',
+                InputOption::VALUE_REQUIRED,
+                'commands.create.content-type.options.entity_support'
               )
+              ->addOption(
+                 'token_support',
+                 '',
+                 InputOption::VALUE_REQUIRED,
+                 'commands.create.content-type.options.token_support'
+             )
              ->addOption(
                  'fields',
                  '',
@@ -113,11 +119,13 @@ class ContentTypeCreateCmd extends BaseCommand {
          $lable_name = $ct_cache['lable_name'];
          $description = $ct_cache['description'];
          $entity_support = (bool) $ct_cache['entity_support'];
+         $token_support = (bool) $ct_cache['token_support'];
          $fields = $ct_cache['fields'];
        }else {
          $lable_name = $input->getOption('lable_name');
          $description = $input->getOption('description');
          $entity_support = (bool) $input->getOption('entity_support');
+         $token_support = (bool) $input->getOption('token_support');
          $fields = $input->getOption('fields');
        }
 
@@ -138,6 +146,7 @@ class ContentTypeCreateCmd extends BaseCommand {
          '--create-composer' => FALSE,
          'isContentType' => TRUE,
          'supportEntity' => $entity_support,
+         'supportToken' => $token_support,
          'fields' => $fields,
        );
 
@@ -284,6 +293,14 @@ class ContentTypeCreateCmd extends BaseCommand {
            $entity_support_question = new ConfirmationQuestion('Enable support Entity (y/n) [No]? ', FALSE);
            $entity_support = $helper->ask($input, $output, $entity_support_question);
            $input->setOption('entity_support', $entity_support);
+       }
+
+       // --support token option
+       $token_support = $input->getOption('token_support');
+       if (!$token_support) {
+           $token_support_question = new ConfirmationQuestion('Enable support Token (y/n) [No]? ', FALSE);
+           $token_support = $helper->ask($input, $output, $token_support_question);
+           $input->setOption('token_support', $token_support);
        }
 
        // --fields option
@@ -445,6 +462,7 @@ class ContentTypeCreateCmd extends BaseCommand {
          'lable_name' => $lable_name,
          'description' => $description,
          'entity_support' => $entity_support,
+         'token_support' => $token_support,
          'fields' => $fields
        );
 
