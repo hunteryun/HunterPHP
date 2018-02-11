@@ -49,7 +49,7 @@ class FileSession {
         $file = $this->getSessionFullName();
         if( file_exists($file) && is_file($file) ) {
             $data = file_get_contents($file);
-            $_SESSION = json_decode($data, true);
+            $_SESSION = (array) json_decode($data);
         }else{
             $_SESSION = [];
         }

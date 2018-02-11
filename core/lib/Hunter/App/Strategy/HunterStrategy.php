@@ -41,7 +41,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
 
             $routeTitles = $route->getContainer()->get('routeTitles');
 
-            if(isset($routeTitles[$path])){
+            if(isset($routeTitles[$path]) && function_exists('theme')){
               theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
             }
             $vars['vars'] = $vars;
