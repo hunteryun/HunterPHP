@@ -137,7 +137,7 @@ class Application {
         list ($module,) = explode('.', $f['basename']);
         $extensions[$module] = array(
           'type' => 'module',
-          'pathname' => 'module/'.$module.'/'.$module.'.info.yml',
+          'pathname' => str_replace($this->root.'/', "",  $f['dirname']).'/'.$module.'.info.yml',
           'filename' => $f['basename'],
         );
       }
@@ -364,7 +364,7 @@ class Application {
               }
 
               $this->routeNames[$route_info['path']] = $name;
-              
+
               if(preg_match("~^(?|".$curpath.")$~", request_uri(), $matches)){
                 $route = $routers->map(['GET','POST'], $route_info['path'], $route_info['defaults']['_controller']);
                 if(isset($route_info['requirements']['_permission']) && !empty($route_info['requirements']['_permission'])){
