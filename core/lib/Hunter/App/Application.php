@@ -11,6 +11,7 @@ use Hunter\Core\App\Strategy\HunterStrategy;
 use Symfony\Component\Console\Application as ConsoleApp;
 use Psr\Http\Message\ResponseInterface;
 use Hunter\Core\Discovery\YamlDiscovery;
+use Hunter\Core\Discovery\PluginDiscovery;
 use Hunter\Core\App\ServiceProvider\HttpMessageServiceProvider;
 use Hunter\Core\App\ModuleHandler;
 use Hunter\Core\App\PermissionHandler;
@@ -29,6 +30,7 @@ class Application {
     protected $commands;
     protected $moduleList;
     protected $permissionList;
+    protected $pluginList;
     protected $routers = array();
     protected $routeList;
     protected $routePermission = array();
@@ -168,6 +170,9 @@ class Application {
 
             // Initialize all permission list.
             $this->initializePermissionList();
+
+            // Initialize all plugin list.
+            $this->initializePluginList();
 
             // Initialize all routes.
             $this->buildRouters($this->container);
@@ -341,6 +346,15 @@ class Application {
     /**
      * {@inheritdoc}
      */
+    protected function initializePluginList() {
+      $discovery = new PluginDiscovery('routing', $this->moduleHandler->getModuleDirectories());
+      $this->pluginList = $discovery->findAll();
+      $this->container->add('pluginList', $this->pluginList);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function buildRouters($container) {
         $routers = new RouteCollection($container);
         $routers->setStrategy(new HunterStrategy());
@@ -489,6 +503,13 @@ class Application {
      */
     public function getModuleHandle() {
         return $this->moduleHandler;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPluginList() {
+        return $this->pluginList;
     }
 
     /**

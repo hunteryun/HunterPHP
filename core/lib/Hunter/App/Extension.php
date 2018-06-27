@@ -203,7 +203,7 @@ class Extension implements \Serializable {
   public function unserialize($data) {
     $data = unserialize($data);
     // Get the app root from the container.
-    $this->root = DRUPAL_ROOT;
+    $this->root = HUNTER_ROOT;
     $this->type = $data['type'];
     $this->pathname = $data['pathname'];
     $this->filename = $data['filename'];

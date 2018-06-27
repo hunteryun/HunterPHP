@@ -31,12 +31,6 @@ class YamlPecl implements SerializationInterface {
     if (!trim($raw)) {
       return NULL;
     }
-    // @todo Use ErrorExceptions when https://drupal.org/node/1247666 is in.
-    // yaml_parse() will throw errors instead of raising an exception. Until
-    // such time as Hunter supports native PHP ErrorExceptions as the error
-    // handler, we need to temporarily set the error handler as ::errorHandler()
-    // and then restore it after decoding has occurred. This allows us to turn
-    // parsing errors into a throwable exception.
     // @see Hunter\Core\Serialization\Exception\InvalidDataTypeException
     // @see http://php.net/manual/en/class.errorexception.php
     set_error_handler([__CLASS__, 'errorHandler']);

@@ -5,7 +5,7 @@ namespace Hunter\Core\Database\sqlite;
 use Hunter\Core\Database\Statement as DatabaseStatement;
 
 /**
- * SQLite implementation of \Drupal\Core\Database\Statement.
+ * SQLite implementation of \Hunter\Core\Database\Statement.
  *
  * The PDO SQLite driver only closes SELECT statements when the PDOStatement
  * destructor is called and SQLite does not allow data change (INSERT,

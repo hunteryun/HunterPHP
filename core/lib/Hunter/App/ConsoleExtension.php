@@ -4,7 +4,7 @@ namespace Hunter\Core\App;
 
 /**
  * Class Extension
- * @package Drupal\Console\Extension
+ * @package Hunter\Console\Extension
  */
 class ConsoleExtension extends Extension
 {

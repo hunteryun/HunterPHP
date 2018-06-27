@@ -5,7 +5,7 @@ namespace Hunter\Core\Database\sqlite;
 use Hunter\Core\Database\Query;
 
 /**
- * SQLite implementation of \Drupal\Core\Database\Query\Insert.
+ * SQLite implementation of \Hunter\Core\Database\Query\Insert.
  *
  * We ignore all the default fields and use the clever SQLite syntax:
  *   INSERT INTO table DEFAULT VALUES

@@ -5,7 +5,7 @@ namespace Hunter\Core\Database\sqlite;
 use Hunter\Core\Database\Query;
 
 /**
- * SQLite implementation of \Drupal\Core\Database\Query\Truncate.
+ * SQLite implementation of \Hunter\Core\Database\Query\Truncate.
  *
  * SQLite doesn't support TRUNCATE, but a DELETE query with no condition has
  * exactly the effect (it is implemented by DROPing the table).

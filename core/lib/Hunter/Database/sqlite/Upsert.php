@@ -5,7 +5,7 @@ namespace Hunter\Core\Database\sqlite;
 use Hunter\Core\Database\Query;
 
 /**
- * SQLite implementation of \Drupal\Core\Database\Query\Upsert.
+ * SQLite implementation of \Hunter\Core\Database\Query\Upsert.
  */
 class Upsert extends Query {
 

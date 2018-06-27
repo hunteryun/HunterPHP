@@ -5,7 +5,7 @@ namespace Hunter\Core\Database\sqlite;
 use Hunter\Core\Database\Select as DatabaseSelect;
 
 /**
- * SQLite implementation of \Drupal\Core\Database\Query\Select.
+ * SQLite implementation of \Hunter\Core\Database\Query\Select.
  */
 class Select extends DatabaseSelect {
 

@@ -12,7 +12,7 @@ use Hunter\Core\Database\Statement as DatabaseStatement;
  */
 
 /**
- * SQLite implementation of \Drupal\Core\Database\Schema.
+ * SQLite implementation of \Hunter\Core\Database\Schema.
  */
 class Schema extends DatabaseSchema {
 
@@ -64,7 +64,7 @@ class Schema extends DatabaseSchema {
   }
 
   /**
-   * Generate SQL to create a new table from a Drupal schema definition.
+   * Generate SQL to create a new table from a Hunter schema definition.
    *
    * @param $name
    *   The name of the table to create.
@@ -236,7 +236,7 @@ class Schema extends DatabaseSchema {
     // Put :normal last so it gets preserved by array_flip. This makes
     // it much easier for modules (such as schema.module) to map
     // database types back into schema types.
-    // $map does not use drupal_static as its value never changes.
+    // $map does not use hunter_static as its value never changes.
     static $map = [
       'varchar_ascii:normal' => 'VARCHAR',
 
@@ -471,7 +471,7 @@ class Schema extends DatabaseSchema {
    *   Name of the table.
    *
    * @return
-   *   An array representing the schema, from drupal_get_schema().
+   *   An array representing the schema, from hunter_get_schema().
    *
    * @throws \Exception
    *   If a column of the table could not be parsed.
