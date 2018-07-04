@@ -294,7 +294,7 @@ function hunter_map_assoc($array, $function = NULL) {
 /**
  * hunter render form api
  */
-function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
+function hunter_form_render($type, &$fields, $parms = NULL) {
   global $app;
   $form_id = '';
   if(isset($fields['form_id'])){
@@ -309,13 +309,13 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
   }
 
   if($type == 'layui'){
-    $form = Layui::create()->start($form_redirect, $form_id);
+    $form = Layui::create()->start($form_redirect, $form_id, $parms);
   }else{
-    $form = NoHtml::create()->start($form_redirect, $form_id);
+    $form = NoHtml::create()->start($form_redirect, $form_id, $parms);
   }
 
   foreach ($app->getModuleHandle()->getImplementations('form_alter') as $module_name) {
-    $args = array(&$fields, $form_id, $module, $parms);
+    $args = array(&$fields, $form_id, $parms);
     $app->getModuleHandle()->invoke($module_name, 'form_alter', $args);
   }
 

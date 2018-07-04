@@ -23,15 +23,11 @@ class Layui extends Form {
      * @param string $charset
      * @return $this
      */
-    public function start($action, $id = null, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8') {
-        switch ($enctype)
-        {
-            case true:
-                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'" enctype="multipart/form-data">';
-            break;
-            default :
-                $this->form =  $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'">';
-            break;
+    public function start($action, $id = null, $parms = array()) {
+        if(isset($parms['enctype']) && $parms['enctype'] == 'true'){
+          $this->form = '<form action="'.$action.'" id="'.$id.'" class="layui-form '.$parms['class'].'" enctype="multipart/form-data">';
+        }else {
+          $this->form = '<form action="'.$action.'" id="'.$id.'" class="layui-form '.$parms['class'].'">';
         }
         return $this;
 
@@ -388,7 +384,7 @@ class Layui extends Form {
           $this->form .= $field['#prefix'];
         }
         $this->form .= '
-        <div class="layui-form-item">
+        <div class="layui-form-item" pane="">
             <label class="layui-form-label">'.$field['#title'].'</label>
             <div class="layui-input-block">';
 
