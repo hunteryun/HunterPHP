@@ -26,7 +26,7 @@ class <?php print ucfirst($module); ?>Controller {
     }
     $<?php print $module; ?>_result = get_all_<?php print $module; ?>($parms);
 
-    return view('/admin/<?php print $module; ?>-list.html', array('<?php print $module; ?>s' => $<?php print $module; ?>_result['list'], 'pager' => $<?php print $module; ?>_result['pager']));
+    return view('/admin/<?php print $module; ?>-list.html', array('<?php print $module; ?>s' => $<?php print $module; ?>_result));
   }
 
   /**

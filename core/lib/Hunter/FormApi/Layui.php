@@ -23,11 +23,15 @@ class Layui extends Form {
      * @param string $charset
      * @return $this
      */
-    public function start($action, $id = null, $parms = array()) {
-        if(isset($parms['enctype']) && $parms['enctype'] == 'true'){
-          $this->form = '<form action="'.$action.'" id="'.$id.'" class="layui-form '.$parms['class'].'" enctype="multipart/form-data">';
-        }else {
-          $this->form = '<form action="'.$action.'" id="'.$id.'" class="layui-form '.$parms['class'].'">';
+    public function start($action, $id = null, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8') {
+        switch ($enctype)
+        {
+            case true:
+                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'" lay-filter="formTest'.$id.'" enctype="multipart/form-data">';
+            break;
+            default :
+                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'" lay-filter="formTest'.$id.'">';
+            break;
         }
         return $this;
 

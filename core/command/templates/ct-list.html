@@ -33,7 +33,7 @@
                 </tr>
             </thead>
             <tbody>
-              <?php print '@foreach($'.$type.'s as $r)'; ?>
+              <?php print '@foreach($'.$type.'s['list'] as $r)'; ?>
 
                   <tr>
                     <td>
@@ -76,7 +76,7 @@
 
             </tbody>
         </table>
-        {!! hunter_pager($pager, '上一页', '下一页') !!}
+        {!! hunter_pager(<?php print $type; ?>s['pager'], '上一页', '下一页') !!}
         <input id="iframe_status" value="" hidden="hidden">
     </div>
     <script src="theme/admin/assets/layui/layui.js"></script>
