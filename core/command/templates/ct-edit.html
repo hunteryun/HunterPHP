@@ -131,6 +131,24 @@
                 tds.eq(4).find('.demo-reload').removeClass('layui-hide'); //显示重传
               }
             });
+            Sortable.create(up_photos, {
+              group: "<?php print $type; ?>_up_photos",
+              handle: '.drag-handle',
+              animation: 150,
+              dataIdAttr: 'data-image',
+              filter: '.js-remove',
+              onFilter: function (evt) {
+                evt.item.parentNode.removeChild(evt.item);
+              }
+            });
+
+            $('#addmore').click(function(){//点击a标签
+                if($('#show-upload-images').is(':hidden')){//如果当前隐藏
+                  $('#show-upload-images').show();//那么就显示div
+                }else{//否则
+                  $('#show-upload-images').hide();//就隐藏div
+                }
+            });
             <?php endif; ?>
             <?php elseif($field['html_type'] == 'file'): ?>
 
@@ -157,27 +175,6 @@
             }
           });
             <?php endif; ?>
-
-            <?php if($field['html_type_setting']['image_type'] == 'multiple'): ?>
-                    Sortable.create(up_photos, {
-                      group: "<?php print $type; ?>_up_photos",
-                      handle: '.drag-handle',
-                      animation: 150,
-                      dataIdAttr: 'data-image',
-                      filter: '.js-remove',
-                  		onFilter: function (evt) {
-                  			evt.item.parentNode.removeChild(evt.item);
-                  		}
-                    });
-
-                    $('#addmore').click(function(){//点击a标签
-                        if($('#show-upload-images').is(':hidden')){//如果当前隐藏
-                          $('#show-upload-images').show();//那么就显示div
-                        }else{//否则
-                          $('#show-upload-images').hide();//就隐藏div
-                        }
-                    });
-            <?php endif; ?>            
           <?php endforeach; ?>
 
             //监听提交

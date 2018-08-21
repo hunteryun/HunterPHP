@@ -294,7 +294,7 @@ function hunter_map_assoc($array, $function = NULL) {
 /**
  * hunter render form api
  */
-function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
+function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wrap = TRUE, $parentform = NULL) {
   global $app;
   $form_id = '';
   if(isset($fields['form_id'])){
@@ -314,10 +314,14 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
     unset($fields['class']);
   }
 
-  if($type == 'layui'){
-    $form = Layui::create()->start($form_redirect, $form_id, $class);
-  }else{
-    $form = NoHtml::create()->start($form_redirect, $form_id, $class);
+  if($wrap){
+    if($type == 'layui'){
+      $form = Layui::create()->start($form_redirect, $form_id, $class);
+    }else{
+      $form = NoHtml::create()->start($form_redirect, $form_id, $class);
+    }
+  }else {
+    $form = $parentform;
   }
 
   foreach ($app->getModuleHandle()->getImplementations('form_alter') as $module_name) {
@@ -329,6 +333,16 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
 
   if(!empty($fields)){
     foreach ($fields as $name => $field) {
+      if(isset($field['#type']) && $field['#type'] == 'container'){
+        unset($field['#type']);
+        foreach ($field as $subname => $subfields) {
+          if (!isset($field[$subname]['#name'])) {
+            $field[$subname]['#name'] = $name.'['.$subname.']';
+          }
+        }
+        $form = hunter_form_render($type, $field, $module, $parms, FALSE, $form);
+        continue;
+      }
       if (!isset($field['#name'])) {
         $field['#name'] = $name;
       }
@@ -430,7 +444,12 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL) {
     $form->submit($submit_field['#name'], $submit_field);
   }
 
-  return $form->end($form_id);
+  if($wrap) {
+    return $form->end($form_id);
+  }else {
+    return $form;
+  }
+
 }
 
 /**

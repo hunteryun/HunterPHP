@@ -27,7 +27,8 @@
       	"voku/anti-xss": "^2.0",
       	"gregwar/captcha": "1.*",
         "katzgrau/klogger": "^1.2",
-        "doctrine/annotations": "^1.6"
+        "doctrine/annotations": "^1.6",
+        "overtrue/pinyin": "~3.0"
     },
     "extra": {
         "merge-plugin": {
