@@ -3,6 +3,9 @@
 //配置: 根目录
 $root_dir = '/';
 
+//配置: 安全key
+$safe_key = '6kUxOb';
+
 //配置: 开发模式
 $hunter_debug = true;
 
@@ -24,7 +27,35 @@ $default_language = 'zh';
 //配置: 启用图片自动压缩
 $auto_image_compress = array(
   'enable' => true,
-  'quality' => 60,
+  'quality' => 70,
+);
+
+//配置: ImageStyle, 格式dir => size
+$image_style = array(
+  'product' =>array(
+    '90_90' => array(
+      'size' => '90*90',
+      'method' => 'resize',
+      'background' => '#FFFFFF'
+    ),
+    '190_190' => array(
+      'size' => '190*190',
+      'method' => 'resize',
+      'background' => '#FFFFFF'
+    ),
+    '570_570' => array(
+      'size' => '570*570',
+      'method' => 'scaleResize',
+      'background' => '#F4F4F4'
+    ),
+    '1200_1200' => array(
+      'size' => '1200*1200',
+      'method' => 'scaleResize',
+      'background' => '#F4F4F4'
+    ),
+  ),
+  'news' => '100*100',
+  'page' => '100*100'
 );
 
 //配置: session
