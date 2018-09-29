@@ -4,7 +4,7 @@ namespace Hunter\Core\Discovery;
 
 use ReflectionClass;
 use Hunter\Core\Utility\Unicode;
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Annotations\AnnotationReader;
 
 /**
  * Provides discovery for plugin within a given set of directories.
@@ -46,8 +46,7 @@ class PluginDiscovery implements DiscoverableInterface {
    * @param array $directories
    *   An array of directories to scan, keyed by the provider.
    */
-  public function __construct($name, array $directories) {
-    $this->name = $name;
+  public function __construct(array $directories) {
     $this->directories = $directories;
   }
 

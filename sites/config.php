@@ -30,6 +30,13 @@ $auto_image_compress = array(
   'quality' => 70,
 );
 
+//配置: 消息队列服务器
+$queue_server = array(
+  'driver' => 'file',
+  'queue' => 'default',
+  'path' => 'sites/message'
+);
+
 //配置: ImageStyle, 格式dir => size
 $image_style = array(
   'product' =>array(

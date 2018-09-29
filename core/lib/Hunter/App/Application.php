@@ -264,8 +264,8 @@ class Application {
       // Load each module's serviceProvider class.
       foreach ($this->moduleList as $module => $filename) {
         $service_filename = dirname($filename['pathname']) . "/$module.services.yml";
-        if (file_exists($service_filename)) {
-          $this->serviceYamls[$module] = Yaml::decode(file_get_contents($service_filename));
+        if (file_exists($service_filename) || file_exists($this->root.'/'.$service_filename)) {
+          $this->serviceYamls[$module] = Yaml::decode(file_get_contents($this->root.'/'.$service_filename));
         }
       }
     }
@@ -347,7 +347,7 @@ class Application {
      * {@inheritdoc}
      */
     protected function initializePluginList() {
-      $discovery = new PluginDiscovery('routing', $this->moduleHandler->getModuleDirectories());
+      $discovery = new PluginDiscovery($this->moduleHandler->getModuleDirectories());
       $this->pluginList = $discovery->findAll();
       $this->container->add('pluginList', $this->pluginList);
     }
