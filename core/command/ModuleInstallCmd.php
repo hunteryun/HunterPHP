@@ -42,40 +42,19 @@ class ModuleInstallCmd extends BaseCommand {
     */
    protected function execute(InputInterface $input, OutputInterface $output) {
       $installed = false;
-      if(isset($this->moduleList[$input->getArgument('module')])){
-          $install_file = str_replace('info.yml', 'install', $this->moduleList[$input->getArgument('module')]['pathname']);
+      if($input->getArgument('module') == 'all'){
+        ksort($this->moduleList);
+        foreach ($this->moduleList as $module => $item) {
+          $install_file = str_replace('info.yml', 'install', $item['pathname']);
+          $installed = $this->exec_install($module, $install_file);
+        }
       }else {
-          $install_file = 'module/'.$input->getArgument('module').'/'.$input->getArgument('module').'.install';
-      }
-
-      if(file_exists($install_file)){
-        require_once $install_file;
-
-        $schema_fun = $input->getArgument('module').'_schema';
-        $install_fun = $input->getArgument('module').'_install';
-        if (function_exists($schema_fun)) {
-          $schemas = $schema_fun();
-          $installed = db_schema()->installSchema($schemas);
+        if(isset($this->moduleList[$input->getArgument('module')])){
+            $install_file = str_replace('info.yml', 'install', $this->moduleList[$input->getArgument('module')]['pathname']);
+        }else {
+            $install_file = 'module/'.$input->getArgument('module').'/'.$input->getArgument('module').'.install';
         }
-
-        if (function_exists($install_fun)) {
-          $installed = true;
-          $install_fun();
-        }
-      }
-
-      if(module_exists('variable')){
-        $install_dir = 'module/'.$input->getArgument('module').'/config/install';
-        if(is_dir($install_dir)){
-          $conf = new Config($install_dir);        
-          $configdata = $conf->all();
-          if(!empty($configdata)){
-            foreach ($configdata as $key => $value) {
-              variable_set($input->getArgument('module').'.'.$key, $value);
-            }
-          }
-          $installed = true;
-        }
+        $installed = $this->exec_install($input->getArgument('module'), $install_file);
       }
 
       if($installed){
@@ -83,6 +62,45 @@ class ModuleInstallCmd extends BaseCommand {
       }else{
         $output->writeln('['.date("Y-m-d H:i:s").'] '.$input->getArgument('module').' module install failed!');
       }
+   }
+
+   /**
+    * 执行安装
+    */
+   protected function exec_install($module, $install_file) {
+     $installed = false;
+
+     if(file_exists($install_file)){
+       require_once $install_file;
+
+       $schema_fun = $module.'_schema';
+       $install_fun = $module.'_install';
+       if (function_exists($schema_fun)) {
+         $schemas = $schema_fun();
+         $installed = db_schema()->installSchema($schemas);
+       }
+
+       if (function_exists($install_fun)) {
+         $installed = true;
+         $install_fun();
+       }
+     }
+
+     if(module_exists('variable')){
+       $install_dir = 'module/'.$module.'/config/install';
+       if(is_dir($install_dir)){
+         $conf = new Config($install_dir);
+         $configdata = $conf->all();
+         if(!empty($configdata)){
+           foreach ($configdata as $key => $value) {
+             variable_set($module.'.'.$key, $value);
+           }
+         }
+         $installed = true;
+       }
+     }
+
+     return $installed;
    }
 
 }
