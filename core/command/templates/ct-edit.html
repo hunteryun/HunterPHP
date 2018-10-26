@@ -86,7 +86,7 @@
                 var files = obj.pushFile(); //将每次选择的文件追加到文件队列
                 //读取本地文件
                 obj.preview(function(index, file, result){
-                  var tr = $(['<tr id="upload-'+ index +'">'
+                  var tr = $(['<tr id="upload-'+ index +'" class="drag-handle" data-image="'+ file.name +'">'
                     ,'<td>'+ file.name +'</td>'
                     ,'<td></td>'
                     ,'<td>'+ (file.size/1014).toFixed(1) +'kb</td>'
@@ -120,6 +120,18 @@
                   tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
                   tds.eq(4).html('<textarea name="up_photos['+ index +'][des]" style="width:300px;height:60px"></textarea><input type="hidden" name="up_photos['+ index +'][img]" value="'+res.data.src+'">');
                   tds.eq(5).html(''); //清空操作
+
+                  Sortable.create(demoList, {
+                    group: "up_photos",
+                    handle: '.drag-handle',
+                    animation: 150,
+                    dataIdAttr: 'data-image',
+                    filter: '.demo-delete',
+                    onFilter: function (evt) {
+                      evt.item.parentNode.removeChild(evt.item);
+                    }
+                  });
+
                   return;
                 }
                 this.error(index, upload);
