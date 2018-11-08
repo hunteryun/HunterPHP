@@ -414,7 +414,9 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
           unset($field['#attributes']['id']);
         }
         element_set_attributes($field, array('id', 'name', 'cols', 'rows'));
-        $field['#attributes']['class'][] = 'layui-textarea';
+        if(empty($field['#attributes']['class'])){
+          $field['#attributes']['class'][] = 'layui-textarea';
+        }
         $form->textarea($name, $field);
         break;
       case 'hidden':
@@ -546,6 +548,7 @@ if (!function_exists('clean')) {
      */
     function clean($value) {
       $antiXss = new AntiXSS();
+      $antiXss->removeEvilAttributes(array('style'));
       return $antiXss->xss_clean($value);
     }
 }
