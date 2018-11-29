@@ -14,8 +14,9 @@ use Hunter\Core\Password\Password;
 use Zend\Diactoros\ServerRequestFactory;
 use Zend\Diactoros\Response\RedirectResponse;
 use Hunter\Core\FormApi\Layui;
-use Hunter\Core\FormApi\NoHtml;
+use Hunter\Core\FormApi\Bootstrap;
 use voku\helper\AntiXSS;
+use Overclokk\Cookie\Cookie;
 
 //file scan
 function file_scan($dir, $regx, $options = array(), $depth = 1) {
@@ -318,7 +319,7 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
     if($type == 'layui'){
       $form = Layui::create()->start($form_redirect, $form_id, $class);
     }else{
-      $form = NoHtml::create()->start($form_redirect, $form_id, $class);
+      $form = Bootstrap::create()->start($form_redirect, $form_id, $class);
     }
   }else {
     $form = $parentform;
@@ -386,7 +387,9 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
           $field['#attributes']['disabled'] = 'true';
         }
         element_set_attributes($field, array('id', 'name', 'value', 'size'));
-        $field['#attributes']['class'][] = 'layui-input layui-input-inline';
+        if($type == 'layui'){
+          $field['#attributes']['class'][] = 'layui-input layui-input-inline';
+        }
         $form->file($name, $field);
         break;
       case 'image':
@@ -394,7 +397,9 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
           $field['#attributes']['disabled'] = 'true';
         }
         element_set_attributes($field, array('id', 'name', 'value', 'size'));
-        $field['#attributes']['class'][] = 'layui-input layui-input-inline';
+        if($type == 'layui'){
+          $field['#attributes']['class'][] = 'layui-input layui-input-inline';
+        }
         $form->file($name, $field);
         break;
       case 'fieldset':
@@ -414,7 +419,7 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
           unset($field['#attributes']['id']);
         }
         element_set_attributes($field, array('id', 'name', 'cols', 'rows'));
-        if(empty($field['#attributes']['class'])){
+        if(empty($field['#attributes']['class']) && $type == 'layui'){
           $field['#attributes']['class'][] = 'layui-textarea';
         }
         $form->textarea($name, $field);
@@ -512,6 +517,34 @@ function hunter_download($filename, $conent) {
 
     readfile($filename);
     exit;
+}
+
+
+/**
+ * set default language.
+ */
+function language_set($lang) {
+  $cookie = new Cookie();
+  $cookie->set('language', $lang, 31536000 * 5, '/');
+  session()->set('language', $lang);
+  return $lang;
+}
+
+/**
+ * get default language.
+ */
+function language_get() {
+  global $default_language;
+
+  if($lang = session()->get('language')){
+    return $lang;
+  }
+
+  if(isset($_COOKIE['language']) && !empty($_COOKIE['language'])){
+    return $_COOKIE['language'];
+  }
+
+  return $default_language;
 }
 
 /**

@@ -487,8 +487,8 @@ class Application {
     /**
      * {@inheritdoc}
      */
-    public function getRoutesList() {
-        return $this->routeList;
+    public function getRoutesList($module = '') {
+        return isset($this->routeList[$module]) ? $this->routeList[$module] : $this->routeList;
     }
 
     /**
@@ -522,14 +522,8 @@ class Application {
             $this->boot();
         }
 
-        foreach ($this->moduleHandler->getImplementations('init') as $module) {
-          $this->moduleHandler->invoke($module, 'init');
-        }
-
         $request = $this->container->get('Zend\Diactoros\ServerRequest');
-
         $response = $this->container->get('Zend\Diactoros\Response');
-
         $response = $this->routers->dispatch($request, $response);
 
         if($response instanceof ResponseInterface){

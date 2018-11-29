@@ -20,7 +20,7 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
      */
     public function getCallable(Route $route, array $vars) {
         return function (ServerRequestInterface $request, ResponseInterface $response, callable $next) use ($route, $vars) {
-            global $default_theme, $hunter_static;
+            global $default_theme, $hunter_static, $app;
             $generate_html = false;
             $path = $route->getPath();
             $routeNames = $route->getContainer()->get('routeNames');
@@ -36,6 +36,12 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
                 die;
               }else {
                 $generate_html = true;
+              }
+            }
+
+            if(isset($routeOptions[$path]['init'])){
+              foreach ($app->getModuleHandle()->getImplementations('init') as $module) {
+                $app->getModuleHandle()->invoke($module, 'init', array($request));
               }
             }
 

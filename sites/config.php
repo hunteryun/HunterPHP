@@ -22,7 +22,7 @@ $cache_dir = HUNTER_ROOT . '/sites/files';
 $default_theme = 'hunter';
 
 //配置: 默认语言
-$default_language = 'zh';
+$default_language = 'zh-cn';
 
 //配置: 启用图片自动压缩
 $auto_image_compress = array(

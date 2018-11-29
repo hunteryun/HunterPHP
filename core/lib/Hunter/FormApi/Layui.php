@@ -85,9 +85,9 @@ class Layui extends Form {
 
           if(!isset($field['#disabled']) || (isset($field['#disabled']) && !$field['#disabled'])){
             if($field['#type'] == 'file'){
-              $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload File').'</button>';
+              $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('上传文件').'</button>';
             }else {
-              $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('Upload Image').'</button>';
+              $this->form .= '<button type="button" class="layui-btn" id="'.$name.'btn">'.t('上传图片').'</button>';
             }
           }
 
