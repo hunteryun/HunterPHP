@@ -147,7 +147,7 @@ class <?php print ucfirst($module); ?>Controller {
 <?php endforeach; ?>
     $form['save'] = array(
      '#type' => 'submit',
-     '#value' => t('Save'),
+     '#value' => t('提交'),
      '#attributes' => array('lay-submit' => '', 'lay-filter' => '<?php print $module; ?>Add'),
     );
 
@@ -274,7 +274,7 @@ $form['<?php print $field['name']; ?>'] = array(
       );
       $form['save'] = array(
        '#type' => 'submit',
-       '#value' => t('Save'),
+       '#value' => t('提交'),
        '#attributes' => array('lay-submit' => '', 'lay-filter' => '<?php print $module; ?>Update'),
       );
 

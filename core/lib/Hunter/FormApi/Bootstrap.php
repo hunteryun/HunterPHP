@@ -2,17 +2,16 @@
 
 namespace Hunter\Core\FormApi;
 
-use Hunter\Core\FormApi\Form;
 use Gregwar\Captcha\CaptchaBuilder;
 
-class Bootstrap extends Form {
+class Bootstrap {
 
     private $form;
 
     /**
      * start the form
      */
-    public function start($action, $id = null, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8') {
+    public function start($action, $id = null, $class = null, $enctype = false, $method = 'post', $charset = 'utf8') {
         switch ($enctype)
         {
             case true:

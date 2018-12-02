@@ -2,10 +2,9 @@
 
 namespace Hunter\Core\FormApi;
 
-use Hunter\Core\FormApi\Form;
 use Gregwar\Captcha\CaptchaBuilder;
 
-class Layui extends Form {
+class Layui {
     /**
      * the html form code
      *
@@ -23,7 +22,7 @@ class Layui extends Form {
      * @param string $charset
      * @return $this
      */
-    public function start($action, $id = null, $class = null, $enctype = false, $method = Form::POST, $charset = 'utf8') {
+    public function start($action, $id = null, $class = null, $enctype = false, $method = 'post', $charset = 'utf8') {
         switch ($enctype)
         {
             case true:
@@ -352,12 +351,10 @@ class Layui extends Form {
 
         if(!empty($field['#options'])){
           foreach ($field['#options'] as $v => $title) {
-            if(!isset($field['#attributes']['lay-skin'])){
-              $field['#attributes']['value'] = $v;
-              $field['#attributes']['name'] = $name.'['.$v.']';
-            }
+            $field['#attributes']['value'] = $v;
+            $field['#attributes']['name'] = $name.'['.$v.']';
             $field['#attributes']['title'] = $title;
-            if((is_array($field['#value']) && in_array($v, $field['#value'])) || $field['#value'] == $field['#attributes']['value']){
+            if((is_array($field['#value']) && in_array($v, $field['#value'])) || (isset($field['#attributes']['value']) && $field['#value'] == $field['#attributes']['value'])){
               $field['#attributes']['checked'] = 'checked';
               $this->form .= '<input'.hunter_attributes($field['#attributes']).'>';
             }else {
