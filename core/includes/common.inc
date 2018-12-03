@@ -297,7 +297,7 @@ function hunter_map_assoc($array, $function = NULL) {
  */
 function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wrap = TRUE, $parentform = NULL) {
   global $app;
-  $form_id = '';
+  $form_id = 'exampleForm-'.rand(1,100);
   if(isset($fields['form_id'])){
     $form_id = $fields['form_id'];
     unset($fields['form_id']);
@@ -315,11 +315,17 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
     unset($fields['class']);
   }
 
+  $show_type = 'block';
+  if(isset($fields['show_type'])){
+    $show_type = $fields['show_type'];
+    unset($fields['show_type']);
+  }
+
   if($wrap){
     if($type == 'layui'){
-      $form = Layui::create()->start($form_redirect, $form_id, $class);
+      $form = Layui::create()->start($form_redirect, $form_id, $class, $show_type);
     }else{
-      $form = Bootstrap::create()->start($form_redirect, $form_id, $class);
+      $form = Bootstrap::create()->start($form_redirect, $form_id, $class, $show_type);
     }
   }else {
     $form = $parentform;
@@ -359,7 +365,12 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
       switch ($field['#type'])
       {
       case 'textfield':
-        $field['#attributes']['type'] = 'text';
+      case 'password':
+      case 'email':
+        if($field['#type'] == 'textfield'){
+          $field['#type'] = 'text';
+        }
+        $field['#attributes']['type'] = $field['#type'];
         if(isset($field['#disabled']) && $field['#disabled']){
           $field['#attributes']['disabled'] = 'true';
         }

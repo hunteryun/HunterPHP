@@ -7,18 +7,20 @@ use Gregwar\Captcha\CaptchaBuilder;
 class Bootstrap {
 
     private $form;
+    private $form_show_type;
 
     /**
      * start the form
      */
-    public function start($action, $id = null, $class = null, $enctype = false, $method = 'post', $charset = 'utf8') {
+    public function start($action, $id = null, $class = null, $show_type = 'block', $enctype = false, $method = 'post') {
+        $this->form_show_type = $show_type;
         switch ($enctype)
         {
             case true:
-                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="form-horizontal '.$class.'" enctype="multipart/form-data">';
+                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="utf8" class="form-horizontal '.$class.'" enctype="multipart/form-data">';
             break;
             default :
-                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="form-horizontal '.$class.'">';
+                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="utf8" class="form-horizontal '.$class.'">';
             break;
         }
         return $this;
@@ -69,7 +71,14 @@ class Bootstrap {
           $this->form .= $field['#prefix'];
         }
 
-        $this->form .= '<div class="form-group"><label class="col-sm-2 control-label">'.$field['#title'].'</label> <div class="col-sm-10"><input class="form-control" '.hunter_attributes($field['#attributes']).'>';
+        $this->form .= '<div class="form-group">';
+        if($this->form_show_type == 'inline'){
+          $field['#attributes']['placeholder'] = $field['#title'];
+          $this->form .= '<div class="col-sm-6"><input class="form-control" '.hunter_attributes($field['#attributes']).'>';
+        }else {
+          $this->form .= '<label class="col-sm-2 control-label">'.$field['#title'].'</label><div class="col-sm-10"><input class="form-control" '.hunter_attributes($field['#attributes']).'>';
+        }
+
         if(isset($field['#description'])){
           $this->form .= '<span class="help-block">'.$field['#description'].'</span>';
         }
@@ -90,10 +99,24 @@ class Bootstrap {
           $this->form .= $field['#prefix'];
         }
 
+        if(!isset($field['#attributes']['rows'])){
+          $field['#attributes']['rows'] = 6;
+        }
+        $this->form .= '<div class="form-group">';
         if(isset($field['#default_value'])){
-          $this->form .= '<div class="form-group"><label class="col-sm-2 control-label">'.$field['#title'].'</label><div class="col-sm-10"><textarea class="form-control" ' . hunter_attributes($field['#attributes']) . '>'.$field['#default_value'].'</textarea>';
+          if($this->form_show_type == 'inline'){
+            $field['#attributes']['placeholder'] = $field['#title'];
+            $this->form .= '<div class="col-sm-10"><textarea class="form-control" ' . hunter_attributes($field['#attributes']) . '>'.$field['#default_value'].'</textarea>';
+          }else {
+            $this->form .= '<label class="col-sm-2 control-label">'.$field['#title'].'</label><div class="col-sm-10"><textarea class="form-control" ' . hunter_attributes($field['#attributes']) . '>'.$field['#default_value'].'</textarea>';
+          }
         }else {
-          $this->form .= '<div class="form-group"><label class="col-sm-2 control-label">'.$field['#title'].'</label><div class="col-sm-10"><textarea class="form-control" ' . hunter_attributes($field['#attributes']) . '></textarea>';
+          if($this->form_show_type == 'inline'){
+            $field['#attributes']['placeholder'] = $field['#title'];
+            $this->form .= '<div class="col-sm-12"><textarea class="form-control" ' . hunter_attributes($field['#attributes']) . '></textarea>';
+          }else {
+            $this->form .= '<label class="col-sm-2 control-label">'.$field['#title'].'</label><div class="col-sm-10"><textarea class="form-control" ' . hunter_attributes($field['#attributes']) . '></textarea>';
+          }
         }
 
         if(isset($field['#description'])){
@@ -213,7 +236,12 @@ class Bootstrap {
         if(isset($field['#prefix'])){
           $this->form .= $field['#prefix'];
         }
-        $this->form .= '<div class="form-group"><div class="col-sm-offset-2 col-sm-10"><button class="btn btn-primary" '.hunter_attributes($field['#attributes']).'> '.$field['#value'].'</button></div></div>';
+
+        if($this->form_show_type == 'inline'){
+          $this->form .= '<div class="form-group"><div class="col-sm-2"><button class="btn btn-primary" '.hunter_attributes($field['#attributes']).'> '.$field['#value'].'</button></div></div>';
+        }else {
+          $this->form .= '<div class="form-group"><div class="col-sm-offset-2 col-sm-10"><button class="btn btn-primary" '.hunter_attributes($field['#attributes']).'> '.$field['#value'].'</button></div></div>';
+        }
 
         if(isset($field['#suffix'])){
           $this->form .= $field['#suffix'];
@@ -228,7 +256,15 @@ class Bootstrap {
         if(isset($field['#prefix'])){
           $this->form .= $field['#prefix'];
         }
-        $this->form .= '<div class="form-group"> <label class="col-sm-2 control-label">'.$field['#title'].'</label> <select'.hunter_attributes($field['#attributes']).'>';
+
+        $this->form .= '<div class="form-group">';
+        if($this->form_show_type == 'inline'){
+          $this->form .= '<div class="col-sm-6"><select class="form-control"'.hunter_attributes($field['#attributes']).'>';
+          $this->form .= ' <option value=""> '.t('请选择').$field['#title'].'</option>';
+        }else {
+          $this->form .= '<label class="col-sm-2 control-label">'.$field['#title'].'</label> <div class="col-sm-10"><select class="form-control"'.hunter_attributes($field['#attributes']).'>';
+          $this->form .= ' <option value=""> '.t('请选择').'</option>';
+        }
 
         foreach ($field['#options'] as $v => $title)
         {
@@ -239,7 +275,7 @@ class Bootstrap {
           }
         }
 
-        $this->form .= '  </select></div>';
+        $this->form .= '  </select></div></div>';
 
         if(isset($field['#suffix'])){
           $this->form .= $field['#suffix'];
@@ -254,10 +290,14 @@ class Bootstrap {
         if(isset($field['#prefix'])){
           $this->form .= $field['#prefix'];
         }
-        $this->form .= '
-        <div class="form-group" pane="">
-            <label class="col-sm-2 control-label">'.$field['#title'].'</label>
-            <div class="col-sm-10">';
+
+        $this->form .= '<div class="form-group">';
+        if($this->form_show_type == 'inline'){
+          $this->form .= '<div class="col-sm-12">';
+          $this->form .= ' <div class="title">'.t('请选择').$field['#title'].'</div>';
+        }else {
+          $this->form .= '<label class="col-sm-2 control-label">'.$field['#title'].'</label><div class="col-sm-10">';
+        }
 
         if(!empty($field['#options'])){
           foreach ($field['#options'] as $v => $title) {
@@ -290,10 +330,14 @@ class Bootstrap {
         if(isset($field['#prefix'])){
           $this->form .= $field['#prefix'];
         }
-        $this->form .= '
-        <div class="form-group">
-            <label class="col-sm-2 control-label">'.$field['#title'].'</label>
-            <div class="col-sm-10">';
+
+        $this->form .= '<div class="form-group">';
+        if($this->form_show_type == 'inline'){
+          $this->form .= '<div class="col-sm-12">';
+          $this->form .= ' <div class="title">'.t('请选择').$field['#title'].'</div>';
+        }else {
+          $this->form .= '<label class="col-sm-2 control-label">'.$field['#title'].'</label><div class="col-sm-10">';
+        }
 
         if(!empty($field['#options'])){
           foreach ($field['#options'] as $v => $title) {

@@ -11,6 +11,7 @@ class Layui {
      * @var string $form
      */
     private $form;
+    private $form_show_type;
 
     /**
      * start the form
@@ -22,14 +23,15 @@ class Layui {
      * @param string $charset
      * @return $this
      */
-    public function start($action, $id = null, $class = null, $enctype = false, $method = 'post', $charset = 'utf8') {
+    public function start($action, $id = null, $class = null, $show_type = 'block', $enctype = false, $method = 'post') {
+        $this->form_show_type = $show_type;
         switch ($enctype)
         {
             case true:
-                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'" lay-filter="formTest'.$id.'" enctype="multipart/form-data">';
+                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="utf8" class="layui-form '.$class.'" lay-filter="formTest'.$id.'" enctype="multipart/form-data">';
             break;
             default :
-                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="'. $charset.'" class="layui-form '.$class.'" lay-filter="formTest'.$id.'">';
+                $this->form = '<form action="'.$action.'" id="'.$id.'" method="'. $method.'" accept-charset="utf8" class="layui-form '.$class.'" lay-filter="formTest'.$id.'">';
             break;
         }
         return $this;
