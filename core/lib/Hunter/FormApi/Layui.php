@@ -2,8 +2,6 @@
 
 namespace Hunter\Core\FormApi;
 
-use Gregwar\Captcha\CaptchaBuilder;
-
 class Layui {
     /**
      * the html form code
@@ -35,7 +33,6 @@ class Layui {
             break;
         }
         return $this;
-
     }
 
     /**
@@ -203,16 +200,15 @@ class Layui {
         if(isset($field['#prefix'])){
           $this->form .= $field['#prefix'];
         }
-        $builder = new CaptchaBuilder;
-        $builder->build($width = 100, $height = 38);
-        session()->set('_captcha', $builder->getPhrase());
         $this->form .= '
         <div class="layui-form-item">
             <label class="layui-form-label">'.$field['#title'].'</label>
-            <div class="layui-input-inline">
+            <div class="layui-input-inline" style="margin-left:10px;">
               <input type="text" name="_captcha" id="'.$name.'" class="layui-input">
             </div>
-            <div class="captcha"><img src="'.$builder->inline().'"'.hunter_attributes($field['#attributes']).'></div>
+            <div class="captcha">
+            <img class="" src="/captcha/make" onclick="this.src=\'/captcha/make?ver=\'+new Date().getTime()" title="'.t('点击刷新验证码').'">
+            </div>
         </div>';
 
         if(isset($field['#suffix'])){
@@ -327,7 +323,13 @@ class Layui {
           }
         }
 
-        $this->form .= '  </select></div></div>';
+        $this->form .= '  </select>';
+
+        if(isset($field['#description'])){
+          $this->form .= '<span class="description">'.$field['#description'].'</span>';
+        }
+
+        $this->form .= ' </div></div>';
 
         if(isset($field['#suffix'])){
           $this->form .= $field['#suffix'];

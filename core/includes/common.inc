@@ -321,11 +321,17 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
     unset($fields['show_type']);
   }
 
+  $enctype = false;
+  if(isset($fields['enctype'])){
+    $enctype = $fields['enctype'];
+    unset($fields['enctype']);
+  }
+
   if($wrap){
     if($type == 'layui'){
-      $form = Layui::create()->start($form_redirect, $form_id, $class, $show_type);
+      $form = Layui::create()->start($form_redirect, $form_id, $class, $show_type, $enctype);
     }else{
-      $form = Bootstrap::create()->start($form_redirect, $form_id, $class, $show_type);
+      $form = Bootstrap::create()->start($form_redirect, $form_id, $class, $show_type, $enctype);
     }
   }else {
     $form = $parentform;
@@ -430,8 +436,14 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
           unset($field['#attributes']['id']);
         }
         element_set_attributes($field, array('id', 'name', 'cols', 'rows'));
-        if(empty($field['#attributes']['class']) && $type == 'layui'){
-          $field['#attributes']['class'][] = 'layui-textarea';
+        if(empty($field['#attributes']['class'])){
+          if($type == 'layui'){
+            $field['#attributes']['class'][] = 'layui-textarea';
+          }elseif($type == 'bs') {
+            $field['#attributes']['class'][] = 'form-control';
+          }else {
+            $field['#attributes']['class'][] = '';
+          }
         }
         $form->textarea($name, $field);
         break;
@@ -530,6 +542,15 @@ function hunter_download($filename, $conent) {
     exit;
 }
 
+/**
+ * clean url.
+ */
+function clean_url($url) {
+  $tmparr=parse_url($url);
+  $new_url=empty($tmparr['scheme'])?'http://':$tmparr['scheme'].'://';
+  $new_url.=$tmparr['host'].$tmparr['path'];
+  return $new_url;
+}
 
 /**
  * set default language.

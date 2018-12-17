@@ -26,7 +26,7 @@ $default_language = 'zh-cn';
 
 //配置: 启用图片自动压缩
 $auto_image_compress = array(
-  'enable' => true,
+  'enable' => false,
   'quality' => 70,
 );
 
@@ -39,29 +39,18 @@ $queue_server = array(
 
 //配置: ImageStyle, 格式dir => size
 $image_style = array(
-  'product' =>array(
-    '90_90' => array(
-      'size' => '90*90',
-      'method' => 'resize',
+  'news' =>array(
+    '120_78' => array(
+      'size' => '120*78',
+      'method' => 'zoomCrop',
       'background' => '#FFFFFF'
     ),
-    '190_190' => array(
-      'size' => '190*190',
-      'method' => 'resize',
+    '200_120' => array(
+      'size' => '200*120',
+      'method' => 'zoomCrop',
       'background' => '#FFFFFF'
-    ),
-    '570_570' => array(
-      'size' => '570*570',
-      'method' => 'scaleResize',
-      'background' => '#F4F4F4'
-    ),
-    '1200_1200' => array(
-      'size' => '1200*1200',
-      'method' => 'scaleResize',
-      'background' => '#F4F4F4'
     ),
   ),
-  'news' => '100*100',
   'page' => '100*100'
 );
 
