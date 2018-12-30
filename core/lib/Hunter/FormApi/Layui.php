@@ -355,7 +355,9 @@ class Layui {
 
         if(!empty($field['#options'])){
           foreach ($field['#options'] as $v => $title) {
-            $field['#attributes']['value'] = $v;
+            if(isset($field['#attributes']['lay-skin']) && $field['#attributes']['lay-skin'] != 'switch'){
+              $field['#attributes']['value'] = $v;
+            }
             $field['#attributes']['name'] = $name.'['.$v.']';
             $field['#attributes']['title'] = $title;
             if((is_array($field['#value']) && in_array($v, $field['#value'])) || (isset($field['#attributes']['value']) && $field['#value'] == $field['#attributes']['value'])){

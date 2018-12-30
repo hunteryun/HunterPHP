@@ -36,7 +36,7 @@
 	 * @return string
 	 */
 	public function getHiddenInputString()	{
-		return sprintf('<input type="hidden" name="_csrf_token_uuid" value="%s"/><input type="hidden" name="_csrf_token" value="%s"/>', $this->generate_key, $this->getToken());
+		return sprintf('<input type="hidden" name="_csrf_token_uuid" id="_csrf_token_uuid" value="%s"/><input type="hidden" name="_csrf_token" id="_csrf_token" value="%s"/>', $this->generate_key, $this->getToken());
 	}
 
 	/**

@@ -41,14 +41,16 @@ class Bootstrap {
           </div>
           </div>
           <div class="col-sm-2" style="padding:0;">
-          <input type="file" name="uploadfile" class="liteupload" multiple="multiple"/>
-          <a href="#" class="btn btn-primary">'.t('选择').'</a>';
+          <a href="javascript:;" class="file btn btn-primary">'.t('选择').'
+            <input type="file" name="uploadfile" class="liteupload" multiple="multiple">
+          </a>';
         }else {
           $this->form .= '<label class="col-sm-2 control-label">'.$field['#title'].'</label><div class="col-sm-6"><input type="text" class="form-control" id="'.$name.'"'.hunter_attributes($field['#attributes']).'>
           </div>
           <div class="col-sm-2" style="padding:0;">
-          <input type="file" name="uploadfile" class="liteupload" multiple="multiple"/>
-          <a href="#" class="btn btn-primary">'.t('选择').'</a>';
+          <a href="javascript:;" class="file btn btn-primary">'.t('选择').'
+            <input type="file" name="uploadfile" class="liteupload" multiple="multiple">
+          </a>';
         }
 
         if(isset($field['#description'])){

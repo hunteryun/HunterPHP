@@ -18,9 +18,6 @@ $default_cache = 'file';
 //配置: 缓存目录
 $cache_dir = HUNTER_ROOT . '/sites/files';
 
-//配置: 默认主题
-$default_theme = 'hunter';
-
 //配置: 默认语言
 $default_language = 'zh-cn';
 

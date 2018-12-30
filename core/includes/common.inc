@@ -17,6 +17,7 @@ use Hunter\Core\FormApi\Layui;
 use Hunter\Core\FormApi\Bootstrap;
 use voku\helper\AntiXSS;
 use Overclokk\Cookie\Cookie;
+use Gregwar\Image\Image;
 
 //file scan
 function file_scan($dir, $regx, $options = array(), $depth = 1) {
@@ -540,6 +541,53 @@ function hunter_download($filename, $conent) {
 
     readfile($filename);
     exit;
+}
+
+/**
+ * create images with image style.
+ */
+function hunter_image_style($filename, $style) {
+    global $auto_image_compress, $image_style, $base_url;
+    if (empty($filename) || !is_string($filename) || empty($style) || !isset($image_style[$style])){
+      return $filename;
+    }
+
+    if(substr($filename, 0, 1) == '/') {
+      $filename = substr($filename, 1);
+    }
+
+    $thumb_group = array();
+    if(is_array($image_style[$style])) {
+      foreach ($image_style[$style] as $dir => $thumb_size) {
+        $thumb_group[$dir]['thumb_move_dir'] = dirname(str_replace('sites/upload/', 'sites/thumb/'.$dir.'/', $filename));
+        $size = explode('*',$thumb_size['size']);
+        $thumb_group[$dir]['width'] = $size[0];
+        $thumb_group[$dir]['height'] = $size[1];
+        $thumb_group[$dir]['method'] = $thumb_size['method'];
+        $thumb_group[$dir]['background'] = $thumb_size['background'];
+        if (!is_dir($thumb_group[$dir]['thumb_move_dir'])){
+          mkdir($thumb_group[$dir]['thumb_move_dir'], 0755, true);
+        }
+      }
+    }else {
+      $thumb_group[$style]['thumb_move_dir'] = dirname(str_replace('sites/upload/', 'sites/thumb/'.$style.'/', $filename));
+      $size = explode('*',$image_style[$style]);
+      $thumb_group[$style]['width'] = $size[0];
+      $thumb_group[$style]['height'] = $size[1];
+      $thumb_group[$style]['method'] = 'resize';
+      $thumb_group[$style]['background'] = '#FFFFFF';
+      if (!is_dir($thumb_group[$style]['thumb_move_dir'])){
+        mkdir($thumb_group[$style]['thumb_move_dir'], 0755, true);
+      }
+    }
+
+    foreach ($thumb_group as $thumb_key => $thumb_item) {
+      $thumburl = $thumb_item['thumb_move_dir'].'/'.basename($filename);
+      $method = $thumb_item['method'];
+      Image::open($filename)
+           ->$method($thumb_item['width'], $thumb_item['height'], $thumb_item['background'])
+           ->save($thumburl);
+    }
 }
 
 /**
