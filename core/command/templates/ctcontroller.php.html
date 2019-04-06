@@ -95,6 +95,9 @@ class <?php print ucfirst($module); ?>Controller {
 <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
       '#multiple' => TRUE,
 <?php endif; ?>
+<?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple' && $field['html_type_setting']['image_skin_type'] == 'simple'): ?>
+      '#skin' => 'simple',
+<?php endif; ?>
       '#attributes' => array('id' => '<?php print $field['name']; ?>'),
     );
     <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'single'): ?>
@@ -214,6 +217,9 @@ $form['<?php print $field['name']; ?>'] = array(
         '#title' => '<?php print $field['lable']; ?>',
         <?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple'): ?>
 '#multiple' => TRUE,
+<?php if($field['html_type'] == 'image' && $field['html_type_setting']['image_type'] == 'multiple' && $field['html_type_setting']['image_skin_type'] == 'simple'): ?>
+'#skin' => 'simple',
+<?php endif; ?>
 '#prefix' => '<div id="show-upload-images" style="display:none">',
 '#suffix' => '</div>',
         <?php endif; ?>

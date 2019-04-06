@@ -43,7 +43,7 @@ class ModuleInstallCmd extends BaseCommand {
    protected function execute(InputInterface $input, OutputInterface $output) {
       $installed = false;
       if($input->getArgument('module') == 'all'){
-        ksort($this->moduleList);
+        krsort($this->moduleList);
         foreach ($this->moduleList as $module => $item) {
           $install_file = str_replace('info.yml', 'install', $item['pathname']);
           $installed = $this->exec_install($module, $install_file);

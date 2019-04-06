@@ -47,33 +47,48 @@ class Layui {
           $this->form .= $field['#prefix'];
         }
         if(isset($field['#multiple'])){
-          $this->form .= '
+          if(isset($field['#skin']) && $field['#skin'] == 'simple'){
+            $this->form .= '
             <div class="layui-form-item">
               <label class="layui-form-label">'.$field['#title'].'</label>
               <div class="layui-input-block">
                 <div class="layui-upload">
-                  <button type="button" class="layui-btn layui-btn-normal" id="'.$name.'List">选择多文件</button>
-                  <div class="layui-upload-list">
-                    <table class="layui-table">
-                      <thead>
-                        <tr><th>文件名</th>
-                        <th>预览</th>
-                        <th>大小</th>
-                        <th>状态</th>
-                        <th>描述</th>
-                        <th>操作</th>
-                      </tr></thead>
-                      <tbody id="demoList"></tbody>
-                    </table>
-                  </div>
-                  <button type="button" class="layui-btn" id="'.$name.'ListAction">开始上传</button>
-                </div>';
+                  <button type="button" class="layui-btn" id="'.$name.'MultiUpload">'.t('选择文件').'</button>
+                  <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                    <div class="uploader-img-list" id="'.$name.'Preview"></div>
+                 </blockquote>
+                </div>
+              </div>
+            </div>';
+          }else {
+            $this->form .= '
+              <div class="layui-form-item">
+                <label class="layui-form-label">'.$field['#title'].'</label>
+                <div class="layui-input-block">
+                  <div class="layui-upload">
+                    <button type="button" class="layui-btn layui-btn-normal" id="'.$name.'List">选择多文件</button>
+                    <div class="layui-upload-list">
+                      <table class="layui-table">
+                        <thead>
+                          <tr><th>文件名</th>
+                          <th>预览</th>
+                          <th>大小</th>
+                          <th>状态</th>
+                          <th>描述</th>
+                          <th>操作</th>
+                        </tr></thead>
+                        <tbody id="demoList"></tbody>
+                      </table>
+                    </div>
+                    <button type="button" class="layui-btn" id="'.$name.'ListAction">开始上传</button>
+                  </div>';
 
-          if(isset($field['#description'])){
-            $this->form .= '<span class="description">'.$field['#description'].'</span>';
+            if(isset($field['#description'])){
+              $this->form .= '<span class="description">'.$field['#description'].'</span>';
+            }
+
+            $this->form .= '</div></div>';
           }
-
-          $this->form .= '</div></div>';
         }else{
           $this->form .= '
             <div class="layui-form-item">

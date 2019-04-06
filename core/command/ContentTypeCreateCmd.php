@@ -409,6 +409,14 @@ class ContentTypeCreateCmd extends BaseCommand {
                    0
                 );
                 $html_type_setting[$field_name]['image_type'] = $helper->ask($input, $output, $image_type_question);
+
+                //skin option
+                $image_skin_type_question = new ChoiceQuestion(
+                   'Choose the skin type [list]:',
+                   array('list', 'simple'),
+                   0
+                );
+                $html_type_setting[$field_name]['image_skin_type'] = $helper->ask($input, $output, $image_skin_type_question);
                 break;
               case 'file':
                 //accept option

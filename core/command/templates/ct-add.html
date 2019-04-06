@@ -72,6 +72,22 @@
               }
             });
           <?php else: ?>
+            <?php if($field['html_type_setting']['image_skin_type'] == 'simple'): ?>
+            var simpleUploader = upload.render({
+              elem: '#<?php print $field['name']; ?>MultiUpload'
+              ,url: 'admin/safe/upload'
+              ,multiple: true
+              ,before: function(obj){
+                layer.load(); //上传loading
+              }
+              ,done: function(res, index){
+                layer.closeAll('loading'); //关闭loading
+                var varDom = '';
+                vartDom = '<div class="item"><img src="'+ res.data.full_path_new_name +'" class="layui-upload-img"><input type="hidden" name="up_photos['+ index +'][img]" value="'+res.data.full_path_new_name+'"><div class="del-pimg" onClick="delSimpleImg(this)"></div></div>'
+                $('#<?php print $field['name']; ?>Preview').append(vartDom);
+              }
+            });
+            <?php else: ?>
             //多文件列表示例
             var demoListView = $('#demoList')
             ,uploadListIns = upload.render({
@@ -143,6 +159,7 @@
                 tds.eq(4).find('.demo-reload').removeClass('layui-hide'); //显示重传
               }
             });
+            <?php endif; ?>
           <?php endif; ?>
               <?php elseif($field['html_type'] == 'file'): ?>
 
@@ -195,6 +212,12 @@
                 return false;
             });
         });
+
+      <?php if($field['html_type_setting']['image_type'] == 'multiple' && $field['html_type_setting']['image_skin_type'] == 'simple'): ?>
+      function delSimpleImg(e) {
+        $(e).parent('div').remove();
+      }
+      <?php endif; ?>
     </script>
 </body>
 
