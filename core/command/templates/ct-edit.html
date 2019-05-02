@@ -158,7 +158,7 @@
                 tds.eq(3).html('<span style="color: #FF5722;">上传失败</span>');
                 tds.eq(4).find('.demo-reload').removeClass('layui-hide'); //显示重传
               }
-            });            
+            });
             <?php endif; ?>
             Sortable.create(up_photos, {
               group: "<?php print $type; ?>_up_photos",
@@ -231,7 +231,7 @@
             });
         });
 
-      <?php if($field['html_type_setting']['image_type'] == 'multiple' && $field['html_type_setting']['image_skin_type'] == 'simple'): ?>
+      <?php if(isset($field['html_type_setting']['image_type']) && $field['html_type_setting']['image_type'] == 'multiple' && $field['html_type_setting']['image_skin_type'] == 'simple'): ?>
       function delSimpleImg(e) {
         $(e).parent('div').remove();
       }

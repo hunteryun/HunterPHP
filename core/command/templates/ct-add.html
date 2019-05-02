@@ -213,7 +213,7 @@
             });
         });
 
-      <?php if($field['html_type_setting']['image_type'] == 'multiple' && $field['html_type_setting']['image_skin_type'] == 'simple'): ?>
+      <?php if(isset($field['html_type_setting']['image_type']) && $field['html_type_setting']['image_type'] == 'multiple' && $field['html_type_setting']['image_skin_type'] == 'simple'): ?>
       function delSimpleImg(e) {
         $(e).parent('div').remove();
       }
