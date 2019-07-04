@@ -75,7 +75,7 @@ class <?php print ucfirst($module); ?>Controller {
       '#type' => 'textarea',
       '#title' => '<?php print $field['lable']; ?>',
       '#required' => TRUE,
-      '#attributes' => array('id' => '<?php print $field['name']; ?>', 'lay-verify' => '<?php print $field['name']; ?>_content'),
+      '#attributes' => array('id' => '<?php print $field['name']; ?>', 'class' => 'ueditor'),
     );
 <?php elseif($field['html_type'] == 'radio'): ?>
     $form['<?php print $field['name']; ?>'] = array(
@@ -191,7 +191,7 @@ $form['<?php print $field['name']; ?>'] = array(
         '#title' => '<?php print $field['lable']; ?>',
         '#default_value' => $<?php print $module; ?>-><?php print $field['name']; ?>,
         '#required' => TRUE,
-        '#attributes' => array('id' => '<?php print $field['name']; ?>', 'lay-verify' => '<?php print $field['name']; ?>_content'),
+        '#attributes' => array('id' => '<?php print $field['name']; ?>', 'class' => 'ueditor'),
       );
   <?php elseif($field['html_type'] == 'radio'): ?>
 $form['<?php print $field['name']; ?>'] = array(

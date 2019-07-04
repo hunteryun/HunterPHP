@@ -3,7 +3,7 @@
     "description": "Best PHP CMF for chinese",
     "keywords": ["microframework", "laravel", "drupal", "psr7", "high-performance"],
     "homepage": "https://github.com/hunteryun/hunterphp",
-    "license": "no-license",
+    "license": "MIT",
     "authors": [
         {
             "name": "DrupalHunter",

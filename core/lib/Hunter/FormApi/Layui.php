@@ -74,6 +74,7 @@ class Layui {
                           <th>预览</th>
                           <th>大小</th>
                           <th>状态</th>
+                          <th>进度</th>
                           <th>描述</th>
                           <th>操作</th>
                         </tr></thead>
