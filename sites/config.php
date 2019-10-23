@@ -10,7 +10,9 @@ $safe_key = '6kUxOb';
 $hunter_debug = true;
 
 //配置: 静态缓存
-$hunter_static = false;
+$hunter_static = true;
+
+$static_time = 300;
 
 //配置: 默认缓存
 $default_cache = 'file';
@@ -20,6 +22,11 @@ $cache_dir = HUNTER_ROOT . '/sites/files';
 
 //配置: 默认语言
 $default_language = 'zh-cn';
+
+//配置: 默认主题
+$default_admin_theme = 'admin';
+
+$default_front_theme = 'front';
 
 //配置: 启用图片自动压缩
 $auto_image_compress = array(

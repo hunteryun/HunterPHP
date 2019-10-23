@@ -21,12 +21,13 @@
         "schnittstabil/csrf-tokenservice": "^3.1",
         "lootils/uuid": "^1.0",
         "overclokk/cookie": "^1.0",
+        "phpfastcache/phpfastcache": "^7.1",
         "fzaninotto/faker": "^1.6",
         "creitive/breadcrumbs": "^3.1",
       	"voku/anti-xss": "^2.0",
       	"gregwar/captcha": "1.*",
         "katzgrau/klogger": "^1.2",
-        "doctrine/annotations": "dev-master",
+        "doctrine/annotations": "^1.8",
         "overtrue/pinyin": "~3.0"
     },
     "extra": {

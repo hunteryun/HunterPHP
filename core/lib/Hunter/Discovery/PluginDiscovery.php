@@ -4,7 +4,7 @@ namespace Hunter\Core\Discovery;
 
 use ReflectionClass;
 use Hunter\Core\Utility\Unicode;
-use Doctrine\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationReader;
 
 /**
  * Provides discovery for plugin within a given set of directories.

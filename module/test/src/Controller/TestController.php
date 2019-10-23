@@ -11,7 +11,7 @@ class TestController {
    * homepage.
    */
   public function index(ServerRequest $request, TestPlugin $test) {
-    return view('/hunter/index.html', array('title' => 'Hello Hunter!'));
+    return view('/front/index.html', array('title' => 'Hello Hunter!'));
   }
 
   /**

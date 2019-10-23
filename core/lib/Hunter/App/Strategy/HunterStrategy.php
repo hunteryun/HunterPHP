@@ -13,6 +13,8 @@ use RuntimeException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\RedirectResponse;
+use Hunter\Core\Utility\StringConverter;
+use Hunter\Core\Cache\FastCache;
 
 class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
     /**
@@ -20,41 +22,40 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
      */
     public function getCallable(Route $route, array $vars) {
         return function (ServerRequestInterface $request, ResponseInterface $response, callable $next) use ($route, $vars) {
-            global $default_theme, $hunter_static, $app;
-            $generate_html = false;
+            global $default_theme, $hunter_static, $app, $hunter_debug, $static_time;
+            timer_start();
             $path = $route->getPath();
             $routeNames = $route->getContainer()->get('routeNames');
             $routeOptions = $route->getContainer()->get('routeOptions');
-            //if enabled html static, and file exists, then load it
+            $routePermission = $route->getContainer()->get('routePermission');
+
             if($hunter_static && isset($routeNames[$path]) && !isset($routeOptions[$path]['no_cache']) && substr($path, 0, 6) != '/admin' && substr($path, 0, 5) != '/api/') {
-              $generate_file = 'sites/html/'.$default_theme.'/'.str_replace('.', '/', $routeNames[$path]);
-              if($vars){
-                $generate_file .= '_'.implode('_',array_values($vars));
+              $FastCache = FastCache::getInstance();
+              $string = new StringConverter();
+              $serverParams = $request->getServerParams();
+              $key = $string->createMachineName(ltrim($serverParams['REQUEST_URI'], '/'))."_cache";
+
+              if (!$FastCache->isCached($key)) {
+                $routeTitles = $route->getContainer()->get('routeTitles');
+
+                if(isset($routeTitles[$path]) && function_exists('theme')){
+                  theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
+                }
+                $vars['vars'] = $vars;
+                $body = $route->getContainer()->call($route->getCallable(), $vars);
+
+                $FastCache->set($key, $body, $static_time);
+              } else {
+                $body = $FastCache->get($key);
               }
-              if(is_file($generate_file.'.html')){
-                require_once($generate_file.'.html');
-                die;
-              }else {
-                $generate_html = true;
+            }else {
+              $routeTitles = $route->getContainer()->get('routeTitles');
+
+              if(isset($routeTitles[$path]) && function_exists('theme')){
+                theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
               }
-            }
-
-            if(isset($routeOptions[$path]['init'])){
-              foreach ($app->getModuleHandle()->getImplementations('init') as $module) {
-                $app->getModuleHandle()->invoke($module, 'init', array($request));
-              }
-            }
-
-            $routeTitles = $route->getContainer()->get('routeTitles');
-
-            if(isset($routeTitles[$path]) && function_exists('theme')){
-              theme()->getEnvironment()->addGlobal('page_title', $routeTitles[$path]);
-            }
-            $vars['vars'] = $vars;
-            $body = $route->getContainer()->call($route->getCallable(), $vars);
-
-            if($generate_html){
-              $this->htmlMake($body, $generate_file);
+              $vars['vars'] = $vars;
+              $body = $route->getContainer()->call($route->getCallable(), $vars);
             }
 
             if(is_array($body) || (is_object($body) && get_class($body) == 'stdClass')){
@@ -63,6 +64,10 @@ class HunterStrategy extends ApplicationStrategy implements StrategyInterface {
             }
 
             if(is_string($body) || is_bool($body)){
+                if($hunter_debug && (!isset($routePermission[$path]) || isset($routePermission[$path]) && $routePermission[$path] != 'pjax') && !isset($routeOptions[$path]['no_cache']) && substr($path, 0, 6) != '/admin' && substr($path, 0, 5) != '/api/') {
+                  $body .= '<center>页面加载时间: '.timer_read(). ' ms</center>';
+                }
+
                 if ($response->getBody()->isWritable()) {
                     $response->getBody()->write($body);
                 }

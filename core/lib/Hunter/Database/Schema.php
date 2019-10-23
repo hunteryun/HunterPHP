@@ -185,7 +185,37 @@ class Schema extends Query {
         if (is_string($spec)) {
             $this->connection->query($spec);
         }
-        //todo spec is array
+
+        $fixnull = FALSE;
+        if (!empty($spec['not null']) && !isset($spec['default']) && !$is_primary_key) {
+          $fixnull = TRUE;
+          $spec['not null'] = FALSE;
+        }
+        $query = 'ALTER TABLE {' . $table . '} ADD ';
+        $query .= $this->createFieldSql($field, $this->processField($spec));
+        $this->connection->query($query);
+        if (isset($spec['initial_from_field'])) {
+          if (isset($spec['initial'])) {
+            $expression = 'COALESCE(' . $spec['initial_from_field'] . ', :default_initial_value)';
+            $arguments = [':default_initial_value' => $spec['initial']];
+          }
+          else {
+            $expression = $spec['initial_from_field'];
+            $arguments = [];
+          }
+          $this->connection->update($table)
+            ->expression($field, $expression, $arguments)
+            ->execute();
+        }
+        elseif (isset($spec['initial'])) {
+          $this->connection->update($table)
+            ->fields([$field => $spec['initial']])
+            ->execute();
+        }
+        if ($fixnull) {
+          $spec['not null'] = TRUE;
+          $this->changeField($table, $field, $field, $spec);
+        }
     }
 
     /**
@@ -212,7 +242,9 @@ class Schema extends Query {
         if (is_string($spec)) {
             $this->connection->query($spec);
         }
-        //todo spec is array
+
+        $sql = 'ALTER TABLE {' . $table . '} CHANGE `' . $field . '` ' . $this->createFieldSql($field_new, $this->processField($spec));
+        $this->connection->query($sql);
     }
 
     /**

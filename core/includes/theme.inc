@@ -23,6 +23,16 @@ function theme($target = 'default') {
  * @param $parameters 变量
  */
 function view($name, array $parameters = array(), $target = 'default') {
+    global $default_admin_theme, $default_front_theme;
+
+    if($default_admin_theme !== 'admin' && strpos($name, 'admin') !==false) {
+      $name = str_replace("admin", $default_admin_theme, $name);
+    }
+
+    if($default_front_theme !== 'front' && strpos($name, 'front') !==false) {
+      $name = str_replace("front", $default_front_theme, $name);
+    }
+
     return theme($target)->setTemplate($name)->setParameters($parameters)->render($name, $parameters);
 }
 

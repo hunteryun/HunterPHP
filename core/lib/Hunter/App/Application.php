@@ -396,6 +396,21 @@ class Application {
           }
         }
 
+        if(module_exists('views')) {
+          $all_views = views_get_all();
+          static $view_paths = array();
+          foreach ($all_views as $view) {
+            if(isset($view['view_path']) && $view['view_path'] && !isset($this->routeTitles[$view['view_path']]) && !isset($view_paths[$view['view_path']])){
+              $view_paths[$view['view_path']] = $view['view_name'];
+              $route = $routers->map(['GET','POST'], $view['view_path'], '\Hunter\views\Controller\ViewsUIController::api_get_view');
+            }
+
+            if(is_object($route) && isset($view['view_permissions']) && !empty($view['view_permissions'])){
+              $this->routePermission[$view['view_path']] = $view['view_permissions'];
+            }
+          }
+        }
+
         $this->routers = $routers;
         $this->container->add('routePermission', $this->routePermission);
         $this->container->add('routeOptions', $this->routeOptions);

@@ -15,6 +15,7 @@ use Zend\Diactoros\ServerRequestFactory;
 use Zend\Diactoros\Response\RedirectResponse;
 use Hunter\Core\FormApi\Layui;
 use Hunter\Core\FormApi\Bootstrap;
+use Hunter\Core\FormApi\Seven;
 use voku\helper\AntiXSS;
 use Overclokk\Cookie\Cookie;
 use Gregwar\Image\Image;
@@ -241,10 +242,9 @@ function hunter_convert_to_utf8($data) {
  * 转换文件名.
  */
 function hunter_rename($text, $ext = false, $type = 'date', $format = 'YmdHis') {
-  $string = new StringConverter();
   $houzhui = substr(strrchr($text, '.'), 1);
   $basename = basename($text,".".$houzhui);
-  $newname = $string->createMachineName($basename);
+  $newname = machine_name($basename);
   if($type == 'date'){
     $newname .= '_'.date($format, time());
   }
@@ -298,7 +298,7 @@ function hunter_map_assoc($array, $function = NULL) {
  */
 function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wrap = TRUE, $parentform = NULL) {
   global $app;
-  $form_id = 'exampleForm-'.rand(1,100);
+  $form_id = 'hpForm-'.rand(1,100);
   if(isset($fields['form_id'])){
     $form_id = $fields['form_id'];
     unset($fields['form_id']);
@@ -329,9 +329,11 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
   }
 
   if($wrap){
-    if($type == 'layui'){
+    if($type == 'layui') {
       $form = Layui::create()->start($form_redirect, $form_id, $class, $show_type, $enctype);
-    }else{
+    }elseif($type == 'seven') {
+      $form = Seven::create()->start($form_redirect, $form_id, $class, $show_type, $enctype);
+    }else {
       $form = Bootstrap::create()->start($form_redirect, $form_id, $class, $show_type, $enctype);
     }
   }else {
@@ -427,6 +429,10 @@ function hunter_form_render($type, &$fields, $module = NULL, $parms = NULL, $wra
       case 'select':
         if(isset($field['#disabled']) && $field['#disabled']){
           $field['#attributes']['disabled'] = 'true';
+        }
+        if(isset($field['#multiple']) && $field['#multiple']){
+          $field['#attributes']['multiple'] = 'multiple';
+          $field['#name'] = $name.'[]';
         }
         element_set_attributes($field, array('id', 'name', 'size'));
         $form->select($name, $field);
@@ -639,6 +645,15 @@ function language_get() {
 function module_exists($module) {
   global $app;
   return $app->getModuleHandle()->moduleExists($module);
+}
+
+/**
+ * create machine name.
+ */
+function machine_name($text) {
+  $string = new StringConverter();
+  $machine_name = $string->createMachineName($text);
+  return $machine_name;
 }
 
 if (!function_exists('e')) {
